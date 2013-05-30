@@ -1,0 +1,73 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureTable", "AzureTable", "{22A492EB-10F9-4C45-90E4-42A1F7AA66EB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Couchbase", "Couchbase", "{F4A6D115-CB3C-46C9-964F-15D3EECA5C43}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Redis", "Redis", "{EA7378C7-68E0-4C9E-8D1B-2FD25F08D6D9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FSText", "FSText", "{E498FDB9-05D7-4502-809B-BC066C1B9B28}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQLServer", "SQLServer", "{89DF64F0-29AF-46D7-96EB-4D191FF73A98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyValueStorage", "KeyValueStorage\KeyValueStorage.csproj", "{A53CB348-4535-44C6-A752-7E3382C24304}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyValueStorage.Couchbase", "Couchbase\KeyValueStorage.Couchbase\KeyValueStorage.Couchbase.csproj", "{16657D58-E46B-4015-A4F8-5B66F4CA5069}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyValueStorage.Redis", "Redis\KeyValueStorage.Redis\KeyValueStorage.Redis.csproj", "{31903596-C7A9-4C7E-837B-CA855D7F15FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyValueStorage.FSText", "FSText\KeyValueStorage.FSText\KeyValueStorage.FSText.csproj", "{3D4A2DE2-90B4-4545-AF2E-B796C775F23C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyValueStorage.FSText.Tests", "FSText\KeyValueStorage.FSText.Tests\KeyValueStorage.FSText.Tests.csproj", "{FBF45E96-E935-4D12-AC62-48434D5E82B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyValueStorage.Testing", "KeyValueStorage.Testing\KeyValueStorage.Testing.csproj", "{BDBDBDA2-4004-47CF-A7EF-A34928637D08}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2A2917E9-609D-4C3C-8E76-AD37F6BCAE7B}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A53CB348-4535-44C6-A752-7E3382C24304}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A53CB348-4535-44C6-A752-7E3382C24304}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A53CB348-4535-44C6-A752-7E3382C24304}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A53CB348-4535-44C6-A752-7E3382C24304}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16657D58-E46B-4015-A4F8-5B66F4CA5069}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16657D58-E46B-4015-A4F8-5B66F4CA5069}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16657D58-E46B-4015-A4F8-5B66F4CA5069}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16657D58-E46B-4015-A4F8-5B66F4CA5069}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31903596-C7A9-4C7E-837B-CA855D7F15FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31903596-C7A9-4C7E-837B-CA855D7F15FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31903596-C7A9-4C7E-837B-CA855D7F15FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31903596-C7A9-4C7E-837B-CA855D7F15FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D4A2DE2-90B4-4545-AF2E-B796C775F23C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D4A2DE2-90B4-4545-AF2E-B796C775F23C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D4A2DE2-90B4-4545-AF2E-B796C775F23C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D4A2DE2-90B4-4545-AF2E-B796C775F23C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBF45E96-E935-4D12-AC62-48434D5E82B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBF45E96-E935-4D12-AC62-48434D5E82B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBF45E96-E935-4D12-AC62-48434D5E82B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBF45E96-E935-4D12-AC62-48434D5E82B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDBDBDA2-4004-47CF-A7EF-A34928637D08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDBDBDA2-4004-47CF-A7EF-A34928637D08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDBDBDA2-4004-47CF-A7EF-A34928637D08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDBDBDA2-4004-47CF-A7EF-A34928637D08}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{16657D58-E46B-4015-A4F8-5B66F4CA5069} = {F4A6D115-CB3C-46C9-964F-15D3EECA5C43}
+		{31903596-C7A9-4C7E-837B-CA855D7F15FB} = {EA7378C7-68E0-4C9E-8D1B-2FD25F08D6D9}
+		{3D4A2DE2-90B4-4545-AF2E-B796C775F23C} = {E498FDB9-05D7-4502-809B-BC066C1B9B28}
+		{FBF45E96-E935-4D12-AC62-48434D5E82B4} = {E498FDB9-05D7-4502-809B-BC066C1B9B28}
+	EndGlobalSection
+EndGlobal
