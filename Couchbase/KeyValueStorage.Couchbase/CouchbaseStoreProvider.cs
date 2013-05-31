@@ -68,7 +68,7 @@ namespace KeyValueStorage.Couchbase
 
         public bool Exists(string key)
         {
-            throw new NotImplementedException();
+            return Client.KeyExists(key);
         }
 
         public DateTime ExpiresOn(string Key)

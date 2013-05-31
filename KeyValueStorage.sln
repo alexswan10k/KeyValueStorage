@@ -40,6 +40,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyValueStorage.AzureTable.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Oracle", "Oracle", "{3B530A91-9FCE-482B-96FF-49A3302A1F0E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cassandra", "Cassandra", "{DA1C5390-A883-4AF3-8645-7ED7B6E6C820}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9AB14D1B-310C-4E73-ADC8-DC0E1399A0DE}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
