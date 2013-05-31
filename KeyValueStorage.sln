@@ -30,6 +30,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2A2917
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyValueStorage.Redis.Tests", "Redis\KeyValueStorage.Redis.Tests\KeyValueStorage.Redis.Tests.csproj", "{0A696150-1FAB-47CF-9ACF-4F37873F60E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +62,10 @@ Global
 		{BDBDBDA2-4004-47CF-A7EF-A34928637D08}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDBDBDA2-4004-47CF-A7EF-A34928637D08}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDBDBDA2-4004-47CF-A7EF-A34928637D08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A696150-1FAB-47CF-9ACF-4F37873F60E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A696150-1FAB-47CF-9ACF-4F37873F60E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A696150-1FAB-47CF-9ACF-4F37873F60E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A696150-1FAB-47CF-9ACF-4F37873F60E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +73,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{16657D58-E46B-4015-A4F8-5B66F4CA5069} = {F4A6D115-CB3C-46C9-964F-15D3EECA5C43}
 		{31903596-C7A9-4C7E-837B-CA855D7F15FB} = {EA7378C7-68E0-4C9E-8D1B-2FD25F08D6D9}
+		{0A696150-1FAB-47CF-9ACF-4F37873F60E4} = {EA7378C7-68E0-4C9E-8D1B-2FD25F08D6D9}
 		{3D4A2DE2-90B4-4545-AF2E-B796C775F23C} = {E498FDB9-05D7-4502-809B-BC066C1B9B28}
 		{FBF45E96-E935-4D12-AC62-48434D5E82B4} = {E498FDB9-05D7-4502-809B-BC066C1B9B28}
 	EndGlobalSection

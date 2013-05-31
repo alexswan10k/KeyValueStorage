@@ -19,12 +19,12 @@ namespace KeyValueStorage.Redis
         #region IStoreProvider
         public string Get(string key)
         {
-            return Get(key);
+            return Encoding.UTF8.GetString(Client.Get(key));
         }
 
         public void Set(string key, string value)
         {
-            Client.Set(key, value);
+            Client.Set(key, Encoding.UTF8.GetBytes(value));
         }
 
         public void Delete(string key)
