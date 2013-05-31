@@ -49,7 +49,7 @@ namespace KeyValueStorage
 
         public void Delete(string key)
         {
-            StoreProvider.Delete(key);
+            StoreProvider.Remove(key);
         }
 
         public T Get<T>(string key, out ulong cas)

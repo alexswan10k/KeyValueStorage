@@ -54,7 +54,7 @@ namespace KeyValueStorage.FSText
             }
         }
 
-        public void Delete(string key)
+        public void Remove(string key)
         {
             var fi = GetFileInfo(key);
 

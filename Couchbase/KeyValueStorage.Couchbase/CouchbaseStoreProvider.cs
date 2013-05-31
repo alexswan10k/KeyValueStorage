@@ -4,40 +4,46 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KeyValueStorage.Interfaces;
+using Couchbase;
 
 namespace KeyValueStorage.Couchbase
 {
     public class CouchbaseStoreProvider : IStoreProvider
     {
-        public CouchbaseStoreProvider()
+        CouchbaseClient Client;
+        public CouchbaseStoreProvider(CouchbaseClient client)
         {
-
+            Client = client;
         }
-
 
         public string Get(string key)
         {
-            throw new NotImplementedException();
+            return (string)Client.Get(key);
         }
 
         public void Set(string key, string value)
         {
-            throw new NotImplementedException();
+            Client.Store(Enyim.Caching.Memcached.StoreMode.Replace, key, value);
         }
 
-        public void Delete(string key)
+        public void Remove(string key)
         {
-            throw new NotImplementedException();
+            Client.Remove(key);
         }
 
         public string Get(string key, out ulong cas)
         {
-            throw new NotImplementedException();
+            var casRes = Client.GetWithCas(key);
+            cas = casRes.Cas;
+            return (string)casRes.Result;
         }
 
         public void Set(string key, string value, ulong cas)
         {
-            throw new NotImplementedException();
+            var casRes = Client.Cas(Enyim.Caching.Memcached.StoreMode.Replace, key, value, cas);
+
+            if (casRes.Result == false)
+                throw new Exception("cas expired");
         }
 
         public void Set(string key, string value, DateTime expires)
@@ -117,7 +123,7 @@ namespace KeyValueStorage.Couchbase
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            //we do not dispose of the client as its lifetime is intended to extend beyond the lifetime of the provider and context.
         }
     }
 }

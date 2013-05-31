@@ -27,7 +27,7 @@ namespace KeyValueStorage.Redis
             Client.Set(key, Encoding.UTF8.GetBytes(value));
         }
 
-        public void Delete(string key)
+        public void Remove(string key)
         {
             Client.Remove(key);
         }

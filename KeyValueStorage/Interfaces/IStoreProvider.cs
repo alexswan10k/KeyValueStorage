@@ -9,7 +9,7 @@ namespace KeyValueStorage.Interfaces
     {
         string Get(string key);
         void Set(string key, string value);
-        void Delete(string key);
+        void Remove(string key);
 
         string Get(string key, out ulong cas);
         void Set(string key, string value, ulong cas);
