@@ -5,7 +5,7 @@ using System.Text;
 
 namespace KeyValueStorage.Interfaces
 {
-    public interface IKVStore
+    public interface IKVStore : IDisposable
     {
         T Get<T>(string key);
         void Set<T>(string key, T value);

@@ -169,5 +169,10 @@ namespace KeyValueStorage.FSText
             throw new NotImplementedException();
         }
         #endregion
+
+        public void Dispose()
+        {
+
+        }
     }
 }

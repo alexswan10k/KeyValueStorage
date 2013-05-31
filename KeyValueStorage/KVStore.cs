@@ -8,16 +8,16 @@ namespace KeyValueStorage
 {
     public class KVStore : IKVStore
     {
-        public static IKVStore Instance { get; set; }
+        public static Factory Factory { get; set; }
 
-        public static void Initialize(IStoreProvider provider)
+        public static void Initialize(Func<IStoreProvider> createProviderDel)
         {
-            Instance = new KVStore(provider);
+            Factory = new Factory(createProviderDel);
         }
 
-        public static void Initialize(IStoreProvider provider, ITextSerializer serializer)
+        public static void Initialize(Func<IStoreProvider> createProviderDel, ITextSerializer serializer)
         {
-            Instance = new KVStore(provider, serializer);
+            Factory = new Factory(createProviderDel, serializer);
         }
 
         public KVStore(IStoreProvider provider)
@@ -149,5 +149,11 @@ namespace KeyValueStorage
         }
         #endregion
         #endregion
+
+        public void Dispose()
+        {
+            //todo: implement the dispose pattern
+            StoreProvider.Dispose();
+        }
     }
 }

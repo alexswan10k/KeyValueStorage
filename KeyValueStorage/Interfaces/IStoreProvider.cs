@@ -5,7 +5,7 @@ using System.Text;
 
 namespace KeyValueStorage.Interfaces
 {
-    public interface IStoreProvider
+    public interface IStoreProvider : IDisposable
     {
         string Get(string key);
         void Set(string key, string value);
