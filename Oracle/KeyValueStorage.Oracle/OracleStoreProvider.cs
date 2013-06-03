@@ -9,7 +9,7 @@ using Oracle.ManagedDataAccess.Client;
 
 namespace KeyValueStorage.Oracle
 {
-    public class OracleStoreProvider : IStoreProvider
+    public class OracleStoreProvider : IRDbStoreProvider
     {
         public IDbConnection Connection { get; protected set; }
         public bool OwnsConnection { get; protected set; }
@@ -38,24 +38,27 @@ namespace KeyValueStorage.Oracle
                 Connection.Open();
         }
 
-        public void CheckAndCreateTable()
+        public bool SetupWorkingTable()
         {
             BeginOperation();
             try
             {
                 Connection.ExecuteNonQuery("create table " + KVSTableName + " ("
-                    + "Key Varchar2(400),"
+                    + "Key Varchar2(128),"
                     + "Value Varchar(4000),"
                     + "Expires timestamp(6)"
                     + ")");
 
                 Connection.ExecuteNonQuery("alter table " + KVSTableName + " add constraint PK_" + KVSTableName + "_Key primary key (Key)");
+                return true;
             }
             catch (OracleException oex)
             {
                 if (oex.Number != 955)
                     throw;
             }
+
+            return false;
         }
 
         #region IStoreProvider

@@ -30,14 +30,14 @@ Currently fully supported:
 
 
 Currently partly supported:
-Redis
-Couchbase
-FileSystemText
-Oracle
+Redis (CRUD)
+Couchbase (CRUD)
+FileSystemText (CRUD)
+Oracle (all except sequence ops)
+SqlServer (all except sequence ops)
 
 Planned:
 AzureTable
-SqlServer
 Cassandra?
 
 Implementing a new database provider technology is as simple as implementing the IStoreProvider interface. This can be found in KeyValueStorage.Interfaces.IStoreProvider

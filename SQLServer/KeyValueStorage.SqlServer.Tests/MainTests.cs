@@ -5,7 +5,7 @@ using System.Text;
 using KeyValueStorage.Testing;
 using NUnit.Framework;
 
-namespace KeyValueStorage.Oracle.Tests
+namespace KeyValueStorage.SqlServer.Tests
 {
     [TestFixture]
     public class MainTests
@@ -13,12 +13,12 @@ namespace KeyValueStorage.Oracle.Tests
         [SetUp]
         public void SetUp()
         {
-            string connString = "data source=ORCL;password=x;persist security info=True;user id=x";
+            string connString = @"data source=localhost\SQLEXPRESS;initial catalog=Test;User Id=Test;Password=test";
 
-            var initStore = new OracleStoreProvider(connString);
+            var initStore = new SqlServerStoreProvider(connString);
             initStore.SetupWorkingTable();
 
-            KVStore.Initialize(new Func<Interfaces.IStoreProvider>(() => new OracleStoreProvider(connString)));
+            KVStore.Initialize(new Func<Interfaces.IStoreProvider>(() => new SqlServerStoreProvider(connString)));
         }
 
         [Test]

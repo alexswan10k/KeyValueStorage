@@ -49,6 +49,7 @@
     <Compile Include="Extensions\IDbConnectionExtensions.cs" />
     <Compile Include="Factory.cs" />
     <Compile Include="Interfaces\IKVStore.cs" />
+    <Compile Include="Interfaces\IRDbStoreProvider.cs" />
     <Compile Include="Interfaces\IStoreProvider.cs" />
     <Compile Include="Interfaces\ITextSerializer.cs" />
     <Compile Include="KVStore.cs" />

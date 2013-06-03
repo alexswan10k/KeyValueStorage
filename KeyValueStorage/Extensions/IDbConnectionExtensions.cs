@@ -15,12 +15,14 @@ namespace KeyValueStorage.Extensions
             if (p1 != null)
             {
                 var par1 = cmd.CreateParameter();
+                par1.ParameterName = "p1";
                 par1.Value = p1;
                 cmd.Parameters.Add(par1);
             }
             if (p2 != null)
             {
                 var par2 = cmd.CreateParameter();
+                par2.ParameterName = "p2";
                 par2.Value = p2;
                 cmd.Parameters.Add(par2);
             }
@@ -34,12 +36,14 @@ namespace KeyValueStorage.Extensions
             if (p1 != null)
             {
                 var par1 = cmd.CreateParameter();
+                par1.ParameterName = "p1";
                 par1.Value = p1;
                 cmd.Parameters.Add(par1);
             }
             if (p2 != null)
             {
                 var par2 = cmd.CreateParameter();
+                par2.ParameterName = "p2";
                 par2.Value = p2;
                 cmd.Parameters.Add(par2);
             }
