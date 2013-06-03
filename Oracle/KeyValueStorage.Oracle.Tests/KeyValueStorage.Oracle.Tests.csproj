@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A53CB348-4535-44C6-A752-7E3382C24304}</ProjectGuid>
+    <ProjectGuid>{900C070F-B73C-4D32-A0C3-2CA1431A8DD1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KeyValueStorage</RootNamespace>
-    <AssemblyName>KeyValueStorage</AssemblyName>
+    <RootNamespace>KeyValueStorage.Oracle.Tests</RootNamespace>
+    <AssemblyName>KeyValueStorage.Oracle.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,9 +32,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ServiceStack.Text, Version=3.9.45.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ServiceStack.Text.3.9.48\lib\net35\ServiceStack.Text.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Oracle.ManagedDataAccess, Version=4.112.3.60, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\packages\odp.net.managed.112.3.60\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -46,14 +49,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extensions\IDbConnectionExtensions.cs" />
-    <Compile Include="Factory.cs" />
-    <Compile Include="Interfaces\IKVStore.cs" />
-    <Compile Include="Interfaces\IStoreProvider.cs" />
-    <Compile Include="Interfaces\ITextSerializer.cs" />
-    <Compile Include="KVStore.cs" />
+    <Compile Include="MainTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceStackTextSerializer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\KeyValueStorage.Testing\KeyValueStorage.Testing.csproj">
+      <Project>{bdbdbda2-4004-47cf-a7ef-a34928637d08}</Project>
+      <Name>KeyValueStorage.Testing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\KeyValueStorage\KeyValueStorage.csproj">
+      <Project>{a53cb348-4535-44c6-a752-7e3382c24304}</Project>
+      <Name>KeyValueStorage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\KeyValueStorage.Oracle\KeyValueStorage.Oracle.csproj">
+      <Project>{09f700a4-fed1-4ab4-8bdc-26c22d7783f7}</Project>
+      <Name>KeyValueStorage.Oracle</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

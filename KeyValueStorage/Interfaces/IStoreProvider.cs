@@ -20,7 +20,7 @@ namespace KeyValueStorage.Interfaces
         void Set(string key, string value, ulong CAS, TimeSpan expiresIn);
 
         bool Exists(string key);
-        DateTime ExpiresOn(string Key);
+        DateTime? ExpiresOn(string key);
 
         #region Queries
         IEnumerable<string> GetStartingWith(string key);

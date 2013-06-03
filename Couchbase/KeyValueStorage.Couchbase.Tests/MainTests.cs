@@ -15,14 +15,23 @@ namespace KeyValueStorage.Couchbase.Tests
         [SetUp]
         public void SetUp()
         {
-            var client = new global::Couchbase.CouchbaseClient("Test", "test");
+            var config = new global::Couchbase.Configuration.CouchbaseClientConfiguration()
+            {
+                Bucket = "default",
+                Password="password"
+                
+            };
+            config.Urls.Add(new Uri("http://127.0.0.1:8091/pools"));
+
+            var client = new global::Couchbase.CouchbaseClient(config);
+            var stats = client.Stats();
             KVStore.Initialize(new Func<Interfaces.IStoreProvider>(() => new Couchbase.CouchbaseStoreProvider(client)));
         }
 
         [Test]
-        public void GetSetSingleSimpleItemTest()
+        public void CRUDSingleSimpleItemTest()
         {
-            ReusableTests.GetSetSingleSimpleItemTest();
+            ReusableTests.CRUDSingleSimpleItemTest();
         }
     }
 }

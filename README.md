@@ -3,23 +3,23 @@ and strives to provide a common interface that can be shared between all provide
 
 Write code like:
 
-KVStore.Initialize(new Func<Interfaces.IStoreProvider>(() => new KeyValueStorage.Redis.RedisStoreProvider(new ServiceStack.Redis.RedisClient())));
+	KVStore.Initialize(new Func<Interfaces.IStoreProvider>(() => new KeyValueStorage.Redis.RedisStoreProvider(new ServiceStack.Redis.RedisClient())));
 
-using (var context = KVStore.Factory.Get())
-{
-    var bo = new TestBO_A()
-    {
-        Id = 1,
-        Description = "Description"
-    };
+	using (var context = KVStore.Factory.Get())
+	{
+		var bo = new TestBO_A()
+		{
+			Id = 1,
+			Description = "Description"
+		};
 
-    context.Set(key, bo);
+		context.Set(key, bo);
 
-    var boCheck = context.Get<TestBO_A>(key);
+		var boCheck = context.Get<TestBO_A>(key);
 
-    Assert.AreEqual(bo.Id, boCheck.Id);
-    Assert.AreEqual(bo.Description, boCheck.Description);
-}
+		Assert.AreEqual(bo.Id, boCheck.Id);
+		Assert.AreEqual(bo.Description, boCheck.Description);
+	}
 
 
 
@@ -33,11 +33,11 @@ Currently partly supported:
 Redis
 Couchbase
 FileSystemText
+Oracle
 
 Planned:
 AzureTable
 SqlServer
-Oracle
 Cassandra?
 
 Implementing a new database provider technology is as simple as implementing the IStoreProvider interface. This can be found in KeyValueStorage.Interfaces.IStoreProvider

@@ -23,7 +23,7 @@ namespace KeyValueStorage.Couchbase
 
         public void Set(string key, string value)
         {
-            Client.Store(Enyim.Caching.Memcached.StoreMode.Replace, key, value);
+            Client.Store(Enyim.Caching.Memcached.StoreMode.Set, key, value);
         }
 
         public void Remove(string key)
@@ -71,7 +71,7 @@ namespace KeyValueStorage.Couchbase
             return Client.KeyExists(key);
         }
 
-        public DateTime ExpiresOn(string Key)
+        public DateTime? ExpiresOn(string key)
         {
             throw new NotImplementedException();
         }

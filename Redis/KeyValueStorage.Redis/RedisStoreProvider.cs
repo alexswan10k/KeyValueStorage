@@ -19,7 +19,11 @@ namespace KeyValueStorage.Redis
         #region IStoreProvider
         public string Get(string key)
         {
-            return Encoding.UTF8.GetString(Client.Get(key));
+            var res = Client.Get(key);
+
+            if(res != null)
+                return Encoding.UTF8.GetString(res);
+            return string.Empty;
         }
 
         public void Set(string key, string value)
@@ -67,7 +71,7 @@ namespace KeyValueStorage.Redis
             return Client.Exists(key) == 1? true: false;
         }
 
-        public DateTime ExpiresOn(string Key)
+        public DateTime? ExpiresOn(string key)
         {
             //looking for implementation
             throw new NotImplementedException();

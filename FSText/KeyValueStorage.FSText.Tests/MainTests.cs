@@ -19,9 +19,9 @@ namespace KeyValueStorage.FSText.Tests
         }
 
         [Test]
-        public void GetSetSingleSimpleItemTest()
+        public void CRUDSingleSimpleItemTest()
         {
-            ReusableTests.GetSetSingleSimpleItemTest();
+            ReusableTests.CRUDSingleSimpleItemTest();
         }
     }
 }

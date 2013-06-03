@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using KeyValueStorage.Testing;
 using NUnit.Framework;
-using KeyValueStorage;
 
-namespace KeyValueStorage.Redis.Tests
+namespace KeyValueStorage.Oracle.Tests
 {
     [TestFixture]
     public class MainTests
@@ -15,7 +13,12 @@ namespace KeyValueStorage.Redis.Tests
         [SetUp]
         public void SetUp()
         {
-            KVStore.Initialize(new Func<Interfaces.IStoreProvider>(() => new KeyValueStorage.Redis.RedisStoreProvider(new ServiceStack.Redis.RedisClient())));
+            string connString = "data source=ORCL;password=x;persist security info=True;user id=x";
+
+            var initStore = new OracleStoreProvider(connString);
+            initStore.CheckAndCreateTable();
+
+            KVStore.Initialize(new Func<Interfaces.IStoreProvider>(() => new OracleStoreProvider(connString)));
         }
 
         [Test]

@@ -99,7 +99,7 @@ namespace KeyValueStorage.FSText
             return false;
         }
 
-        public DateTime ExpiresOn(string Key)
+        public DateTime? ExpiresOn(string key)
         {
             throw new NotImplementedException();
         }

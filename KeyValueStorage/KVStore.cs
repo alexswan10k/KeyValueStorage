@@ -88,9 +88,9 @@ namespace KeyValueStorage
             return StoreProvider.Exists(key);
         }
 
-        public DateTime ExpiresOn(string Key)
+        public DateTime? ExpiresOn(string key)
         {
-            return StoreProvider.ExpiresOn(Key);
+            return StoreProvider.ExpiresOn(key);
         }
 
         #region Queries
