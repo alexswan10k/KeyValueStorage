@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KeyValueStorage.AzureTable;
 using KeyValueStorage.Testing;
+using Microsoft.WindowsAzure.Storage;
 using NUnit.Framework;
 
 namespace KeyValueStorage.Oracle.Tests
@@ -14,12 +15,10 @@ namespace KeyValueStorage.Oracle.Tests
         [SetUp]
         public void SetUp()
         {
-            //string connString = "data source=ORCL;password=x;persist security info=True;user id=x";
+            var initStore = new AzureTableStoreProvider(CloudStorageAccount.DevelopmentStorageAccount);
+            initStore.SetupWorkingTable();
 
-            //var initStore = new OracleStoreProvider(connString);
-            //initStore.SetupWorkingTable();
-
-            KVStore.Initialize(new Func<Interfaces.IStoreProvider>(() => new AzureTableStoreProvider()));
+            KVStore.Initialize(new Func<Interfaces.IStoreProvider>(() => new AzureTableStoreProvider(CloudStorageAccount.DevelopmentStorageAccount)));
         }
 
         [Test]

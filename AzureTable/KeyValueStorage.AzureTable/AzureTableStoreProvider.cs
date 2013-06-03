@@ -3,29 +3,67 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KeyValueStorage.Interfaces;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace KeyValueStorage.AzureTable
 {
     public class AzureTableStoreProvider : IStoreProvider
     {
-        public AzureTableStoreProvider()
-        {
+        public CloudTableClient client { get; protected set; }
+        public string KVSTableName { get; protected set;}
+        const string KVSTableNameDefault = "KVS";
 
+        public CloudTable Table
+        {
+            get
+            {
+                return client.GetTableReference(KVSTableName);
+            }
         }
 
+        public AzureTableStoreProvider(CloudStorageAccount storageAccount)
+        {
+            KVSTableName = KVSTableNameDefault;
+            client = storageAccount.CreateCloudTableClient();
+        }
+
+        public AzureTableStoreProvider(CloudTableClient tableClient)
+        {
+            KVSTableName = KVSTableNameDefault;
+            client = tableClient;
+        }
+
+        public bool SetupWorkingTable()
+        {
+            return Table.CreateIfNotExists();
+        }
+
+        protected KVEntity get(string key)
+        {
+            var query = new TableQuery<KVEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, key));
+            return Table.ExecuteQuery(query).FirstOrDefault();
+        }
+
+        #region IStoreProvider
         public string Get(string key)
         {
-            throw new NotImplementedException();
+            var entity = get(key);
+            if(entity != null)
+                return entity.Value;
+            return null;
         }
 
         public void Set(string key, string value)
         {
-            throw new NotImplementedException();
+            Table.Execute(TableOperation.InsertOrReplace(new KVEntity() { PartitionKey = key, RowKey = "1", Value = value }));
         }
 
         public void Remove(string key)
         {
-            throw new NotImplementedException();
+            var item = get(key);
+            Table.Execute(TableOperation.Delete(item));
         }
 
         public string Get(string key, out ulong cas)
@@ -112,10 +150,11 @@ namespace KeyValueStorage.AzureTable
         {
             throw new NotImplementedException();
         }
+        #endregion
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            //No azure client components are disposable... 
         }
     }
 }

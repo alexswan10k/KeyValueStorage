@@ -73,16 +73,19 @@ namespace KeyValueStorage.Couchbase
 
         public DateTime? ExpiresOn(string key)
         {
+            //Couchbase does not seem to have an easy api to support this
             throw new NotImplementedException();
         }
 
         public IEnumerable<string> GetStartingWith(string key)
         {
+            //Requires views?
             throw new NotImplementedException();
         }
 
         public IEnumerable<string> GetContaining(string key)
         {
+            //Requires views?
             throw new NotImplementedException();
         }
 
