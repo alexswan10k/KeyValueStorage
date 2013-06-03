@@ -138,12 +138,12 @@ namespace KeyValueStorage
         #endregion
 
         #region Sequences
-        public long GetNextSequenceValue(string key)
+        public ulong GetNextSequenceValue(string key)
         {
             return StoreProvider.GetNextSequenceValue(key, 1);
         }
 
-        public long GetNextSequenceValue(string key, int increment)
+        public ulong GetNextSequenceValue(string key, int increment)
         {
             return StoreProvider.GetNextSequenceValue(key, increment);
         }

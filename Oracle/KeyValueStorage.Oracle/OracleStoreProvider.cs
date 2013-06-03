@@ -210,7 +210,7 @@ namespace KeyValueStorage.Oracle
             return (int)val.Value;
         }
 
-        public long GetNextSequenceValue(string key, int increment)
+        public ulong GetNextSequenceValue(string key, int increment)
         {
             throw new NotImplementedException();
         }

@@ -7,16 +7,71 @@ namespace KeyValueStorage.Interfaces
 {
     public interface IStoreProvider : IDisposable
     {
+        /// <summary>
+        /// Gets the specified key.
+        /// Covered by all providers
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
         string Get(string key);
+        /// <summary>
+        /// Sets the specified key.
+        /// Covered by all providers
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
         void Set(string key, string value);
+        /// <summary>
+        /// Removes the specified key.
+        /// Supported by all providers
+        /// </summary>
+        /// <param name="key">The key.</param>
         void Remove(string key);
 
+        /// <summary>
+        /// Gets the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="cas">The cas.</param>
+        /// <returns></returns>
         string Get(string key, out ulong cas);
+        /// <summary>
+        /// Sets the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="cas">The cas.</param>
         void Set(string key, string value, ulong cas);
 
+        /// <summary>
+        /// Sets the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="expires">The expires.</param>
         void Set(string key, string value, DateTime expires);
+        /// <summary>
+        /// Sets the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="expiresIn">The expires in.</param>
         void Set(string key, string value, TimeSpan expiresIn);
+        /// <summary>
+        /// Sets the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="CAS">The CAS.</param>
+        /// <param name="expires">The expires.</param>
         void Set(string key, string value, ulong CAS, DateTime expires);
+        /// <summary>
+        /// Sets the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="CAS">The CAS.</param>
+        /// <param name="expiresIn">The expires in.</param>
         void Set(string key, string value, ulong CAS, TimeSpan expiresIn);
 
         bool Exists(string key);
@@ -37,7 +92,7 @@ namespace KeyValueStorage.Interfaces
         #endregion
 
         #region Sequences
-        long GetNextSequenceValue(string key, int increment);
+        ulong GetNextSequenceValue(string key, int increment);
         #endregion
     }
 }

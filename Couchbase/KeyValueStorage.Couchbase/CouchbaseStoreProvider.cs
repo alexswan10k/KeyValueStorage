@@ -48,22 +48,22 @@ namespace KeyValueStorage.Couchbase
 
         public void Set(string key, string value, DateTime expires)
         {
-            throw new NotImplementedException();
+            Client.Store(Enyim.Caching.Memcached.StoreMode.Set, key, value, expires);
         }
 
         public void Set(string key, string value, TimeSpan expiresIn)
         {
-            throw new NotImplementedException();
+            Client.Store(Enyim.Caching.Memcached.StoreMode.Set, key, value,DateTime.UtcNow + expiresIn);
         }
 
         public void Set(string key, string value, ulong CAS, DateTime expires)
         {
-            throw new NotImplementedException();
+            Client.Cas(Enyim.Caching.Memcached.StoreMode.Set, key, value, expires, CAS);
         }
 
         public void Set(string key, string value, ulong CAS, TimeSpan expiresIn)
         {
-            throw new NotImplementedException();
+            Client.Cas(Enyim.Caching.Memcached.StoreMode.Set, key, value, DateTime.UtcNow + expiresIn, CAS);
         }
 
         public bool Exists(string key)
@@ -91,37 +91,43 @@ namespace KeyValueStorage.Couchbase
 
         public IEnumerable<string> GetAllKeys()
         {
+            //Requires views?
             throw new NotImplementedException();
         }
 
         public IEnumerable<string> GetKeysStartingWith(string key)
         {
+            //Requires views?
             throw new NotImplementedException();
         }
 
         public IEnumerable<string> GetKeysContaining(string key)
         {
+            //Requires views?
             throw new NotImplementedException();
         }
 
         public int CountStartingWith(string key)
         {
+            //Requires views?
             throw new NotImplementedException();
         }
 
         public int CountContaining(string key)
         {
+            //Requires views?
             throw new NotImplementedException();
         }
 
         public int CountAll()
         {
+            //Requires views?
             throw new NotImplementedException();
         }
 
-        public long GetNextSequenceValue(string key, int increment)
+        public ulong GetNextSequenceValue(string key, int increment)
         {
-            throw new NotImplementedException();
+            return Client.Increment(key, 1, (ulong)increment);
         }
 
         public void Dispose()

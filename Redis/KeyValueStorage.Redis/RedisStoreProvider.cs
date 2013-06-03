@@ -117,7 +117,7 @@ namespace KeyValueStorage.Redis
             return Client.GetAllKeys().Count;
         }
 
-        public long GetNextSequenceValue(string key, int increment)
+        public ulong GetNextSequenceValue(string key, int increment)
         {
             throw new NotImplementedException();
         }
