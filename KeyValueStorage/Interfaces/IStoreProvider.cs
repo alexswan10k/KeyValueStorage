@@ -64,7 +64,7 @@ namespace KeyValueStorage.Interfaces
         /// <param name="value">The value.</param>
         /// <param name="CAS">The CAS.</param>
         /// <param name="expires">The expires.</param>
-        void Set(string key, string value, ulong CAS, DateTime expires);
+        void Set(string key, string value, ulong cas, DateTime expires);
         /// <summary>
         /// Sets the specified key.
         /// </summary>
@@ -72,7 +72,7 @@ namespace KeyValueStorage.Interfaces
         /// <param name="value">The value.</param>
         /// <param name="CAS">The CAS.</param>
         /// <param name="expiresIn">The expires in.</param>
-        void Set(string key, string value, ulong CAS, TimeSpan expiresIn);
+        void Set(string key, string value, ulong cas, TimeSpan expiresIn);
 
         bool Exists(string key);
         DateTime? ExpiresOn(string key);

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using KeyValueStorage.Interfaces;
 using Couchbase;
+using KeyValueStorage.Exceptions;
 
 namespace KeyValueStorage.Couchbase
 {
@@ -43,7 +44,7 @@ namespace KeyValueStorage.Couchbase
             var casRes = Client.Cas(Enyim.Caching.Memcached.StoreMode.Replace, key, value, cas);
 
             if (casRes.Result == false)
-                throw new Exception("cas expired");
+                throw new CASException("CAS expired");
         }
 
         public void Set(string key, string value, DateTime expires)

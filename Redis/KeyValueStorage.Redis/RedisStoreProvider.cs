@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using KeyValueStorage.Exceptions;
 using KeyValueStorage.Interfaces;
 using ServiceStack.Redis;
 
@@ -11,6 +12,9 @@ namespace KeyValueStorage.Redis
     public class RedisStoreProvider : IStoreProvider
     {
         RedisClient Client;
+        const string casSuffix = "-CAS";
+        const string lockSuffix = "-L";
+
         public RedisStoreProvider(RedisClient client)
         {
             Client = client;   
@@ -38,32 +42,60 @@ namespace KeyValueStorage.Redis
 
         public string Get(string key, out ulong cas)
         {
-            throw new NotImplementedException();
+            cas = Client.Get<ulong>(key + casSuffix);
+            return this.Get(key);
         }
 
         public void Set(string key, string value, ulong cas)
         {
-            throw new NotImplementedException();
+            using (var casLock = Client.AcquireLock(key + lockSuffix, TimeSpan.FromSeconds(10)))
+            {
+                var casDB = Client.Get<ulong>(key + casSuffix);
+
+                if (casDB != cas)
+                    throw new CASException("CAS values do not match");
+
+                Client.Set(key, Encoding.UTF8.GetBytes(value));
+                GetNextSequenceValue(key + casSuffix, 1);
+            }
         }
 
         public void Set(string key, string value, DateTime expires)
         {
-            Client.Set(key, value, expires);
+            Client.Set(key, Encoding.UTF8.GetBytes(value), expires);
         }
 
         public void Set(string key, string value, TimeSpan expiresIn)
         {
-            Client.Set(key, value, DateTime.UtcNow + expiresIn);
+            Client.Set(key, Encoding.UTF8.GetBytes(value), DateTime.UtcNow + expiresIn);
         }
 
-        public void Set(string key, string value, ulong CAS, DateTime expires)
+        public void Set(string key, string value, ulong cas, DateTime expires)
         {
-            throw new NotImplementedException();
+            using (var casLock = Client.AcquireLock(key + casSuffix))
+            {
+                var casDB = Client.Get<ulong>(key + casSuffix);
+
+                if (casDB != cas)
+                    throw new Exception("CAS values do not match");
+
+                Client.Set(key, Encoding.UTF8.GetBytes(value), expires);
+                GetNextSequenceValue(key + casSuffix, 1);
+            }
         }
 
-        public void Set(string key, string value, ulong CAS, TimeSpan expiresIn)
+        public void Set(string key, string value, ulong cas, TimeSpan expiresIn)
         {
-            throw new NotImplementedException();
+            using (var casLock = Client.AcquireLock(key + casSuffix))
+            {
+                var casDB = Client.Get<ulong>(key + casSuffix);
+
+                if (casDB != cas)
+                    throw new CASException("CAS expired");
+
+                Client.Set(key, Encoding.UTF8.GetBytes(value), DateTime.UtcNow + expiresIn);
+                GetNextSequenceValue(key + casSuffix, 1);
+            }
         }
 
         public bool Exists(string key)
@@ -119,7 +151,14 @@ namespace KeyValueStorage.Redis
 
         public ulong GetNextSequenceValue(string key, int increment)
         {
-            throw new NotImplementedException();
+            ulong seq = 0;
+
+            for (int i = 0; i < increment; i++)
+            {
+                seq = (ulong)Client.Incr(key);
+            }
+
+            return seq;
         }
         #endregion
 

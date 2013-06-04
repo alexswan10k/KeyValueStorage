@@ -23,5 +23,17 @@ namespace KeyValueStorage.Redis.Tests
         {
             ReusableTests.CRUDSingleSimpleItemTest();
         }
+
+        [Test]
+        public void SequenceTest()
+        {
+            ReusableTests.SequenceTest();
+        }
+
+        [Test]
+        public void CASTest()
+        {
+            ReusableTests.CASTest();
+        }
     }
 }

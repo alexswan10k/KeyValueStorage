@@ -46,7 +46,8 @@ namespace KeyValueStorage.Oracle
                 Connection.ExecuteNonQuery("create table " + KVSTableName + " ("
                     + "Key Varchar2(128),"
                     + "Value Varchar(4000),"
-                    + "Expires timestamp(6)"
+                    + "Expires timestamp(6),"
+                    + "CAS Number(38,0)"
                     + ")");
 
                 Connection.ExecuteNonQuery("alter table " + KVSTableName + " add constraint PK_" + KVSTableName + "_Key primary key (Key)");

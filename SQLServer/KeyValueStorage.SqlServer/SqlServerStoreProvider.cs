@@ -46,7 +46,8 @@ namespace KeyValueStorage.SqlServer
                     Connection.ExecuteNonQuery("create table " + KVSTableName + " ("
                         + "[Key] Varchar(128) not null,"
                         + "[Value] Varchar(MAX),"
-                        + "Expires datetime"
+                        + "Expires datetime,"
+                        + "CAS int"
                         + ")");
 
                     Connection.ExecuteNonQuery("Alter table "+ KVSTableName 
@@ -122,6 +123,7 @@ namespace KeyValueStorage.SqlServer
 
             public string Get(string key, out ulong cas)
             {
+                //use triggers?
                 throw new NotImplementedException();
             }
 
@@ -215,6 +217,7 @@ namespace KeyValueStorage.SqlServer
 
             public ulong GetNextSequenceValue(string key, int increment)
             {
+                //set up a sproc for this
                 throw new NotImplementedException();
             }
             #endregion
