@@ -91,14 +91,14 @@ namespace KeyValueStorage.Testing
                 Assert.AreEqual(bo.Dump(), bo2.Dump());
                 bo.Description = "DescriptionB";
 
-                context.Set(key, bo2, cas);
+                context.Set(key, bo, cas);
                 ulong cas2 = cas;
 
                 var bo3 = context.Get<TestBO_A>(key, out cas2);
 
                 Assert.AreNotEqual(cas2, cas);
 
-                Assert.AreEqual(bo2.Dump(), bo3.Dump());
+                Assert.AreEqual(bo.Dump(), bo3.Dump());
                 bo.Description = "DescriptionC";
 
                 Assert.Throws<CASException>(() => context.Set(key, bo3, 0));

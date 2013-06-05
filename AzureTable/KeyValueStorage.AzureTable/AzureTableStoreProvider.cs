@@ -64,7 +64,9 @@ namespace KeyValueStorage.AzureTable
         public void Remove(string key)
         {
             var item = get(key);
-            Table.Execute(TableOperation.Delete(item));
+
+            if (item != null)
+                Table.Execute(TableOperation.Delete(item));
         }
 
         public string Get(string key, out ulong cas)
@@ -73,7 +75,7 @@ namespace KeyValueStorage.AzureTable
             var entity = get(key);
             if (entity != null)
             {
-                cas = entity.CAS;
+                cas = (ulong)entity.CAS;
                 return entity.Value;
             }
             return null;
@@ -84,13 +86,16 @@ namespace KeyValueStorage.AzureTable
             var entity = get(key);
             if (entity != null)
             {
-                if (entity.CAS != cas)
+                if (entity.CAS != (long)cas)
                     throw new CASException("CAS Expired");
 
-                Table.Execute(TableOperation.Merge(entity));
+                entity.CAS++;
+                entity.Value = value;
+
+                Table.Execute(TableOperation.Replace(entity));
             }
             else
-                Table.Execute(TableOperation.Insert(new KVEntity() { PartitionKey = key, RowKey = "1", Value = value }));
+                Table.Execute(TableOperation.Insert(new KVEntity() { PartitionKey = key, RowKey = "1", Value = value, CAS = (long)cas }));
         }
 
         public void Set(string key, string value, DateTime expires)
@@ -166,8 +171,37 @@ namespace KeyValueStorage.AzureTable
 
         public ulong GetNextSequenceValue(string key, int increment)
         {
-            throw new NotImplementedException();
+            return getNextSequenceValue(key, increment, 0);
         }
+
+        protected ulong getNextSequenceValue(string key, int increment, int tryCount)
+        {
+            try
+            {
+                ulong cas;
+                var obj = Get(key, out cas);
+                ulong seqVal;
+
+                if (!ulong.TryParse(obj, out seqVal))
+                {
+                    seqVal = 0;
+                }
+                seqVal = seqVal + (ulong)increment;
+                Set(key, seqVal.ToString(), cas);
+                return seqVal;
+            }
+            catch (CASException casEx)
+            {
+                if (tryCount >= 10)
+                    throw new Exception("Could not get sequence value", casEx);
+
+                System.Threading.Thread.Sleep(20);
+                //retry
+                return getNextSequenceValue(key, increment,tryCount++);
+            }
+            return 0;
+        }
+
         #endregion
 
         public void Dispose()

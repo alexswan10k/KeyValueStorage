@@ -33,5 +33,17 @@ namespace KeyValueStorage.Couchbase.Tests
         {
             ReusableTests.CRUDSingleSimpleItemTest();
         }
+
+        [Test]
+        public void CASTest()
+        {
+            ReusableTests.CASTest();
+        }
+
+        [Test]
+        public void SequenceTest()
+        {
+            ReusableTests.SequenceTest();
+        }
     }
 }

@@ -28,6 +28,12 @@ namespace KeyValueStorage.Oracle.Tests
         }
 
         [Test]
+        public void SequenceTest()
+        {
+            ReusableTests.SequenceTest();
+        }
+
+        [Test]
         public void CASTest()
         {
             ReusableTests.CASTest();

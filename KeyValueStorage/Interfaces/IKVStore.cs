@@ -94,7 +94,6 @@ namespace KeyValueStorage.Interfaces
 
         #region Counters
         int CountStartingWith(string key);
-        int CountContaining(string key);
         int CountAll();
         #endregion
 

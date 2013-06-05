@@ -116,11 +116,6 @@ namespace KeyValueStorage
             return StoreProvider.CountStartingWith(key);
         }
 
-        public int CountContaining(string key)
-        {
-            return StoreProvider.CountContaining(key);
-        }
-
         public int CountAll()
         {
             return StoreProvider.CountAll();
