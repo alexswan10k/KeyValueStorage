@@ -99,11 +99,6 @@ namespace KeyValueStorage
             return StoreProvider.GetStartingWith(key).Select(s => Serializer.Deserialize<T>(s));
         }
 
-        public IEnumerable<T> GetContaining<T>(string key)
-        {
-            return StoreProvider.GetContaining(key).Select(s => Serializer.Deserialize<T>(s));
-        }
-
         public IEnumerable<string> GetAllKeys()
         {
             return StoreProvider.GetAllKeys();
@@ -112,11 +107,6 @@ namespace KeyValueStorage
         public IEnumerable<string> GetKeysStartingWith(string key)
         {
             return StoreProvider.GetKeysStartingWith(key);
-        }
-
-        public IEnumerable<string> GetKeysContaining(string key)
-        {
-            return StoreProvider.GetKeysContaining(key);
         }
         #endregion
 

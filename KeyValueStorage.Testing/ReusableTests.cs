@@ -104,5 +104,52 @@ namespace KeyValueStorage.Testing
                 Assert.Throws<CASException>(() => context.Set(key, bo3, 0));
             }
         }
+
+        public static void KeysStartingWithTest()
+        {
+            //insert some keys
+
+            using (var context = KVStore.Factory.Get())
+            {
+                context.Set("K1A:1", true);
+                context.Set("K1A:2", true);
+                context.Set("K1A:3", true);
+
+                context.Set("K1B:1", 1);
+                context.Set("K1B:2", 2);
+                context.Set("K1B:3", 3);
+                context.Set("K1B:4", 4);
+
+                context.Set("K2A:1", "one");
+                context.Set("K2A:2", "two");
+                context.Set("K2A:3", "three");
+
+                context.Set("K2A:2Sub:1", "subVal");
+
+                context.Set("K3:1", true);
+                context.Set("K3:2", true);
+
+                var keys = context.GetKeysStartingWith("K1A");
+
+                Assert.AreEqual(3, keys.Count());
+                Assert.IsTrue(keys.All(q => q.StartsWith("K1A")));
+
+
+                keys = context.GetKeysStartingWith("K1B");
+
+                Assert.AreEqual(4, keys.Count());
+                Assert.IsTrue(keys.All(q => q.StartsWith("K1B")));
+
+
+                keys = context.GetKeysStartingWith("K2A");
+
+                Assert.AreEqual(4, keys.Count());
+                Assert.IsTrue(keys.All(q => q.StartsWith("K2A")));
+
+                keys = context.GetKeysStartingWith("K2A:2Sub");
+
+                Assert.AreEqual(1, keys.Count());
+            }
+        }
     }
 }

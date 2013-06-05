@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KeyValueStorage.Exceptions;
 using KeyValueStorage.Interfaces;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
@@ -68,22 +69,38 @@ namespace KeyValueStorage.AzureTable
 
         public string Get(string key, out ulong cas)
         {
-            throw new NotImplementedException();
+            cas = 0;
+            var entity = get(key);
+            if (entity != null)
+            {
+                cas = entity.CAS;
+                return entity.Value;
+            }
+            return null;
         }
 
         public void Set(string key, string value, ulong cas)
         {
-            throw new NotImplementedException();
+            var entity = get(key);
+            if (entity != null)
+            {
+                if (entity.CAS != cas)
+                    throw new CASException("CAS Expired");
+
+                Table.Execute(TableOperation.Merge(entity));
+            }
+            else
+                Table.Execute(TableOperation.Insert(new KVEntity() { PartitionKey = key, RowKey = "1", Value = value }));
         }
 
         public void Set(string key, string value, DateTime expires)
         {
-            throw new NotImplementedException();
+            Table.Execute(TableOperation.InsertOrReplace(new KVEntity() { PartitionKey = key, RowKey = "1", Value = value, Expires = expires }));
         }
 
         public void Set(string key, string value, TimeSpan expiresIn)
         {
-            throw new NotImplementedException();
+            Table.Execute(TableOperation.InsertOrReplace(new KVEntity() { PartitionKey = key, RowKey = "1", Value = value, Expires = DateTime.UtcNow + expiresIn }));
         }
 
         public void Set(string key, string value, ulong CAS, DateTime expires)
@@ -98,52 +115,53 @@ namespace KeyValueStorage.AzureTable
 
         public bool Exists(string key)
         {
-            throw new NotImplementedException();
+            var entity = get(key);
+            if (entity != null)
+                return true;
+            return false;
         }
 
         public DateTime? ExpiresOn(string key)
         {
-            throw new NotImplementedException();
+            var entity = get(key);
+            if (entity != null)
+                return entity.Expires;
+            return null;
         }
 
         public IEnumerable<string> GetStartingWith(string key)
         {
-            throw new NotImplementedException();
-        }
+            var keyMax = Encoding.UTF8.GetString(incrementByteArrByOne(Encoding.UTF8.GetBytes(key)));
 
-        public IEnumerable<string> GetContaining(string key)
-        {
-            throw new NotImplementedException();
+            var query = new TableQuery<KVEntity>().Where("PartitionKey ge '" + key + "' and PartitionKey lt '" + keyMax + "'");
+            return Table.ExecuteQuery(query).Select(s => s.Value).ToList();
         }
 
         public IEnumerable<string> GetAllKeys()
         {
-            throw new NotImplementedException();
+            var query = new TableQuery<KVEntity>();
+            return Table.ExecuteQuery(query).Select(s => s.PartitionKey).ToList();
         }
 
         public IEnumerable<string> GetKeysStartingWith(string key)
         {
-            throw new NotImplementedException();
-        }
+            var keyMax = Encoding.UTF8.GetString(incrementByteArrByOne(Encoding.UTF8.GetBytes(key)));
 
-        public IEnumerable<string> GetKeysContaining(string key)
-        {
-            throw new NotImplementedException();
+            var query = new TableQuery<KVEntity>().Where("PartitionKey ge '"+key + "' and PartitionKey lt '"+keyMax+"'");
+            return Table.ExecuteQuery(query).Select(s => s.PartitionKey).ToList();
         }
 
         public int CountStartingWith(string key)
         {
-            throw new NotImplementedException();
-        }
+            var keyMax = Encoding.UTF8.GetString(incrementByteArrByOne(Encoding.UTF8.GetBytes(key)));
 
-        public int CountContaining(string key)
-        {
-            throw new NotImplementedException();
+            var query = new TableQuery<KVEntity>().Where("PartitionKey ge '"+key + "' and PartitionKey lt '"+keyMax+"'");
+            return Table.ExecuteQuery(query).Count();
         }
 
         public int CountAll()
         {
-            throw new NotImplementedException();
+            return Table.ExecuteQuery(new TableQuery<KVEntity>()).Count();
         }
 
         public ulong GetNextSequenceValue(string key, int increment)
@@ -155,6 +173,38 @@ namespace KeyValueStorage.AzureTable
         public void Dispose()
         {
             //No azure client components are disposable... 
+        }
+
+        private byte[] incrementByteArrByOne(byte[] arr)
+        {
+            byte[] outBytes = new byte[arr.Length];
+            byte carry = 0;
+            bool first = true;
+            for(int i = arr.Length-1; i >= 0; i--)
+            {
+                byte procByte = 0;
+                procByte = arr[i];
+                if(first)
+                {
+                    if(procByte < byte.MaxValue)
+                        procByte ++;
+
+                }
+
+                if (carry > 0)
+                {
+                    procByte += carry;
+                    carry = 0;
+                }
+
+                if (procByte > byte.MaxValue)
+                    carry = 1;
+
+                first = false;
+                outBytes[i] = procByte;
+            }
+
+            return outBytes;
         }
     }
 }

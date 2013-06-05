@@ -26,5 +26,17 @@ namespace KeyValueStorage.Oracle.Tests
         {
             ReusableTests.CRUDSingleSimpleItemTest();
         }
+
+        [Test]
+        public void CASTest()
+        {
+            ReusableTests.CASTest();
+        }
+
+        [Test]
+        public void KeysStartingWithTest()
+        {
+            ReusableTests.KeysStartingWithTest();
+        }
     }
 }

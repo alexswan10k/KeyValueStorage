@@ -79,15 +79,12 @@ namespace KeyValueStorage.Interfaces
 
         #region Queries
         IEnumerable<string> GetStartingWith(string key);
-        IEnumerable<string> GetContaining(string key);
         IEnumerable<string> GetAllKeys();
         IEnumerable<string> GetKeysStartingWith(string key);
-        IEnumerable<string> GetKeysContaining(string key);
         #endregion
 
         #region Scalar Queries
         int CountStartingWith(string key);
-        int CountContaining(string key);
         int CountAll();
         #endregion
 

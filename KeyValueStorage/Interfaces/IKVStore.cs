@@ -88,10 +88,8 @@ namespace KeyValueStorage.Interfaces
 
         #region Queries
         IEnumerable<T> GetStartingWith<T>(string key);
-        IEnumerable<T> GetContaining<T>(string key);
         IEnumerable<string> GetAllKeys();
         IEnumerable<string> GetKeysStartingWith(string key);
-        IEnumerable<string> GetKeysContaining(string key);
         #endregion
 
         #region Counters
