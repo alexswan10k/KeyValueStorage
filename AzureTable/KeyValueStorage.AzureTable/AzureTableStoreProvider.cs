@@ -7,11 +7,19 @@ using KeyValueStorage.Interfaces;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Table;
+using KeyValueStorage.Utility;
 
 namespace KeyValueStorage.AzureTable
 {
     public class AzureTableStoreProvider : IStoreProvider
     {
+        public static AzureTableStoreProvider()
+        {
+
+        }
+
+        public static StoreExpiryManager StoreExpiryManager { get; protected set; }
+
         public CloudTableClient client { get; protected set; }
         public string KVSTableName { get; protected set;}
         const string KVSTableNameDefault = "KVS";
@@ -202,6 +210,10 @@ namespace KeyValueStorage.AzureTable
             return 0;
         }
 
+        public void Append(string key, string value)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
         public void Dispose()

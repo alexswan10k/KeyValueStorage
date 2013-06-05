@@ -131,6 +131,11 @@ namespace KeyValueStorage.Couchbase
             return Client.Increment(key, 1, (ulong)increment);
         }
 
+        public void Append(string key, string value)
+        {
+            Client.Append(key, new ArraySegment<byte>(Encoding.UTF8.GetBytes(value)));
+        }
+
         public void Dispose()
         {
             //we do not dispose of the client as its lifetime is intended to extend beyond the lifetime of the provider and context.

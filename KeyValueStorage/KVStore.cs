@@ -135,6 +135,68 @@ namespace KeyValueStorage
         #endregion
         #endregion
 
+        #region CollectionOperations
+        public IEnumerable<T> GetCollection<T>(string key)
+        {
+            return separateJsonArray(StoreProvider.Get(key)).Select(s => Serializer.Deserialize<T>(s));
+        }
+
+        public IEnumerable<T> GetCollection<T>(string key, out ulong cas)
+        {
+            return separateJsonArray(StoreProvider.Get(key, out cas)).Select(s => Serializer.Deserialize<T>(s));
+        }
+
+        public void SetCollection<T>(string key, IEnumerable<T> values)
+        {
+            StoreProvider.Set(key, String.Concat(values.Select(s => Serializer.Serialize(s))));
+        }
+
+        public void SetCollection<T>(string key, IEnumerable<T> values, ulong cas)
+        {
+            StoreProvider.Set(key, String.Concat(values.Select(s => Serializer.Serialize(s))), cas);
+        }
+
+        public void AppendToCollection<T>(string key, T value)
+        {
+            StoreProvider.Append(key, Serializer.Serialize(value));
+        }
+
+        public void RemoveFromCollection<T>(string key, T value)
+        {
+            ulong cas;
+            var collection = GetCollection<T>(key, out cas).ToList();
+            var itemToRemove = collection.SingleOrDefault(q => q.Equals(value));
+            collection.Remove(itemToRemove);
+            SetCollection(key, collection);
+        }
+        #endregion
+
+        private IEnumerable<string> separateJsonArray(string json)
+        {
+            int depth = 0;
+            List<string> outputStringEnumerable = new List<string>();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < json.Length; i++)
+            {
+                if (json[i] == '{')
+                    depth++;
+                else if (json[i] == '}')
+                    depth--;
+                else if (depth < 0)
+                    throw new Exception("Json is invalid");
+
+                if (depth == 0 && i > 0)
+                {
+                    outputStringEnumerable.Add(sb.ToString());
+                    sb = new StringBuilder();
+                }
+                else
+                    sb.Append(json[i]);
+            }
+
+            return outputStringEnumerable;
+        }
+
         public void Dispose()
         {
             //todo: implement the dispose pattern

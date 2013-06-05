@@ -31,6 +31,11 @@ namespace KeyValueStorage
             storeInitDel = () => new KVStore(providerInitDel());
         }
 
+        public Factory(Func<IKVStore> storeInit)
+        {
+            storeInitDel = storeInit;
+        }
+
         public IKVStore Get()
         {
             return storeInitDel();

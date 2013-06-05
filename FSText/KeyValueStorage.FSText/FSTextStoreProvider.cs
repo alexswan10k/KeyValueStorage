@@ -168,6 +168,11 @@ namespace KeyValueStorage.FSText
         {
             throw new NotImplementedException();
         }
+
+        public void Append(string key, string value)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
         public void Dispose()

@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Exceptions\CASException.cs" />
     <Compile Include="Extensions\IDbConnectionExtensions.cs" />
+    <Compile Include="IKVStoreExtensions.cs" />
     <Compile Include="Factory.cs" />
     <Compile Include="Interfaces\IKVStore.cs" />
     <Compile Include="Interfaces\IRDbStoreProvider.cs" />

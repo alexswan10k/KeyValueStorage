@@ -101,5 +101,17 @@ namespace KeyValueStorage.Interfaces
         ulong GetNextSequenceValue(string key);
         ulong GetNextSequenceValue(string key, int increment);
         #endregion
+
+        #region Collections
+        IEnumerable<T> GetCollection<T>(string key);
+
+        IEnumerable<T> GetCollection<T>(string key, out ulong cas);
+
+        void SetCollection<T>(string key, IEnumerable<T> values);
+
+        void SetCollection<T>(string key, IEnumerable<T> values, ulong cas);
+
+        void AppendToCollection<T>(string key, T value);
+        #endregion
     }
 }

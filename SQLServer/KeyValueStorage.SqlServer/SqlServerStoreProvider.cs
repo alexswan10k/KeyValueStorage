@@ -220,6 +220,12 @@ namespace KeyValueStorage.SqlServer
                 //set up a sproc for this
                 throw new NotImplementedException();
             }
+
+            public void Append(string key, string value)
+            {
+                throw new NotImplementedException();
+            }
+
             #endregion
 
             public void Dispose()
@@ -227,5 +233,8 @@ namespace KeyValueStorage.SqlServer
                 if (OwnsConnection)
                     Connection.Dispose();
             }
+
+
+
     }
 }

@@ -160,6 +160,11 @@ namespace KeyValueStorage.Redis
 
             return seq;
         }
+
+        public void Append(string key, string value)
+        {
+            Client.Append(key, Encoding.UTF8.GetBytes(value));
+        }
         #endregion
 
         public void Dispose()

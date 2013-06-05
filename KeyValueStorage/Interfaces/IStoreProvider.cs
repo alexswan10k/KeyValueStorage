@@ -91,5 +91,9 @@ namespace KeyValueStorage.Interfaces
         #region Sequences
         ulong GetNextSequenceValue(string key, int increment);
         #endregion
+
+        #region CollectionBaseOperations
+        void Append(string key, string value);
+        #endregion
     }
 }

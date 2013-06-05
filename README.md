@@ -52,8 +52,8 @@ Currently fully supported:
 
 Partly supported:
 
+	AzureTable All except expiry
 	Couchbase (CRUD)
-	AzureTable (CRUD)
 	FileSystemText (CRUD) - Provides a mechanism to store objects directly on the file system as json or similar
 	Oracle (all except CAS, Expiry, and sequence ops)
 	SqlServer (all except CAS, Expiry, and sequence ops)
