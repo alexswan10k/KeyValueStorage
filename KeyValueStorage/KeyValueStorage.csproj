@@ -57,6 +57,7 @@
     <Compile Include="KVStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceStackTextSerializer.cs" />
+    <Compile Include="Utility\CharSubstitutor.cs" />
     <Compile Include="Utility\StoreExpiryManager.cs" />
   </ItemGroup>
   <ItemGroup>

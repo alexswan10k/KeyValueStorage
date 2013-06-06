@@ -104,22 +104,24 @@ namespace KeyValueStorage.AzureTable
 
         public void Set(string key, string value, DateTime expires)
         {
+            throw new NotImplementedException();//awaiting better cleanup implementation
             Table.Execute(TableOperation.InsertOrReplace(new KVEntity() { PartitionKey = key, RowKey = "1", Value = value, Expires = expires }));
         }
 
         public void Set(string key, string value, TimeSpan expiresIn)
         {
+            throw new NotImplementedException();//awaiting better cleanup implementation
             Table.Execute(TableOperation.InsertOrReplace(new KVEntity() { PartitionKey = key, RowKey = "1", Value = value, Expires = DateTime.UtcNow + expiresIn }));
         }
 
         public void Set(string key, string value, ulong CAS, DateTime expires)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException();//awaiting better cleanup implementation
         }
 
         public void Set(string key, string value, ulong CAS, TimeSpan expiresIn)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException();//awaiting better cleanup implementation
         }
 
         public bool Exists(string key)

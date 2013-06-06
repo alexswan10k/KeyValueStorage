@@ -23,5 +23,29 @@ namespace KeyValueStorage.FSText.Tests
         {
             ReusableTests.CRUDSingleSimpleItemTest();
         }
+
+        [Test]
+        public void SequenceTest()
+        {
+            ReusableTests.SequenceTest();
+        }
+
+        [Test]
+        public void CASTest()
+        {
+            ReusableTests.CASTest();
+        }
+
+        [Test]
+        public void KeysStartingWithTest()
+        {
+            ReusableTests.KeysStartingWithTest();
+        }
+
+        [Test]
+        public void CollectionsTest()
+        {
+            ReusableTests.CollectionsTest();
+        }
     }
 }
