@@ -174,6 +174,7 @@ namespace KeyValueStorage
         private IEnumerable<string> separateJsonArray(string json)
         {
             int depth = 0;
+            bool inQuot = false;
             List<string> outputStringEnumerable = new List<string>();
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < json.Length; i++)
@@ -182,10 +183,12 @@ namespace KeyValueStorage
                     depth++;
                 else if (json[i] == '}')
                     depth--;
+                else if (json[i] == '"')
+                    inQuot = !inQuot;
                 else if (depth < 0)
                     throw new Exception("Json is invalid");
 
-                if (depth == 0 && i > 0)
+                if ((depth == 0 && !inQuot) && i > 0)
                 {
                     outputStringEnumerable.Add(sb.ToString());
                     sb = new StringBuilder();

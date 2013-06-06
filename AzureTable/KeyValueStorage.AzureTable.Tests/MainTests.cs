@@ -44,5 +44,11 @@ namespace KeyValueStorage.Oracle.Tests
         {
             ReusableTests.KeysStartingWithTest();
         }
+
+        [Test]
+        public void CollectionsTest()
+        {
+            ReusableTests.CollectionsTest();
+        }
     }
 }

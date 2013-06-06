@@ -35,5 +35,17 @@ namespace KeyValueStorage.Redis.Tests
         {
             ReusableTests.CASTest();
         }
+
+        [Test]
+        public void KeysStartingWithTest()
+        {
+            ReusableTests.KeysStartingWithTest();
+        }
+
+        [Test]
+        public void CollectionsTest()
+        {
+            ReusableTests.CollectionsTest();
+        }
     }
 }

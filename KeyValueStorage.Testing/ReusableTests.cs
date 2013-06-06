@@ -151,5 +151,32 @@ namespace KeyValueStorage.Testing
                 Assert.AreEqual(1, keys.Count());
             }
         }
+
+        public static void CollectionsTest(string key = "coll")
+        {
+            using (var context = KVStore.Factory.Get())
+            {
+                IList<string> collection = new List<string>();
+                collection.Add("this");
+                collection.Add("is");
+                collection.Add("a");
+                collection.Add("collection");
+                context.SetCollection(key, collection);
+
+                var collCheck = context.GetCollection<string>(key);
+                Assert.AreEqual(collection.Dump(), collCheck.Dump());
+
+                context.AppendToCollection<string>(key, "of");
+                context.AppendToCollection<string>(key, "strings");
+
+                Assert.AreEqual("strings", context.GetCollection<string>(key).Last());
+                Assert.AreEqual(6, context.GetCollection<string>(key).Count());
+
+                context.RemoveFromCollection(key, "is");
+                context.RemoveFromCollection(key, "a");
+
+                Assert.AreEqual(4, context.GetCollection<string>(key).Count());
+            }
+        }
     }
 }

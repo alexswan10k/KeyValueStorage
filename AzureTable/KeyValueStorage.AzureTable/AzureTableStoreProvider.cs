@@ -13,10 +13,6 @@ namespace KeyValueStorage.AzureTable
 {
     public class AzureTableStoreProvider : IStoreProvider
     {
-        public static AzureTableStoreProvider()
-        {
-
-        }
 
         public static StoreExpiryManager StoreExpiryManager { get; protected set; }
 
@@ -212,7 +208,25 @@ namespace KeyValueStorage.AzureTable
 
         public void Append(string key, string value)
         {
-            throw new NotImplementedException();
+            append(key, value);
+        }
+
+        private void append(string key, string value, int tryCount = 0)
+        {
+            try
+            {
+                ulong cas;
+                var val = Get(key, out cas);
+
+                Set(key, val + value);
+            }
+            catch (CASException casEx)
+            {
+                if (tryCount >= 10)
+                    throw new Exception("Could not get sequence value", casEx);
+
+                append(key, value, tryCount++);
+            }
         }
         #endregion
 
