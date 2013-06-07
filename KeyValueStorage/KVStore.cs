@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.Utility;
 
 namespace KeyValueStorage
 {
@@ -138,12 +139,12 @@ namespace KeyValueStorage
         #region CollectionOperations
         public IEnumerable<T> GetCollection<T>(string key)
         {
-            return separateJsonArray(StoreProvider.Get(key)).Select(s => Serializer.Deserialize<T>(s));
+            return Helpers.SeparateJsonArray(StoreProvider.Get(key)).Select(s => Serializer.Deserialize<T>(s));
         }
 
         public IEnumerable<T> GetCollection<T>(string key, out ulong cas)
         {
-            return separateJsonArray(StoreProvider.Get(key, out cas)).Select(s => Serializer.Deserialize<T>(s));
+            return Helpers.SeparateJsonArray(StoreProvider.Get(key, out cas)).Select(s => Serializer.Deserialize<T>(s));
         }
 
         public void SetCollection<T>(string key, IEnumerable<T> values)
@@ -170,35 +171,6 @@ namespace KeyValueStorage
             SetCollection(key, collection);
         }
         #endregion
-
-        private IEnumerable<string> separateJsonArray(string json)
-        {
-            int depth = 0;
-            bool inQuot = false;
-            List<string> outputStringEnumerable = new List<string>();
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < json.Length; i++)
-            {
-                if (json[i] == '{')
-                    depth++;
-                else if (json[i] == '}')
-                    depth--;
-                else if (json[i] == '"')
-                    inQuot = !inQuot;
-                else if (depth < 0)
-                    throw new Exception("Json is invalid");
-
-                if ((depth == 0 && !inQuot) && i > 0)
-                {
-                    outputStringEnumerable.Add(sb.ToString());
-                    sb = new StringBuilder();
-                }
-                else
-                    sb.Append(json[i]);
-            }
-
-            return outputStringEnumerable;
-        }
 
         public void Dispose()
         {
