@@ -141,4 +141,12 @@ namespace KeyValueStorage.Couchbase
             //we do not dispose of the client as its lifetime is intended to extend beyond the lifetime of the provider and context.
         }
     }
+
+    class cc : CouchbaseClient
+    {
+        public cc()
+        {
+            base.
+        }
+    }
 }

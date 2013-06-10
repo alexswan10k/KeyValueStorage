@@ -8,11 +8,12 @@ namespace KeyValueStorage.Utility
 {
     public class RDBExpiredKeyCleaner : IExpiredKeyCleaner
     {
-        public IStoreProvider Provider { get; protected set; }
+        public IStoreProvider Provider { get { return _provider; } }
+        protected IRDbStoreProvider _provider;
 
         public RDBExpiredKeyCleaner(IRDbStoreProvider provider)
         {
-            Provider = provider;
+            _provider = provider;
         }
 
         public void CleanupKeys()

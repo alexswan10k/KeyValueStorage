@@ -16,6 +16,9 @@ namespace KeyValueStorage.Oracle
         public string KVSTableName { get; protected set; }
         const string KVSTableNameDefault = "KVS";
 
+        const int OracleCharLimit = 4000;
+        const int JsonValueParams = 4;
+
         public OracleStoreProvider(global::Oracle.ManagedDataAccess.Client.OracleConnection connection)
         {
             Connection = connection;
@@ -43,12 +46,20 @@ namespace KeyValueStorage.Oracle
             BeginOperation();
             try
             {
-                Connection.ExecuteNonQuery("create table " + KVSTableName + " ("
-                    + "Key Varchar2(128),"
-                    + "Value Varchar(4000),"
-                    + "Expires timestamp(6),"
-                    + "CAS Number(38,0)"
-                    + ")");
+                StringBuilder valueCols = new StringBuilder();
+
+                for (int i = 1; i <= JsonValueParams; i++)
+                {
+                    valueCols.Append("Value" + i + " Varchar2(4000),");
+                }
+
+                    Connection.ExecuteNonQuery("create table " + KVSTableName + " ("
+                        + "Key Varchar2(128),"
+                        //+ "Value1 Varchar2(4000),"
+                        + valueCols.ToString()
+                        + "Expires timestamp(6),"
+                        + "CAS Number(38,0)"
+                        + ")");
 
                 Connection.ExecuteNonQuery("alter table " + KVSTableName + " add constraint PK_" + KVSTableName + "_Key primary key (Key)");
                 return true;
@@ -222,10 +233,62 @@ namespace KeyValueStorage.Oracle
         }
         #endregion
 
+        protected void SplitAndInsert(string key, string json)
+        {
+            var serializedJsonSplit = json.SplitInParts(OracleCharLimit);
+
+            Insert(
+                new string[] { "Key" }.Concat(Enumerable.Range(1, JsonValueParams).Select(s => "Value" + s)),
+                new object[] { key }
+                    .Concat(serializedJsonSplit)
+                    .Concat(Enumerable.Repeat<object>(null, JsonValueParams - serializedJsonSplit.Count()))     //pad out our collection with null params
+                );
+        }
+
+        protected void Insert(IEnumerable<string> colNames, IEnumerable<object> values)
+        {
+            StringBuilder baseSqlCmd = new StringBuilder("Insert into [Table] ([Cols]) values ([ValueParams]);");
+            baseSqlCmd.Replace("[Table]", KVSTableName);
+            baseSqlCmd.Replace("[Cols]", string.Join(", ", colNames));
+
+            //This line is creating a sequence such as :2, :3, :4, :5 to accommodate for the value parameters
+            baseSqlCmd.Replace("[ValueParams]",
+                string.Join(", ", Enumerable.Range(2, values.Count()).Select(s => s.ToString() + ":"))
+                );
+            Connection.ExecuteNonQuery(baseSqlCmd.ToString(), values);
+        }
+
+        protected void Update(IEnumerable<string> colNames, IEnumerable<object> values)
+        {
+            StringBuilder baseSqlCmd = new StringBuilder("Update [Table] set ([Cols]) values ([ValueParams]) Where ;");
+            baseSqlCmd.Replace("[Table]", KVSTableName);
+            baseSqlCmd.Replace("[Cols]", string.Join(", ", colNames));
+
+            //This line is creating a sequence such as :2, :3, :4, :5 to accommodate for the value parameters
+            baseSqlCmd.Replace("[ValueParams]",
+                string.Join(", ", Enumerable.Range(2, values.Count()).Select(s => s.ToString() + ":"))
+                );
+            Connection.ExecuteNonQuery(baseSqlCmd.ToString(), values);
+        }
+
         public void Dispose()
         {
             if (OwnsConnection)
                 Connection.Dispose();
+        }
+    }
+
+    public static class StringExtensions
+    {
+        public static IEnumerable<String> SplitInParts(this String s, Int32 partLength)
+        {
+            if (s == null)
+                throw new ArgumentNullException("s");
+            if (partLength <= 0)
+                throw new ArgumentException("Part length has to be positive.", "partLength");
+
+            for (var i = 0; i < s.Length; i += partLength)
+                yield return s.Substring(i, Math.Min(partLength, s.Length - i));
         }
     }
 }
