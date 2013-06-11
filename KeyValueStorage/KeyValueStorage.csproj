@@ -49,6 +49,7 @@
     <Compile Include="Exceptions\CASException.cs" />
     <Compile Include="Exceptions\LockException.cs" />
     <Compile Include="Extensions\IDbConnectionExtensions.cs" />
+    <Compile Include="Extensions\IDbConnectionSqlExtensions.cs" />
     <Compile Include="IKVStoreExtensions.cs" />
     <Compile Include="Factory.cs" />
     <Compile Include="Interfaces\IExpiredKeyCleaner.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="Interfaces\IRDbStoreProvider.cs" />
     <Compile Include="Interfaces\IStoreProvider.cs" />
     <Compile Include="Interfaces\ITextSerializer.cs" />
+    <Compile Include="Interfaces\Utility\ISqlDialectProvider.cs" />
     <Compile Include="KVStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceStackTextSerializer.cs" />
@@ -66,6 +68,10 @@
     <Compile Include="Utility\Helpers.cs" />
     <Compile Include="Utility\KVSExpiredKeyCleaner.cs" />
     <Compile Include="Utility\RDBExpiredKeyCleaner.cs" />
+    <Compile Include="Utility\SqlDialectProviderCommon.cs" />
+    <Compile Include="Utility\Sql\ColumnValue.cs" />
+    <Compile Include="Utility\Sql\Operator.cs" />
+    <Compile Include="Utility\Sql\WhereClause.cs" />
     <Compile Include="Utility\StoreExpiryManager.cs" />
   </ItemGroup>
   <ItemGroup>

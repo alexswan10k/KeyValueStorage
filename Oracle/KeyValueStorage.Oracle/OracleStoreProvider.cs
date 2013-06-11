@@ -245,32 +245,6 @@ namespace KeyValueStorage.Oracle
                 );
         }
 
-        protected void Insert(IEnumerable<string> colNames, IEnumerable<object> values)
-        {
-            StringBuilder baseSqlCmd = new StringBuilder("Insert into [Table] ([Cols]) values ([ValueParams]);");
-            baseSqlCmd.Replace("[Table]", KVSTableName);
-            baseSqlCmd.Replace("[Cols]", string.Join(", ", colNames));
-
-            //This line is creating a sequence such as :2, :3, :4, :5 to accommodate for the value parameters
-            baseSqlCmd.Replace("[ValueParams]",
-                string.Join(", ", Enumerable.Range(2, values.Count()).Select(s => s.ToString() + ":"))
-                );
-            Connection.ExecuteNonQuery(baseSqlCmd.ToString(), values);
-        }
-
-        protected void Update(IEnumerable<string> colNames, IEnumerable<object> values)
-        {
-            StringBuilder baseSqlCmd = new StringBuilder("Update [Table] set ([Cols]) values ([ValueParams]) Where ;");
-            baseSqlCmd.Replace("[Table]", KVSTableName);
-            baseSqlCmd.Replace("[Cols]", string.Join(", ", colNames));
-
-            //This line is creating a sequence such as :2, :3, :4, :5 to accommodate for the value parameters
-            baseSqlCmd.Replace("[ValueParams]",
-                string.Join(", ", Enumerable.Range(2, values.Count()).Select(s => s.ToString() + ":"))
-                );
-            Connection.ExecuteNonQuery(baseSqlCmd.ToString(), values);
-        }
-
         public void Dispose()
         {
             if (OwnsConnection)
