@@ -24,8 +24,9 @@ namespace KeyValueStorage.Couchbase.Tests
             config.Urls.Add(new Uri("http://127.0.0.1:8091/pools"));
 
             var client = new global::Couchbase.CouchbaseClient(config);
+            var cluster = new global::Couchbase.Management.CouchbaseCluster(config);
             var stats = client.Stats();
-            KVStore.Initialize(new Func<Interfaces.IStoreProvider>(() => new Couchbase.CouchbaseStoreProvider(client)));
+            KVStore.Initialize(new Func<Interfaces.IStoreProvider>(() => new Couchbase.CouchbaseStoreProvider(client, cluster, config.Bucket)));
         }
 
         [Test]

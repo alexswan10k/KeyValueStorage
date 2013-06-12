@@ -1,0 +1,7 @@
+{"views":
+	{"GetAll":
+		{
+            "map":"function (doc, meta) { emit(meta.id, doc); }"
+        }
+    }
+}

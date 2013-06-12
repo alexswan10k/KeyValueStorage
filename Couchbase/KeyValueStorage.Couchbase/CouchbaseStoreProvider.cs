@@ -5,23 +5,48 @@ using System.Text;
 using System.Threading.Tasks;
 using KeyValueStorage.Interfaces;
 using Couchbase;
+using Couchbase.Management;
 using KeyValueStorage.Exceptions;
+using System.Reflection;
+using System.IO;
 
 namespace KeyValueStorage.Couchbase
 {
+
     public class CouchbaseStoreProvider : IStoreProvider
     {
         CouchbaseClient Client;
+        CouchbaseCluster Cluster;
+        string Bucket;
+
         public CouchbaseStoreProvider(CouchbaseClient client)
         {
             Client = client;
         }
 
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CouchbaseStoreProvider"/> class.
+        /// It is necessary to provider a CouchbaseCluster object if you wish the factory to be able to correctly check and initialize the required views on startup.
+        /// </summary>
+        /// <param name="client">The client.</param>
+        /// <param name="cluster">The cluster.</param>
+        public CouchbaseStoreProvider(CouchbaseClient client, CouchbaseCluster cluster, string bucket)
+        {
+            Client = client;
+            Cluster = cluster;
+            Bucket = bucket;
+        }
+
         #region IStoreProvider
         public void Initialize()
         {
             //TODO: setup required views
+            if (Cluster != null)
+            {
+                var json = Encoding.ASCII.GetString(Properties.Resources.KVSViews);
+                Cluster.CreateDesignDocument(Bucket, "KVSViews", json);
+            }
         }
 
         public string Get(string key)
@@ -147,6 +172,17 @@ namespace KeyValueStorage.Couchbase
         public void Dispose()
         {
             //we do not dispose of the client as its lifetime is intended to extend beyond the lifetime of the provider and context.
+        }
+
+        string AssemblyDirectory
+        {
+            get
+            {
+                string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                UriBuilder uri = new UriBuilder(codeBase);
+                string path = Uri.UnescapeDataString(uri.Path);
+                return Path.GetDirectoryName(path);
+            }
         }
     }
 }
