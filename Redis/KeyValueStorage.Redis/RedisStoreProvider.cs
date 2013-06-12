@@ -21,6 +21,11 @@ namespace KeyValueStorage.Redis
         }
 
         #region IStoreProvider
+        public void Initialize()
+        {
+
+        }
+
         public string Get(string key)
         {
             var res = Client.Get(key);

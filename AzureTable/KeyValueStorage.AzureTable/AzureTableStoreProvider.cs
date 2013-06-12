@@ -52,6 +52,11 @@ namespace KeyValueStorage.AzureTable
         }
 
         #region IStoreProvider
+        public void Initialize()
+        {
+            SetupWorkingTable();
+        }
+
         public string Get(string key)
         {
             var entity = get(key);

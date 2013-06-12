@@ -50,6 +50,11 @@ namespace KeyValueStorage.FSText
 
 
         #region IStoreProvider
+        public void Initialize()
+        {
+
+        }
+
         public string Get(string key)
         {
             key = KeyCharSubstitutor.Convert(key);

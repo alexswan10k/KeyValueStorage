@@ -17,6 +17,13 @@ namespace KeyValueStorage.Couchbase
             Client = client;
         }
 
+
+        #region IStoreProvider
+        public void Initialize()
+        {
+            //TODO: setup required views
+        }
+
         public string Get(string key)
         {
             return (string)Client.Get(key);
@@ -135,6 +142,7 @@ namespace KeyValueStorage.Couchbase
         {
             Client.Append(key, new ArraySegment<byte>(Encoding.UTF8.GetBytes(value)));
         }
+        #endregion
 
         public void Dispose()
         {

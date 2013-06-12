@@ -66,6 +66,11 @@ namespace KeyValueStorage.SqlServer
             }
 
             #region IStoreProvider
+            public void Initialize()
+            {
+                SetupWorkingTable();
+            }
+
             public string Get(string key)
             {
                 BeginOperation();

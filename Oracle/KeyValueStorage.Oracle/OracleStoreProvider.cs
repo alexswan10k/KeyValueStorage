@@ -11,6 +11,11 @@ namespace KeyValueStorage.Oracle
 {
     public class OracleStoreProvider : IRDbStoreProvider
     {
+        static OracleStoreProvider()
+        {
+            IDbConnectionSqlExtensions.SqlDialect = new Utility.SqlDialectProviderCommon();
+        }
+
         public IDbConnection Connection { get; protected set; }
         public bool OwnsConnection { get; protected set; }
         public string KVSTableName { get; protected set; }
@@ -74,6 +79,11 @@ namespace KeyValueStorage.Oracle
         }
 
         #region IStoreProvider
+        public void Initialize()
+        {
+            SetupWorkingTable();
+        }
+
         public string Get(string key)
         {
             BeginOperation();

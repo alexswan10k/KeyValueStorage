@@ -7,6 +7,9 @@ namespace KeyValueStorage.Interfaces
 {
     public interface IKVStore : IDisposable
     {
+        IStoreProvider StoreProvider { get; }
+        ITextSerializer Serializer { get; }
+
         /// <summary>
         /// Gets the specified key.
         /// Supported by all providers

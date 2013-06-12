@@ -7,6 +7,8 @@ namespace KeyValueStorage.Interfaces
 {
     public interface IStoreProvider : IDisposable
     {
+        void Initialize();
+
         /// <summary>
         /// Gets the specified key.
         /// Covered by all providers
