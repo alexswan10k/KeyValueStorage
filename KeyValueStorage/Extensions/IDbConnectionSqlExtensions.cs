@@ -12,39 +12,39 @@ namespace KeyValueStorage.Extensions
     {
         public static ISqlDialectProvider SqlDialect { get; set; }
 
-        public static int ExecuteInsert(this IDbConnection connection, string tableName, params ColumnValue[] values)
+        public static int ExecuteInsertParams(this IDbConnection connection, string tableName, params ColumnValue[] values)
         {
-            return SqlDialect.ExecuteInsert(connection, tableName, values);
+            return SqlDialect.ExecuteInsertParams(connection, tableName, values);
         }
 
-        public static DataTable ExecuteSelect(this IDbConnection connection, string tableName, params WhereClause[] whereClauses)
+        public static DataTable ExecuteSelectParams(this IDbConnection connection, string tableName, params WhereClause[] whereClauses)
         {
-            return SqlDialect.ExecuteSelect(connection, tableName, null, whereClauses);
+            return SqlDialect.ExecuteSelectParams(connection, tableName, null, whereClauses);
         }
 
-        public static DataTable ExecuteSelect(this IDbConnection connection, string tableName, IEnumerable<string> colNames, params WhereClause[] whereClauses)
+        public static DataTable ExecuteSelectParams(this IDbConnection connection, string tableName, IEnumerable<string> colNames, params WhereClause[] whereClauses)
         {
-            return SqlDialect.ExecuteSelect(connection, tableName, colNames, whereClauses);
+            return SqlDialect.ExecuteSelectParams(connection, tableName, colNames, whereClauses);
         }
 
-        public int ExecuteUpdate(IDbConnection connection, string tableName, IEnumerable<WhereClause> whereClauses, params ColumnValue[] values)
+        public static int ExecuteUpdateParams(IDbConnection connection, string tableName, IEnumerable<WhereClause> whereClauses, params ColumnValue[] values)
         {
-            return SqlDialect.ExecuteUpdate(connection, tableName, whereClauses, values);
+            return SqlDialect.ExecuteUpdateParams(connection, tableName, whereClauses, values);
         }
 
-        public int ExecuteUpdate(IDbConnection connection, string tableName, WhereClause whereClause, params ColumnValue[] values)
+        public static int ExecuteUpdateParams(IDbConnection connection, string tableName, WhereClause whereClause, params ColumnValue[] values)
         {
-            return SqlDialect.ExecuteUpdate(connection, tableName, new WhereClause[]{ whereClause}, values);
+            return SqlDialect.ExecuteUpdateParams(connection, tableName, new WhereClause[]{ whereClause}, values);
         }
 
-        public int ExecuteUpdate(IDbConnection connection, string tableName, params ColumnValue[] values)
+        public static int ExecuteUpdateParams(IDbConnection connection, string tableName, params ColumnValue[] values)
         {
-            return SqlDialect.ExecuteUpdate(connection, tableName, new WhereClause[] { }, values);
+            return SqlDialect.ExecuteUpdateParams(connection, tableName, new WhereClause[] { }, values);
         }
 
-        public int ExecuteDelete(IDbConnection connection, string tableName, params WhereClause[] whereClauses)
+        public static int ExecuteDeleteParams(IDbConnection connection, string tableName, params WhereClause[] whereClauses)
         {
-            return SqlDialect.ExecuteDelete(connection, tableName, whereClauses);
+            return SqlDialect.ExecuteDeleteParams(connection, tableName, whereClauses);
         }
     }
 }
