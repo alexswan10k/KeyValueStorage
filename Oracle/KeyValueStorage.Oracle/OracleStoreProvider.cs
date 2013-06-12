@@ -6,6 +6,7 @@ using System.Text;
 using KeyValueStorage.Interfaces;
 using KeyValueStorage.Extensions;
 using Oracle.ManagedDataAccess.Client;
+using KeyValueStorage.Utility.Sql;
 
 namespace KeyValueStorage.Oracle
 {
@@ -22,7 +23,7 @@ namespace KeyValueStorage.Oracle
         const string KVSTableNameDefault = "KVS";
 
         const int OracleCharLimit = 4000;
-        const int JsonValueParams = 4;
+        const int JsonValueParams = 10;
 
         public OracleStoreProvider(global::Oracle.ManagedDataAccess.Client.OracleConnection connection)
         {
@@ -71,7 +72,7 @@ namespace KeyValueStorage.Oracle
             }
             catch (OracleException oex)
             {
-                if (oex.Number != 955)
+                if (oex.Number != 955) //table already exists ex
                     throw;
             }
 
@@ -81,6 +82,9 @@ namespace KeyValueStorage.Oracle
         #region IStoreProvider
         public void Initialize()
         {
+            var dialect = new Utility.SqlDialectProviderCommon();
+            dialect.ParameterPrefix = ":";
+            Extensions.IDbConnectionSqlExtensions.SqlDialect = dialect;
             SetupWorkingTable();
         }
 
@@ -89,12 +93,13 @@ namespace KeyValueStorage.Oracle
             BeginOperation();
             try
             {
-                var dt = Connection.ExecuteSql("Select Value from " + KVSTableName + " where Key = :p1", key).AsEnumerable();
-
-                if (dt.Count() == 1)
-                    return dt.First()[0] as string;
+                var sql = "Select [Values] from " + KVSTableName + " where Key = :p1";
+                sql = sql.Replace("[Values]", GetValueColumnNames());
+                var valRows = ConcatValueColumns(Connection.ExecuteSql(sql, key));
+                if (valRows.Count() == 1)
+                    return valRows.First();
                 else
-                    return String.Empty;
+                    return string.Empty;
             }
             catch (OracleException ex)
             {
@@ -107,15 +112,15 @@ namespace KeyValueStorage.Oracle
             BeginOperation();
             try
             {
-                var count = Connection.ExecuteSql("Select Count(Value) from " + KVSTableName + " where Key = :p1", key).AsEnumerable().First()[0] as decimal?;
+                var count = Connection.ExecuteSql("Select Count(Key) from " + KVSTableName + " where Key = :p1", key).AsEnumerable().First()[0] as decimal?;
 
                 if (count == 0)
                 {
-                    Connection.ExecuteNonQuery("Insert into " + KVSTableName + "(Key, Value) values (:p1, :p2)", key, value);
+                    SplitAndInsert(key, value);
                 }
                 else
                 {
-                    var rows = Connection.ExecuteNonQuery("Update " + KVSTableName + " Set Value = :p1 where key = :p2", value, key);
+                    var rows = SplitAndUpdate(key, value);
                     if (rows != 1)
                         throw new Exception("Update did not affect the expected number of rows");
                 }
@@ -131,7 +136,7 @@ namespace KeyValueStorage.Oracle
             BeginOperation();
             try
             {
-                Connection.ExecuteSql("Delete from " + KVSTableName + " where key = :p1", key);
+                Connection.ExecuteSql("Delete from " + KVSTableName + " where Key = :p1", key);
             }
             catch (OracleException ex)
             {
@@ -173,7 +178,7 @@ namespace KeyValueStorage.Oracle
         {
             try
             {
-                var count = Connection.ExecuteSql("Select Count(Value) from " + KVSTableName + " where Key = :p1", key).AsEnumerable().First()[0] as decimal?;
+                var count = Connection.ExecuteSql("Select Count(Key) from " + KVSTableName + " where Key = :p1", key).AsEnumerable().First()[0] as decimal?;
                 if (count > 0)
                     return true;
                 return false;
@@ -191,12 +196,16 @@ namespace KeyValueStorage.Oracle
 
         public IEnumerable<string> GetStartingWith(string key)
         {
-            return Connection.ExecuteSql("Select Value from " + KVSTableName + " where Key like '" + key + "%'").AsEnumerable().Select(s => s[0] as string);
+            var sql = "Select [Values] from " + KVSTableName + " where Key like '" + key + "%'";
+            sql = sql.Replace("[Values]", GetValueColumnNames());
+            return ConcatValueColumns(Connection.ExecuteSql(sql));
         }
 
         public IEnumerable<string> GetContaining(string key)
         {
-            return Connection.ExecuteSql("Select Value from " + KVSTableName + " where Key like '%" + key + "%'").AsEnumerable().Select(s => s[0] as string);
+            var sql = "Select [Values] from " + KVSTableName + " where Key like '%" + key + "%'";
+            sql = sql.Replace("[Values]", GetValueColumnNames());
+            return ConcatValueColumns(Connection.ExecuteSql(sql));
         }
 
         public IEnumerable<string> GetAllKeys()
@@ -235,6 +244,12 @@ namespace KeyValueStorage.Oracle
         public ulong GetNextSequenceValue(string key, int increment)
         {
             throw new NotImplementedException();
+            //get the key's value (this is the name of the sequence)
+            //execute the sequence which is referenced
+
+            //Create a key of the same name.
+            //Set its value to a seq prefix plus random unique identifier (within ora max char limit)
+            //Create a sequence of the name of the key's value
         }
 
         public void Append(string key, string value)
@@ -243,17 +258,85 @@ namespace KeyValueStorage.Oracle
         }
         #endregion
 
-        protected void SplitAndInsert(string key, string json)
+        #region SqlHelpers
+        protected int SplitAndInsert(string key, string json)
         {
             var serializedJsonSplit = json.SplitInParts(OracleCharLimit);
 
-            Insert(
-                new string[] { "Key" }.Concat(Enumerable.Range(1, JsonValueParams).Select(s => "Value" + s)),
-                new object[] { key }
-                    .Concat(serializedJsonSplit)
-                    .Concat(Enumerable.Repeat<object>(null, JsonValueParams - serializedJsonSplit.Count()))     //pad out our collection with null params
-                );
+            List<ColumnValue> colVals = new List<ColumnValue>(serializedJsonSplit.Count());
+            colVals.Add(new ColumnValue("Key", key));
+            int i = 0;
+            foreach(var item in serializedJsonSplit)
+            {
+                var cv = new ColumnValue();
+                cv.ColumnName = "Value"+(i+1);
+                cv.Value = item;
+                colVals.Add(cv);
+                i++;
+            }
+
+            return Connection.ExecuteInsertParams(KVSTableName, colVals.ToArray());
         }
+
+        protected int SplitAndUpdate(string key, string json)
+        {
+            var serializedJsonSplit = json.SplitInParts(OracleCharLimit);
+
+            List<ColumnValue> colVals = new List<ColumnValue>(serializedJsonSplit.Count());
+            int i = 0;
+            foreach (var item in serializedJsonSplit)
+            {
+                var cv = new ColumnValue();
+                cv.ColumnName = "Value" + (i + 1);
+                cv.Value = item;
+                colVals.Add(cv);
+                i++;
+            }
+
+            return Connection.ExecuteUpdateParams(KVSTableName, new WhereClause("Key", Operator.Equals, key), colVals.ToArray());
+        }
+
+        protected IEnumerable<string> ConcatValueColumns(DataTable table)
+        {
+            var outStrings = new List<string>();
+            foreach (DataRow row in table.Rows)
+            {
+                outStrings.Add(ConcatValueColumns(row));
+            }
+
+            return outStrings;
+        }
+
+        protected string ConcatValueColumns(DataRow row)
+        {
+            var sb = new StringBuilder();
+            for (int i = 0; i < JsonValueParams; i++)
+            {
+                var rowName = "Value" + (i+1);
+                if (row.Table.Columns.Contains(rowName))
+                {
+                    string val = row[rowName] as string;
+                    if (val != null)
+                        sb.Append(val);
+                }
+            }
+            return sb.ToString();
+        }
+
+        protected string GetValueColumnNames()
+        {
+            var sb = new StringBuilder();
+            for (int i = 0; i < JsonValueParams; i++)
+            {
+                if (i > 0)
+                    sb.Append(", ");
+
+                var rowName = "Value" + (i + 1);
+                sb.Append(rowName);
+            }
+            return sb.ToString();
+        }
+        #endregion
 
         public void Dispose()
         {

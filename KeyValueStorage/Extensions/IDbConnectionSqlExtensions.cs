@@ -27,22 +27,22 @@ namespace KeyValueStorage.Extensions
             return SqlDialect.ExecuteSelectParams(connection, tableName, colNames, whereClauses);
         }
 
-        public static int ExecuteUpdateParams(IDbConnection connection, string tableName, IEnumerable<WhereClause> whereClauses, params ColumnValue[] values)
+        public static int ExecuteUpdateParams(this IDbConnection connection, string tableName, IEnumerable<WhereClause> whereClauses, params ColumnValue[] values)
         {
             return SqlDialect.ExecuteUpdateParams(connection, tableName, whereClauses, values);
         }
 
-        public static int ExecuteUpdateParams(IDbConnection connection, string tableName, WhereClause whereClause, params ColumnValue[] values)
+        public static int ExecuteUpdateParams(this IDbConnection connection, string tableName, WhereClause whereClause, params ColumnValue[] values)
         {
             return SqlDialect.ExecuteUpdateParams(connection, tableName, new WhereClause[]{ whereClause}, values);
         }
 
-        public static int ExecuteUpdateParams(IDbConnection connection, string tableName, params ColumnValue[] values)
+        public static int ExecuteUpdateParams(this IDbConnection connection, string tableName, params ColumnValue[] values)
         {
             return SqlDialect.ExecuteUpdateParams(connection, tableName, new WhereClause[] { }, values);
         }
 
-        public static int ExecuteDeleteParams(IDbConnection connection, string tableName, params WhereClause[] whereClauses)
+        public static int ExecuteDeleteParams(this IDbConnection connection, string tableName, params WhereClause[] whereClauses)
         {
             return SqlDialect.ExecuteDeleteParams(connection, tableName, whereClauses);
         }

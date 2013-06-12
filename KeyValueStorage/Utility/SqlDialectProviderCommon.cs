@@ -15,7 +15,7 @@ namespace KeyValueStorage.Utility
         protected string InsertStatementTemplate = "Insert into [Table] ([Cols]) values ([ValueParams])";
         protected string UpdateStatementTemplate = "Update [Table] Set [UpdateCols] [Where]";
         protected string DeleteStatementTemplate = "Delete from [Table] [Where]";
-        protected string ParameterPrefix = ":";
+        public string ParameterPrefix = "@";
 
         /// <summary>
         /// Executes an insert statement with a list of values which will be passed as parameters.
@@ -69,7 +69,7 @@ namespace KeyValueStorage.Utility
 
             List<Tuple<string, object>> inputParams = new List<Tuple<string, object>>();
 
-            StringBuilder columnSetSql = new StringBuilder("(");
+            StringBuilder columnSetSql = new StringBuilder();
             var cmd = connection.CreateCommand();
             int i = 0;
             for (; i < values.Count(); i++)
@@ -84,17 +84,13 @@ namespace KeyValueStorage.Utility
                 cmd.Parameters.Add(par);
                 columnSetSql.Append(currentVal.ColumnName + " = " + par.ParameterName);
             }
-            columnSetSql.Append(")");
 
             baseSqlCmd.Replace("[UpdateCols]", columnSetSql.ToString());
 
 
-            StringBuilder colWhereSql = WhereBuilder(cmd, whereClauses, i);
+            StringBuilder colWhereSql = WhereBuilder(cmd, whereClauses, i+1);
 
             baseSqlCmd.Replace("[Where]", colWhereSql.ToString());
-
-            //This line is creating a sequence such as :1, :2, :3 to accommodate for the value parameters
-            var paramsString = Enumerable.Range(1, values.Count()).Select(s => ParameterPrefix + s.ToString());
 
             cmd.CommandText = baseSqlCmd.ToString();
             return cmd.ExecuteNonQuery();
