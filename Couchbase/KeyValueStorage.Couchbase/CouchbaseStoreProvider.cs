@@ -9,6 +9,7 @@ using Couchbase.Management;
 using KeyValueStorage.Exceptions;
 using System.Reflection;
 using System.IO;
+using KeyValueStorage.Utility;
 
 namespace KeyValueStorage.Couchbase
 {
@@ -18,6 +19,7 @@ namespace KeyValueStorage.Couchbase
         CouchbaseClient Client;
         CouchbaseCluster Cluster;
         string Bucket;
+        public const string KVSDocNm = "KVSViews";
 
         public CouchbaseStoreProvider(CouchbaseClient client)
         {
@@ -45,7 +47,7 @@ namespace KeyValueStorage.Couchbase
             if (Cluster != null)
             {
                 var json = Encoding.ASCII.GetString(Properties.Resources.KVSViews);
-                Cluster.CreateDesignDocument(Bucket, "KVSViews", json);
+                Cluster.CreateDesignDocument(Bucket, KVSDocNm, json);
             }
         }
 
@@ -112,6 +114,10 @@ namespace KeyValueStorage.Couchbase
 
         public IEnumerable<string> GetStartingWith(string key)
         {
+            var keyMax = Encoding.UTF8.GetString(ArrayHelpers.IncrementByteArrByOne(Encoding.UTF8.GetBytes(key)));
+
+            var dict = Client.GetView(KVSDocNm, "GetAll").StartKey(key).EndDocumentId(keyMax).Select(s => s.Info);
+
             //Requires views?
             throw new NotImplementedException();
         }
@@ -130,8 +136,11 @@ namespace KeyValueStorage.Couchbase
 
         public IEnumerable<string> GetKeysStartingWith(string key)
         {
+            var keyMax = Encoding.UTF8.GetString(ArrayHelpers.IncrementByteArrByOne(Encoding.UTF8.GetBytes(key)));
+
+            var keys = Client.GetView(KVSDocNm, "GetAll").StartKey(key).EndKey(keyMax).Select(s => s.ItemId);
             //Requires views?
-            throw new NotImplementedException();
+            return keys;
         }
 
         public IEnumerable<string> GetKeysContaining(string key)

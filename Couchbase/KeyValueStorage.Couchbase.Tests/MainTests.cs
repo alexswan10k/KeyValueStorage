@@ -48,12 +48,12 @@ namespace KeyValueStorage.Couchbase.Tests
             ReusableTests.CASTest();
         }
 
-        //not implemented as of yet
-        //[Test]
-        //public void KeysStartingWithTest()
-        //{
-        //    ReusableTests.KeysStartingWithTest();
-        //}
+
+        [Test]
+        public void KeysStartingWithTest()
+        {
+            ReusableTests.KeysStartingWithTest();
+        }
 
         [Test]
         public void CollectionsTest()

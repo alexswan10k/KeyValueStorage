@@ -147,7 +147,7 @@ namespace KeyValueStorage.AzureTable
 
         public IEnumerable<string> GetStartingWith(string key)
         {
-            var keyMax = Encoding.UTF8.GetString(incrementByteArrByOne(Encoding.UTF8.GetBytes(key)));
+            var keyMax = Encoding.UTF8.GetString(ArrayHelpers.IncrementByteArrByOne(Encoding.UTF8.GetBytes(key)));
 
             var query = new TableQuery<KVEntity>().Where("PartitionKey ge '" + key + "' and PartitionKey lt '" + keyMax + "'");
             return Table.ExecuteQuery(query).Select(s => s.Value).ToList();
@@ -161,7 +161,7 @@ namespace KeyValueStorage.AzureTable
 
         public IEnumerable<string> GetKeysStartingWith(string key)
         {
-            var keyMax = Encoding.UTF8.GetString(incrementByteArrByOne(Encoding.UTF8.GetBytes(key)));
+            var keyMax = Encoding.UTF8.GetString(ArrayHelpers.IncrementByteArrByOne(Encoding.UTF8.GetBytes(key)));
 
             var query = new TableQuery<KVEntity>().Where("PartitionKey ge '"+key + "' and PartitionKey lt '"+keyMax+"'");
             return Table.ExecuteQuery(query).Select(s => s.PartitionKey).ToList();
@@ -169,7 +169,7 @@ namespace KeyValueStorage.AzureTable
 
         public int CountStartingWith(string key)
         {
-            var keyMax = Encoding.UTF8.GetString(incrementByteArrByOne(Encoding.UTF8.GetBytes(key)));
+            var keyMax = Encoding.UTF8.GetString(ArrayHelpers.IncrementByteArrByOne(Encoding.UTF8.GetBytes(key)));
 
             var query = new TableQuery<KVEntity>().Where("PartitionKey ge '"+key + "' and PartitionKey lt '"+keyMax+"'");
             return Table.ExecuteQuery(query).Count();
@@ -240,38 +240,6 @@ namespace KeyValueStorage.AzureTable
         public void Dispose()
         {
             //No azure client components are disposable... 
-        }
-
-        private byte[] incrementByteArrByOne(byte[] arr)
-        {
-            byte[] outBytes = new byte[arr.Length];
-            byte carry = 0;
-            bool first = true;
-            for(int i = arr.Length-1; i >= 0; i--)
-            {
-                byte procByte = 0;
-                procByte = arr[i];
-                if(first)
-                {
-                    if(procByte < byte.MaxValue)
-                        procByte ++;
-
-                }
-
-                if (carry > 0)
-                {
-                    procByte += carry;
-                    carry = 0;
-                }
-
-                if (procByte > byte.MaxValue)
-                    carry = 1;
-
-                first = false;
-                outBytes[i] = procByte;
-            }
-
-            return outBytes;
         }
     }
 }
