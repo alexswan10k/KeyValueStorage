@@ -116,10 +116,8 @@ namespace KeyValueStorage.Couchbase
         {
             var keyMax = Encoding.UTF8.GetString(ArrayHelpers.IncrementByteArrByOne(Encoding.UTF8.GetBytes(key)));
 
-            var dict = Client.GetView(KVSDocNm, "GetAll").StartKey(key).EndDocumentId(keyMax).Select(s => s.Info);
-
-            //Requires views?
-            throw new NotImplementedException();
+            var values = Client.GetView(KVSDocNm, "GetAll").StartKey(key).EndKey(keyMax).Select(s => (string)s.GetItem()).ToList();
+            return values;
         }
 
         public IEnumerable<string> GetContaining(string key)

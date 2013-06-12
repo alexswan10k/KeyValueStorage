@@ -56,6 +56,12 @@ namespace KeyValueStorage.Couchbase.Tests
         }
 
         [Test]
+        public void ValuesStartingWithTest()
+        {
+            ReusableTests.ValuesStartingWithTest();
+        }
+
+        [Test]
         public void CollectionsTest()
         {
             ReusableTests.CollectionsTest();

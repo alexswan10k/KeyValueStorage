@@ -156,6 +156,61 @@ namespace KeyValueStorage.Testing
             }
         }
 
+        public static void ValuesStartingWithTest()
+        {
+            using (var context = KVStore.Factory.Get())
+            {
+                var k1a1 = new TestBO_A() { Description = "k1a1" };
+                var k1a2 = new TestBO_B() { SomeInfo = "k1a2" };
+                var k1a3 = new TestBO_A() { Description = "k1a3" };
+
+                var k1b1 = new TestBO_A() { Description = "k1b1" };
+                var k1b2 = new TestBO_B() { SomeInfo = "k1b2" };
+                var k1b3 = new TestBO_A() { Description = "k1b3" };
+                var k1b4 = true;
+
+                var k2a1 = new TestBO_A() { Description = "k2a1" };
+                var k2a2 = new TestBO_B() { SomeInfo = "k2a2" };
+                var k2a3 = new TestBO_A() { Description = "k2a3" };
+
+                context.Set("K1A:1", k1a1);
+                context.Set("K1A:2", k1a2);
+                context.Set("K1A:3", k1a3);
+
+                context.Set("K1B:1", k1b1);
+                context.Set("K1B:2", k1b2);
+                context.Set("K1B:3", k1b3);
+                context.Set("K1B:4", k1b4);
+
+                context.Set("K2A:1", k2a1);
+                context.Set("K2A:2", k2a2);
+                context.Set("K2A:3", k2a3);
+
+                var k1A = context.GetStartingWith<TestBO_A>("K1A");
+
+                Assert.AreEqual(2, k1A.Count());
+
+                Assert.AreEqual(k1A.ElementAt(0).Dump(), k1a1.Dump());
+                Assert.AreEqual(k1A.ElementAt(1).Dump(), k1a3.Dump());
+
+                var k1B_1st = context.GetStartingWith<TestBO_A>("K1B");
+
+                Assert.AreEqual(2, k1B_1st.Count());
+
+                Assert.AreEqual(k1B_1st.ElementAt(0).Dump(), k1b1.Dump());
+                Assert.AreEqual(k1B_1st.ElementAt(1).Dump(), k1b3.Dump());
+
+                var k1B_2nd = context.GetStartingWith<TestBO_B>("K1B:");
+
+                Assert.AreEqual(1, k1B_2nd.Count());
+                Assert.AreEqual(k1B_2nd.ElementAt(0).Dump(), k1b2.Dump());
+
+                var k1b_3rd = context.GetStartingWith<bool>("K1B");
+
+                Assert.AreEqual(1, k1b_3rd.Count());
+            }
+        }
+
         public static void CollectionsTest(string key = "coll")
         {
             using (var context = KVStore.Factory.Get())
