@@ -14,10 +14,6 @@ namespace KeyValueStorage.SqlServer.Tests
         public void SetUp()
         {
             string connString = @"data source=localhost\SQLEXPRESS;initial catalog=Test;User Id=Test;Password=test";
-
-            var initStore = new SqlServerStoreProvider(connString);
-            initStore.SetupWorkingTable();
-
             KVStore.Initialize(new Func<Interfaces.IStoreProvider>(() => new SqlServerStoreProvider(connString)));
         }
 

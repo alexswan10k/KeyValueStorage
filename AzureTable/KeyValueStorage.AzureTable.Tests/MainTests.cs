@@ -15,9 +15,6 @@ namespace KeyValueStorage.Oracle.Tests
         [SetUp]
         public void SetUp()
         {
-            var initStore = new AzureTableStoreProvider(CloudStorageAccount.DevelopmentStorageAccount);
-            initStore.SetupWorkingTable();
-
             KVStore.Initialize(new Func<Interfaces.IStoreProvider>(() => new AzureTableStoreProvider(CloudStorageAccount.DevelopmentStorageAccount)));
         }
 
