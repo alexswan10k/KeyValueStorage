@@ -10,8 +10,9 @@ namespace KeyValueStorage.Interfaces.Utility
 {
     public interface ISqlDialectProvider
     {
-        DataTable ExecuteSelect(IDbConnection connection, string tableName, params WhereClause[] whereClauses);
-        DataTable ExecuteSelect(IDbConnection connection, string tableName, IEnumerable<string> colNames, params WhereClause[] whereClauses);
-        void ExecuteInsert(IDbConnection connection, string tableName, params ColumnValue[] values);
+        DataTable ExecuteSelect(IDbConnection connection, string tableName, IEnumerable<string> colNames, IEnumerable<WhereClause> whereClauses);
+        int ExecuteInsert(IDbConnection connection, string tableName, IEnumerable<ColumnValue> values);
+        int ExecuteUpdate(IDbConnection connection, string tableName, IEnumerable<WhereClause> whereClauses, IEnumerable<ColumnValue> values);
+        int ExecuteDelete(IDbConnection connection, string tableName, IEnumerable<WhereClause> whereClauses);
     }
 }

@@ -23,7 +23,7 @@ namespace KeyValueStorage.Utility
         /// <param name="connection">The connection.</param>
         /// <param name="tableName">Name of the table.</param>
         /// <param name="values">The column values to insert.</param>
-        public virtual void ExecuteInsert(IDbConnection connection, string tableName, params ColumnValue[] values)
+        public virtual void ExecuteInsert(IDbConnection connection, string tableName, IEnumerable<ColumnValue> values)
         {
             if (connection.State == ConnectionState.Closed)
                 connection.Open();
@@ -59,7 +59,7 @@ namespace KeyValueStorage.Utility
         /// <param name="connection">The connection.</param>
         /// <param name="tableName">Name of the table.</param>
         /// <param name="values">The column values to insert.</param>
-        public virtual void ExecuteUpdate(IDbConnection connection, string tableName, IEnumerable<WhereClause> whereClauses, params ColumnValue[] values)
+        public virtual int ExecuteUpdate(IDbConnection connection, string tableName, IEnumerable<WhereClause> whereClauses, IEnumerable<ColumnValue> values)
         {
             if (connection.State == ConnectionState.Closed)
                 connection.Open();
@@ -89,16 +89,7 @@ namespace KeyValueStorage.Utility
             baseSqlCmd.Replace("[UpdateCols]", columnSetSql.ToString());
 
 
-            StringBuilder colWhereSql = new StringBuilder("Where ");
-            int j = 0;
-            foreach (var whereClause in whereClauses)
-            {
-                if (j > 0)
-                    colWhereSql.Append(" And ");
-
-                colWhereSql.Append(GetConditionalSql(whereClause, ParameterPrefix + (j + 1)));
-                j++;
-            }
+            StringBuilder colWhereSql = WhereBuilder(cmd, whereClauses, i);
 
             baseSqlCmd.Replace("[Where]", colWhereSql.ToString());
 
@@ -106,19 +97,30 @@ namespace KeyValueStorage.Utility
             var paramsString = Enumerable.Range(1, values.Count()).Select(s => ParameterPrefix + s.ToString());
 
             cmd.CommandText = baseSqlCmd.ToString();
-            cmd.ExecuteNonQuery();
+            return cmd.ExecuteNonQuery();
         }
 
-        /// <summary>
-        /// Executes a select statement with an optional number of conditional parameters.
+                /// <summary>
+        /// Executes a delete statement with a list of values which will be passed as parameters.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="tableName">Name of the table.</param>
-        /// <param name="whereClauses">The where clauses.</param>
-        /// <returns>A data table object containing the rows retrieved from the selection.</returns>
-        public virtual DataTable ExecuteSelect(IDbConnection connection, string tableName, params WhereClause[] whereClauses)
+        /// <param name="values">The column values to insert.</param>
+        public virtual int ExecuteDelete(IDbConnection connection, string tableName, IEnumerable<WhereClause> whereClauses)
         {
-            return ExecuteSelect(connection, tableName, null, whereClauses);
+            if (connection.State == ConnectionState.Closed)
+                connection.Open();
+
+            var cmd = connection.CreateCommand();
+            StringBuilder baseSqlCmd = new StringBuilder(DeleteStatementTemplate);
+            baseSqlCmd.Replace("[Table]", tableName);
+
+            StringBuilder sbWhereClauses = WhereBuilder(cmd, whereClauses);
+            baseSqlCmd.Replace("[Where]", sbWhereClauses.ToString());
+
+            cmd.CommandText = baseSqlCmd.ToString();
+
+            return cmd.ExecuteNonQuery();
         }
 
         /// <summary>
@@ -129,7 +131,7 @@ namespace KeyValueStorage.Utility
         /// <param name="colNames">The col names.</param>
         /// <param name="whereClauses">The where clauses.</param>
         /// <returns>A data table object containing the rows retrieved from the selection.</returns>
-        public virtual DataTable ExecuteSelect(IDbConnection connection, string tableName, IEnumerable<string> colNames, params WhereClause[] whereClauses)
+        public virtual DataTable ExecuteSelect(IDbConnection connection, string tableName, IEnumerable<string> colNames, IEnumerable<WhereClause> whereClauses)
         {
             if (connection.State == ConnectionState.Closed)
                 connection.Open();
@@ -145,22 +147,7 @@ namespace KeyValueStorage.Utility
 
             var cmd = connection.CreateCommand();
 
-            StringBuilder sbWhereClauses = new StringBuilder("Where ");
-            int i = 1;
-            foreach (var whereClause in whereClauses)
-            {
-                if (i > 1)
-                    sbWhereClauses.Append(" And ");
-
-                var par = cmd.CreateParameter();
-                par.ParameterName = ParameterPrefix + i;
-
-                sbWhereClauses.Append(GetConditionalSql(whereClause, par.ParameterName));
-
-                par.Value = whereClause.ParameterValue;
-                cmd.Parameters.Add(par);
-                i++;
-            }
+            StringBuilder sbWhereClauses = WhereBuilder(cmd, whereClauses);
 
             baseSqlCmd.Replace("[Where]", sbWhereClauses.ToString());
             cmd.CommandText = baseSqlCmd.ToString();
@@ -174,6 +161,27 @@ namespace KeyValueStorage.Utility
             return dt;
         }
 
+        protected virtual StringBuilder WhereBuilder(IDbCommand cmd, IEnumerable<WhereClause> whereClauses, int startAt = 1)
+        {
+            var colWhereSql = new StringBuilder("Where ");
+            int i = 0;
+            foreach (var whereClause in whereClauses)
+            {
+                if (i > 0)
+                    colWhereSql.Append(" And ");
+
+                var par = cmd.CreateParameter();
+                par.ParameterName = ParameterPrefix + (startAt + i);
+                colWhereSql.Append(GetConditionalSql(whereClause, par.ParameterName));
+
+                par.Value = whereClause.ParameterValue;
+                cmd.Parameters.Add(par);
+                i++;
+            }
+
+            return colWhereSql;
+        }
+
 
         /// <summary>
         /// Gets the conditional SQL subcomponent from a WhereClause object.
@@ -181,7 +189,7 @@ namespace KeyValueStorage.Utility
         /// <param name="whereClause">The where clause.</param>
         /// <param name="parameterSub">The parameter sub.</param>
         /// <returns></returns>
-        private string GetConditionalSql(WhereClause whereClause, string parameterSub)
+        protected virtual string GetConditionalSql(WhereClause whereClause, string parameterSub)
         {
             string op;
             switch (whereClause.Operator)
