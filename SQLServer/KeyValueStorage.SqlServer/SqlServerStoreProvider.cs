@@ -6,6 +6,7 @@ using System.Text;
 using KeyValueStorage.Interfaces;
 using KeyValueStorage.Extensions;
 using System.Data.SqlClient;
+using KeyValueStorage.Utility;
 
 namespace KeyValueStorage.SqlServer
 {
@@ -15,6 +16,8 @@ namespace KeyValueStorage.SqlServer
             public bool OwnsConnection { get; protected set; }
             public string KVSTableName { get; protected set; }
             const string KVSTableNameDefault = "KVS";
+
+            public RDBExpiredKeyCleaner KeyCleaner { get; protected set; } 
 
             public SqlServerStoreProvider(System.Data.SqlClient.SqlConnection connection)
             {
@@ -30,6 +33,16 @@ namespace KeyValueStorage.SqlServer
                 OwnsConnection = true;
 
                 KVSTableName = KVSTableNameDefault;
+            }
+
+            public SqlServerStoreProvider(System.Data.SqlClient.SqlConnection connection, RDBExpiredKeyCleaner keyCleaner)
+            {
+                KeyCleaner = keyCleaner;
+            }
+
+            public SqlServerStoreProvider(string connectionString, RDBExpiredKeyCleaner keyCleaner)
+            {
+                KeyCleaner = keyCleaner;
             }
 
             protected void BeginOperation()

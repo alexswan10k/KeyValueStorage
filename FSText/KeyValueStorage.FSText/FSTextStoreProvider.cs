@@ -21,11 +21,12 @@ namespace KeyValueStorage.FSText
         private DirectoryInfo DI { get; set; }
         const string suffix = ".json";
         const string dataSuffix = ".data";
-        const string casSuffix = "-CAS";
-        const string expSuffix = "-EXP";
-        const string lockSuffix = "-L";
+        const string casPrefix = "-CAS-";
+        const string lockPrefix = "-L-";
         public static CharSubstitutor KeyCharSubstitutorDefault = new CharSubstitutor();
-        CharSubstitutor KeyCharSubstitutor {get;set;}
+
+        public CharSubstitutor KeyCharSubstitutor {get;protected set;}
+        public KVSExpiredKeyCleaner KeyCleaner { get; protected set; } 
 
         public FSTextStoreProvider(string path)
         {
@@ -35,6 +36,12 @@ namespace KeyValueStorage.FSText
                 DI.Create();
 
             KeyCharSubstitutor = KeyCharSubstitutorDefault;
+        }
+
+        public FSTextStoreProvider(string path, KVSExpiredKeyCleaner keyCleaner)
+            :this(path)
+        {
+            KeyCleaner = KeyCleaner;
         }
 
         public FSTextStoreProvider(string path, CharSubstitutor keyCharsubstitutor)
@@ -99,7 +106,7 @@ namespace KeyValueStorage.FSText
         {
             key = KeyCharSubstitutor.Convert(key);
 
-            var fi = GetFileInfo(key+casSuffix, true);
+            var fi = GetFileInfo(casPrefix + key, true);
 
             if (fi.Exists)
             {
@@ -116,7 +123,7 @@ namespace KeyValueStorage.FSText
                         }
                         catch (Exception ex)
                         {
-                            throw new Exception("Data for key "+key+casSuffix+" is not CAS data", ex);
+                            throw new Exception("Data for key " + casPrefix + key + " is not CAS data", ex);
                         }
                     }
                     else
@@ -133,8 +140,8 @@ namespace KeyValueStorage.FSText
         {
             key = KeyCharSubstitutor.Convert(key);
 
-            var fi = GetFileInfo(key + casSuffix, true);
-            var fiLock = GetFileInfo(key + lockSuffix, true);
+            var fi = GetFileInfo(casPrefix + key, true);
+            var fiLock = GetFileInfo(lockPrefix + key, true);
 
             if (!fi.Exists)
                 fi.Create().Dispose();
@@ -174,28 +181,32 @@ namespace KeyValueStorage.FSText
 
         public void Set(string key, string value, DateTime expires)
         {
-            key = KeyCharSubstitutor.Convert(key);
-            throw new NotImplementedException();//awaiting better cleanup implementation
+            Set(key, value);
+            SetKeyExpiry(key, expires);
         }
 
         public void Set(string key, string value, TimeSpan expiresIn)
         {
-            key = KeyCharSubstitutor.Convert(key);
-            throw new NotImplementedException();//awaiting better cleanup implementation
+            var expires = DateTime.UtcNow + expiresIn;
+
+            Set(key, value);
+            SetKeyExpiry(key, expires);
         }
 
         public void Set(string key, string value, ulong CAS, DateTime expires)
         {
-            key = KeyCharSubstitutor.Convert(key);
-            throw new NotImplementedException();//awaiting better cleanup implementation
+            Set(key, value, CAS);
+            SetKeyExpiry(key, expires);
         }
 
         public void Set(string key, string value, ulong CAS, TimeSpan expiresIn)
         {
-            key = KeyCharSubstitutor.Convert(key);
+            var expires = DateTime.UtcNow + expiresIn;
 
-            throw new NotImplementedException();//awaiting better cleanup implementation
+            Set(key, value, CAS);
+            SetKeyExpiry(key, expires);
         }
+
 
         public bool Exists(string key)
         {
@@ -208,9 +219,9 @@ namespace KeyValueStorage.FSText
 
         public DateTime? ExpiresOn(string key)
         {
-            key = KeyCharSubstitutor.Convert(key);
-
-            throw new NotImplementedException();
+            if (KeyCleaner != null)
+                return KeyCleaner.GetKeyExpiry(key);
+            return null;
         }
 
         public IEnumerable<string> GetStartingWith(string key)
@@ -341,6 +352,14 @@ namespace KeyValueStorage.FSText
             }
         }
         #endregion
+
+        private void SetKeyExpiry(string key, DateTime expires)
+        {
+            if (KeyCleaner == null)
+                throw new InvalidOperationException("Expiry date cannot be set if no key cleaner is present");
+
+            KeyCleaner.SetKeyExpiry(key, expires);
+        }
 
         public void Dispose()
         {

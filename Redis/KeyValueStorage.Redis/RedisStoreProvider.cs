@@ -116,12 +116,13 @@ namespace KeyValueStorage.Redis
 
         public IEnumerable<string> GetStartingWith(string key)
         {
-            return Client.Keys(key + "*").Select(s => s[1]).Cast<string>();
+            //TODO: not that efficient, is likely a better implementation
+            return Client.GetValues(Client.Keys(key + "*").Select(s => Encoding.UTF8.GetString(s)).ToList()).ToList();
         }
 
         public IEnumerable<string> GetContaining(string key)
         {
-            return Client.Keys("*" + key + "*").Select(s => s[1]).Cast<string>();
+            return Client.Keys("*" + key + "*").Select(s => Encoding.UTF8.GetString(s)).ToList();
         }
 
         public IEnumerable<string> GetAllKeys()

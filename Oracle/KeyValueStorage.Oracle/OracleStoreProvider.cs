@@ -7,6 +7,7 @@ using KeyValueStorage.Interfaces;
 using KeyValueStorage.Extensions;
 using Oracle.ManagedDataAccess.Client;
 using KeyValueStorage.Utility.Sql;
+using KeyValueStorage.Utility;
 
 namespace KeyValueStorage.Oracle
 {
@@ -21,6 +22,8 @@ namespace KeyValueStorage.Oracle
         public bool OwnsConnection { get; protected set; }
         public string KVSTableName { get; protected set; }
         const string KVSTableNameDefault = "KVS";
+
+        public RDBExpiredKeyCleaner KeyCleaner { get; protected set; } 
 
         const int OracleCharLimit = 4000;
         const int JsonValueParams = 10;
@@ -39,6 +42,17 @@ namespace KeyValueStorage.Oracle
             OwnsConnection = true;
 
             KVSTableName = KVSTableNameDefault;
+        }
+
+        public OracleStoreProvider(global::Oracle.ManagedDataAccess.Client.OracleConnection connection, RDBExpiredKeyCleaner keyCleaner)
+        {
+            KeyCleaner = keyCleaner;
+        }
+
+        public OracleStoreProvider(string connectionString, RDBExpiredKeyCleaner keyCleaner)
+            :this(connectionString)
+        {
+            KeyCleaner = keyCleaner;
         }
 
         protected void BeginOperation()

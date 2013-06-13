@@ -13,9 +13,6 @@ namespace KeyValueStorage.AzureTable
 {
     public class AzureTableStoreProvider : IStoreProvider
     {
-
-        public static StoreExpiryManager StoreExpiryManager { get; protected set; }
-
         public CloudTableClient client { get; protected set; }
         public KVSExpiredKeyCleaner KeyCleaner { get; protected set; } 
         public string KVSTableName { get; protected set;}
@@ -123,9 +120,7 @@ namespace KeyValueStorage.AzureTable
         public void Set(string key, string value, DateTime expires)
         {
             Set(key, value);
-
-            if (KeyCleaner != null)
-                KeyCleaner.SetKeyExpiry(key, expires);
+            SetKeyExpiry(key, expires);
         }
 
         public void Set(string key, string value, TimeSpan expiresIn)
@@ -133,17 +128,13 @@ namespace KeyValueStorage.AzureTable
             var expires = DateTime.UtcNow + expiresIn;
 
             Set(key, value);
-
-            if (KeyCleaner != null)
-                KeyCleaner.SetKeyExpiry(key, expires);
+            SetKeyExpiry(key, expires);
         }
 
         public void Set(string key, string value, ulong CAS, DateTime expires)
         {
             Set(key, value, CAS);
-
-            if (KeyCleaner != null)
-                KeyCleaner.SetKeyExpiry(key, expires);
+            SetKeyExpiry(key, expires);
         }
 
         public void Set(string key, string value, ulong CAS, TimeSpan expiresIn)
@@ -151,9 +142,7 @@ namespace KeyValueStorage.AzureTable
             var expires = DateTime.UtcNow + expiresIn;
 
             Set(key, value, CAS);
-
-            if (KeyCleaner != null)
-                KeyCleaner.SetKeyExpiry(key, expires);
+            SetKeyExpiry(key, expires);
         }
 
         public bool Exists(string key)
@@ -261,6 +250,14 @@ namespace KeyValueStorage.AzureTable
 
                 append(key, value, tryCount++);
             }
+        }
+
+        private void SetKeyExpiry(string key, DateTime expires)
+        {
+            if (KeyCleaner == null)
+                throw new InvalidOperationException("Expiry date cannot be set if no key cleaner is present");
+
+            KeyCleaner.SetKeyExpiry(key, expires);
         }
         #endregion
 
