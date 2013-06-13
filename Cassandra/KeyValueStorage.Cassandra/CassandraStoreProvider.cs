@@ -4,30 +4,54 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KeyValueStorage.Interfaces;
+using Cassandra;
 
 namespace KeyValueStorage.Cassandra
 {
     public class CassandraStoreProvider : IStoreProvider
     {
+        public Session Session { get; set; }
+        public const string KVSKeyspaceDefault = "KVSKS";
+        const string KVSTableNameDefault = "KVS";
+
+        public CassandraStoreProvider(Session session)
+        {
+            Session = session;
+        }
+
         #region IStoreProvider
         public void Initialize()
         {
-            throw new NotImplementedException();
+            Session.CreateKeyspaceIfNotExists(KVSKeyspaceDefault);
+            Session.ChangeKeyspace(KVSKeyspaceDefault);
+            try
+            {
+                Session.Execute("Create Table " + KVSTableNameDefault + " (Key text, Value text, CAS int, PRIMARY KEY(Key))");
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         public string Get(string key)
         {
-            throw new NotImplementedException();
+            var row = Session.Execute("Select Value from " + KVSTableNameDefault + " where Key = '" + key + "'").GetRows().FirstOrDefault();
+               
+            if(row != null)
+                return row.GetValue<string>(0);
+
+            return string.Empty;
         }
 
         public void Set(string key, string value)
         {
-            throw new NotImplementedException();
+            Session.Execute("Insert into " + KVSTableNameDefault + " (Key, Value) values ('" + key + "','" + value + "')");
         }
 
         public void Remove(string key)
         {
-            throw new NotImplementedException();
+            Session.Execute("Delete from " + KVSTableNameDefault + " Where Key = '" + key + "'");
         }
 
         public string Get(string key, out ulong cas)
@@ -108,7 +132,7 @@ namespace KeyValueStorage.Cassandra
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            
         }
     }
 }
