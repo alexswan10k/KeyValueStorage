@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KeyValueStorage.Exceptions;
+using KeyValueStorage.Interfaces.Utility;
 
 namespace KeyValueStorage.Utility
 {

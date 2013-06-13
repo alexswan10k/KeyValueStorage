@@ -52,7 +52,7 @@
     <Compile Include="Extensions\IDbConnectionSqlExtensions.cs" />
     <Compile Include="IKVStoreExtensions.cs" />
     <Compile Include="Factory.cs" />
-    <Compile Include="Interfaces\IExpiredKeyCleaner.cs" />
+    <Compile Include="Interfaces\Utility\IExpiredKeyCleaner.cs" />
     <Compile Include="Interfaces\IKVStore.cs" />
     <Compile Include="Interfaces\IRDbStoreProvider.cs" />
     <Compile Include="Interfaces\IStoreProvider.cs" />

@@ -10,8 +10,6 @@ namespace KeyValueStorage.AzureTable
     {
         public string Value { get; set; }
 
-        public DateTime? Expires { get; set; }
-
         //azure table does not appear to support ulong
         public long CAS { get; set; }
 

@@ -17,6 +17,7 @@ namespace KeyValueStorage.AzureTable
         public static StoreExpiryManager StoreExpiryManager { get; protected set; }
 
         public CloudTableClient client { get; protected set; }
+        public KVSExpiredKeyCleaner KeyCleaner { get; protected set; } 
         public string KVSTableName { get; protected set;}
         const string KVSTableNameDefault = "KVS";
 
@@ -38,6 +39,18 @@ namespace KeyValueStorage.AzureTable
         {
             KVSTableName = KVSTableNameDefault;
             client = tableClient;
+        }
+
+        public AzureTableStoreProvider(CloudStorageAccount storageAccount, KVSExpiredKeyCleaner keyCleaner)
+            :this(storageAccount)
+        {
+            KeyCleaner = keyCleaner;
+        }
+
+        public AzureTableStoreProvider(CloudTableClient tableClient, KVSExpiredKeyCleaner keyCleaner)
+            :this(tableClient)
+        {
+            KeyCleaner = keyCleaner;
         }
 
         public bool SetupWorkingTable()
@@ -109,24 +122,38 @@ namespace KeyValueStorage.AzureTable
 
         public void Set(string key, string value, DateTime expires)
         {
-            throw new NotImplementedException();//awaiting better cleanup implementation
-            Table.Execute(TableOperation.InsertOrReplace(new KVEntity() { PartitionKey = key, RowKey = "1", Value = value, Expires = expires }));
+            Set(key, value);
+
+            if (KeyCleaner != null)
+                KeyCleaner.SetKeyExpiry(key, expires);
         }
 
         public void Set(string key, string value, TimeSpan expiresIn)
         {
-            throw new NotImplementedException();//awaiting better cleanup implementation
-            Table.Execute(TableOperation.InsertOrReplace(new KVEntity() { PartitionKey = key, RowKey = "1", Value = value, Expires = DateTime.UtcNow + expiresIn }));
+            var expires = DateTime.UtcNow + expiresIn;
+
+            Set(key, value);
+
+            if (KeyCleaner != null)
+                KeyCleaner.SetKeyExpiry(key, expires);
         }
 
         public void Set(string key, string value, ulong CAS, DateTime expires)
         {
-            throw new NotImplementedException();//awaiting better cleanup implementation
+            Set(key, value, CAS);
+
+            if (KeyCleaner != null)
+                KeyCleaner.SetKeyExpiry(key, expires);
         }
 
         public void Set(string key, string value, ulong CAS, TimeSpan expiresIn)
         {
-            throw new NotImplementedException();//awaiting better cleanup implementation
+            var expires = DateTime.UtcNow + expiresIn;
+
+            Set(key, value, CAS);
+
+            if (KeyCleaner != null)
+                KeyCleaner.SetKeyExpiry(key, expires);
         }
 
         public bool Exists(string key)
@@ -139,10 +166,10 @@ namespace KeyValueStorage.AzureTable
 
         public DateTime? ExpiresOn(string key)
         {
-            var entity = get(key);
-            if (entity != null)
-                return entity.Expires;
-            return null;
+            if (KeyCleaner != null)
+                return KeyCleaner.GetKeyExpiry(key);
+            else
+                throw new Exception("Cannot get expiry as no KeyCleaner is available");
         }
 
         public IEnumerable<string> GetStartingWith(string key)

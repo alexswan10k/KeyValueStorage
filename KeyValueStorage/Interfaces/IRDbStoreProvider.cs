@@ -11,7 +11,5 @@ namespace KeyValueStorage.Interfaces
         IDbConnection Connection { get; }
         bool OwnsConnection { get;  }
         string KVSTableName { get;}
-
-        bool SetupWorkingTable();
     }
 }

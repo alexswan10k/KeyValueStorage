@@ -43,7 +43,6 @@ namespace KeyValueStorage.Couchbase
         #region IStoreProvider
         public void Initialize()
         {
-            //TODO: setup required views
             if (Cluster != null)
             {
                 var json = Encoding.ASCII.GetString(Properties.Resources.KVSViews);

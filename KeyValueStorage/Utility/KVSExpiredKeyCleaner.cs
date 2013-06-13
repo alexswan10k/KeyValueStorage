@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KeyValueStorage.Exceptions;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.Interfaces.Utility;
 using KeyValueStorage.Utility.Data;
 
 namespace KeyValueStorage.Utility
@@ -17,6 +18,7 @@ namespace KeyValueStorage.Utility
         public int LockExpiryTimeS { get; protected set; }
         public ITextSerializer Serializer { get; protected set; }
         public string StoreExpiryDateRowPrefix { get; protected set; }
+        public string StoreExpiryDataExpiryKeyPrefix { get; protected set; }
         public TimeSpan WindowResolution { get; protected set; }
 
         public KVSExpiredKeyCleaner(IStoreProvider provider, string lockKey, TimeSpan windowResolution)
@@ -28,6 +30,7 @@ namespace KeyValueStorage.Utility
             StoreExpiryDateRowPrefix = "-SE-";
             StoreExpirySequenceKey = "-SES";
             StoreExpiryStateDataKey = "-SESD";
+            StoreExpiryDataExpiryKeyPrefix = "-E-";
         }
 
         public void CleanupKeys()
@@ -80,7 +83,14 @@ namespace KeyValueStorage.Utility
             var stateData = GetStateData();
             var window = GetWindow(expires, stateData);
 
-            Provider.Append(StoreExpiryDateRowPrefix + "-" + window, Serializer.Serialize(new StoreExpiryData() { TargetKey = key, Expires = expires }));
+            Provider.Append(StoreExpiryDateRowPrefix + window, Serializer.Serialize(new StoreExpiryData() { TargetKey = key, Expires = expires }));
+
+            Provider.Set(StoreExpiryDataExpiryKeyPrefix + key, Serializer.Serialize(expires));
+        }
+
+        public DateTime GetKeyExpiry(string key)
+        {
+            return Serializer.Deserialize<DateTime>(Provider.Get(StoreExpiryDataExpiryKeyPrefix + key));
         }
 
         protected int RemoveItemsFromWindow(ulong offsetWindow)
@@ -102,8 +112,15 @@ namespace KeyValueStorage.Utility
                 //remove our rows
                 foreach (var item in dataRowItemsToRemove)
                 {
+                    var compareDate = GetKeyExpiry(StoreExpiryDataExpiryKeyPrefix + item.TargetKey);
                     //If the row has somehow already been removed this will not fail.
-                    Provider.Remove(item.TargetKey);
+
+                    //Ensure that the expiry date matches the final value (we do not want to process out of date TTL stamps)
+                    if (compareDate != null && compareDate == item.Expires)
+                    {
+                        Provider.Remove(StoreExpiryDataExpiryKeyPrefix + item.TargetKey);
+                        Provider.Remove(item.TargetKey);
+                    }
                 }
 
                 //If all hve been succesfully removed, we can update our refs.
@@ -154,13 +171,13 @@ namespace KeyValueStorage.Utility
 
         private IEnumerable<StoreExpiryData> GetExpiryDataRow(ulong offsetWindow, out ulong cas)
         {
-            var key = StoreExpiryDateRowPrefix + "-" + offsetWindow;
+            var key = StoreExpiryDateRowPrefix + offsetWindow;
             return Helpers.SeparateJsonArray(Provider.Get(key, out cas)).Select(s => Serializer.Deserialize<StoreExpiryData>(s));
         }
 
         private void SetExpiryDataRow(ulong offsetWindow, IEnumerable<StoreExpiryData> data, ulong cas)
         {
-            var key = StoreExpiryDateRowPrefix + "-" + offsetWindow;
+            var key = StoreExpiryDateRowPrefix + offsetWindow;
             Provider.Set(key, String.Concat(data.Select(s => Serializer.Serialize(s))), cas);
         }
     }
