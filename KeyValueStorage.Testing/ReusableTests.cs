@@ -188,26 +188,27 @@ namespace KeyValueStorage.Testing
 
                 var k1A = context.GetStartingWith<TestBO_A>("K1A");
 
-                Assert.AreEqual(2, k1A.Count());
+                Assert.AreEqual(3, k1A.Count());
 
                 Assert.AreEqual(k1A.ElementAt(0).Dump(), k1a1.Dump());
-                Assert.AreEqual(k1A.ElementAt(1).Dump(), k1a3.Dump());
+                Assert.AreEqual(k1A.ElementAt(2).Dump(), k1a3.Dump());
 
                 var k1B_1st = context.GetStartingWith<TestBO_A>("K1B");
 
-                Assert.AreEqual(2, k1B_1st.Count());
+                Assert.AreEqual(4, k1B_1st.Count());
 
                 Assert.AreEqual(k1B_1st.ElementAt(0).Dump(), k1b1.Dump());
-                Assert.AreEqual(k1B_1st.ElementAt(1).Dump(), k1b3.Dump());
+                Assert.AreEqual(k1B_1st.ElementAt(2).Dump(), k1b3.Dump());
 
-                var k1B_2nd = context.GetStartingWith<TestBO_B>("K1B:");
+                var k1B_2nd = context.GetStartingWith<TestBO_B>("K1B");
 
-                Assert.AreEqual(1, k1B_2nd.Count());
-                Assert.AreEqual(k1B_2nd.ElementAt(0).Dump(), k1b2.Dump());
+                Assert.AreEqual(4, k1B_2nd.Count());
+                Assert.AreEqual(k1B_2nd.ElementAt(1).Dump(), k1b2.Dump());
 
                 var k1b_3rd = context.GetStartingWith<bool>("K1B");
 
-                Assert.AreEqual(1, k1b_3rd.Count());
+                Assert.AreEqual(4, k1b_3rd.Count());
+                Assert.IsTrue(k1b_3rd.Last());
             }
         }
 

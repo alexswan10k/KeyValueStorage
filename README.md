@@ -48,13 +48,13 @@ Note: This project is in early stages, and the interface has not completely been
 
 Currently fully supported:
 
+	Couchbase
 	Redis
 
 Partly supported:
 
 	AzureTable (all except expiry)
 	FileSystemText (all except expiry) - Provides a mechanism to store objects directly on the file system as json or similar
-	Couchbase (CRUD)
 	
 	Oracle (all except CAS, Expiry, and sequence ops)
 	SqlServer (all except CAS, Expiry, and sequence ops)

@@ -120,16 +120,10 @@ namespace KeyValueStorage.Couchbase
             return values;
         }
 
-        public IEnumerable<string> GetContaining(string key)
-        {
-            //Requires views?
-            throw new NotImplementedException();
-        }
 
         public IEnumerable<string> GetAllKeys()
         {
-            //Requires views?
-            throw new NotImplementedException();
+            return Client.GetView(KVSDocNm, "GetAll").Select(s => s.ItemId);
         }
 
         public IEnumerable<string> GetKeysStartingWith(string key)
@@ -137,32 +131,20 @@ namespace KeyValueStorage.Couchbase
             var keyMax = Encoding.UTF8.GetString(ArrayHelpers.IncrementByteArrByOne(Encoding.UTF8.GetBytes(key)));
 
             var keys = Client.GetView(KVSDocNm, "GetAll").StartKey(key).EndKey(keyMax).Select(s => s.ItemId);
-            //Requires views?
-            return keys;
-        }
 
-        public IEnumerable<string> GetKeysContaining(string key)
-        {
-            //Requires views?
-            throw new NotImplementedException();
+            return keys;
         }
 
         public int CountStartingWith(string key)
         {
-            //Requires views?
-            throw new NotImplementedException();
-        }
+            var keyMax = Encoding.UTF8.GetString(ArrayHelpers.IncrementByteArrByOne(Encoding.UTF8.GetBytes(key)));
 
-        public int CountContaining(string key)
-        {
-            //Requires views?
-            throw new NotImplementedException();
+            return Client.GetView(KVSDocNm, "GetAll").StartKey(key).EndKey(keyMax).Count();
         }
 
         public int CountAll()
         {
-            //Requires views?
-            throw new NotImplementedException();
+            return Client.GetView(KVSDocNm, "GetAll").Count();
         }
 
         public ulong GetNextSequenceValue(string key, int increment)

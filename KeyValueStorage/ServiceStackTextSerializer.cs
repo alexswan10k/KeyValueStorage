@@ -17,7 +17,14 @@ namespace KeyValueStorage
 
         public T Deserialize<T>(string itemSerialized)
         {
-            return itemSerialized.FromJson<T>();
+            try
+            {
+                return itemSerialized.FromJson<T>();
+            }
+            catch (Exception ex)
+            {
+                return default(T);
+            }
         }
     }
 }
