@@ -52,15 +52,15 @@ namespace KeyValueStorage.Utility
             Set(LockKey, new StoreKeyLock() { Expiry = Expires, WorkerId = WorkerId, IsConfirmed = true }, cas);
         }
 
-        private void CheckLockPocoIsMyLock(StoreKeyLock lockPOCO)
+        private void CheckLockPocoIsMyLock(StoreKeyLock lockPOCO, bool isMyLock = false)
         {
             if (lockPOCO != null)
             {
                 if (lockPOCO.Expiry >= DateTime.UtcNow)
                 {
-                    if (WorkerId == lockPOCO.WorkerId)
+                    if (WorkerId != lockPOCO.WorkerId)
                         throw new LockException("This worker " + WorkerId + " has already locked key " + LockKey);
-                    else
+                    else if(!isMyLock)
                         throw new LockException("Cannot acquire lock for " + LockKey + " as it has already been locked by " + WorkerId);
                 }
                 //otherwise the lock has expired so continue

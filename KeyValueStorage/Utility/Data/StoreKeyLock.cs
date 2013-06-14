@@ -5,10 +5,10 @@ using System.Text;
 
 namespace KeyValueStorage.Utility.Data
 {
-    internal class StoreKeyLock
+    public class StoreKeyLock
     {
-        internal DateTime Expiry { get; set; }
-        internal string WorkerId { get; set; }
-        internal bool IsConfirmed { get; set; }
+        public DateTime Expiry { get; set; }
+        public string WorkerId { get; set; }
+        public bool IsConfirmed { get; set; }
     }
 }

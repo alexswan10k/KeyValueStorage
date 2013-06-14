@@ -48,7 +48,7 @@ namespace KeyValueStorage.Cassandra
 
         public void Set(string key, string value)
         {
-            Session.Execute("Insert into " + KVSTableNameDefault + " (Key, Value, CAS) values ('" + key + "','" + value + ", 1')");
+            Session.Execute("Insert into " + KVSTableNameDefault + " (Key, Value, CAS) values ('" + key + "','" + value + "', 1)");
         }
 
         public void Remove(string key)

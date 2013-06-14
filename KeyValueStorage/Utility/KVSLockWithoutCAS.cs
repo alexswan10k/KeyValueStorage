@@ -50,7 +50,7 @@ namespace KeyValueStorage.Utility
             Set(LockKey, new StoreKeyLock() { Expiry = Expires, WorkerId = WorkerId });
 
             lockPOCO = Get(LockKey);
-            CheckLockPocoIsMyLock(lockPOCO);
+            CheckLockPocoIsMyLock(lockPOCO, true);
 
             lockPOCO.IsConfirmed = true;
             Set(LockKey, lockPOCO);
@@ -58,21 +58,21 @@ namespace KeyValueStorage.Utility
             //finally check our lock has been sucessfully put in place by the db
             lockPOCO = Get(LockKey);
 
-            CheckLockPocoIsMyLock(lockPOCO);
+            CheckLockPocoIsMyLock(lockPOCO, true);
 
             if (lockPOCO.IsConfirmed == false)
                 throw new Exception("Poco is in an invalid state");
         }
 
-        private void CheckLockPocoIsMyLock(StoreKeyLock lockPOCO)
+        private void CheckLockPocoIsMyLock(StoreKeyLock lockPOCO, bool isMyLock = false)
         {
             if (lockPOCO != null)
             {
                 if (lockPOCO.Expiry >= DateTime.UtcNow)
                 {
-                    if (WorkerId == lockPOCO.WorkerId)
+                    if (WorkerId != lockPOCO.WorkerId)
                         throw new LockException("This worker " + WorkerId + " has already locked key " + LockKey);
-                    else
+                    else if (!isMyLock)
                         throw new LockException("Cannot acquire lock for " + LockKey + " as it has already been locked by " + WorkerId);
                 }
                 //otherwise the lock has expired so continue

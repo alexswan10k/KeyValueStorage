@@ -103,7 +103,7 @@ namespace KeyValueStorage.AzureTable
 
         public void Set(string key, string value, ulong cas)
         {
-            using (var keyLock = new KVSLockWithoutCAS(LockPrefix + key, DateTime.Now.AddSeconds(10), this))
+            using (var keyLock = new KVSLockWithoutCAS(LockPrefix + key, DateTime.UtcNow.AddSeconds(10), this))
             {
                 var entity = get(key);
                 if (entity != null)
