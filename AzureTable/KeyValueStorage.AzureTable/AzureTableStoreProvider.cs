@@ -17,6 +17,7 @@ namespace KeyValueStorage.AzureTable
         public KVSExpiredKeyCleaner KeyCleaner { get; protected set; } 
         public string KVSTableName { get; protected set;}
         const string KVSTableNameDefault = "KVS";
+        const string LockPrefix = "-L-";
 
         public CloudTable Table
         {
@@ -77,7 +78,7 @@ namespace KeyValueStorage.AzureTable
 
         public void Set(string key, string value)
         {
-            Table.Execute(TableOperation.InsertOrReplace(new KVEntity() { PartitionKey = key, RowKey = "1", Value = value }));
+            Table.Execute(TableOperation.InsertOrReplace(new KVEntity() { PartitionKey = key, RowKey = "1", Value = value, CAS = 1 }));
         }
 
         public void Remove(string key)
@@ -102,19 +103,22 @@ namespace KeyValueStorage.AzureTable
 
         public void Set(string key, string value, ulong cas)
         {
-            var entity = get(key);
-            if (entity != null)
+            using (var keyLock = new KVSLockWithoutCAS(LockPrefix + key, DateTime.Now.AddSeconds(10), this))
             {
-                if (entity.CAS != (long)cas)
-                    throw new CASException("CAS Expired");
+                var entity = get(key);
+                if (entity != null)
+                {
+                    if (entity.CAS != (long)cas)
+                        throw new CASException("CAS Expired");
 
-                entity.CAS++;
-                entity.Value = value;
+                    entity.CAS++;
+                    entity.Value = value;
 
-                Table.Execute(TableOperation.Replace(entity));
+                    Table.Execute(TableOperation.Replace(entity));
+                }
+                else
+                    Table.Execute(TableOperation.Insert(new KVEntity() { PartitionKey = key, RowKey = "1", Value = value, CAS = (long)cas }));
             }
-            else
-                Table.Execute(TableOperation.Insert(new KVEntity() { PartitionKey = key, RowKey = "1", Value = value, CAS = (long)cas }));
         }
 
         public void Set(string key, string value, DateTime expires)
@@ -203,30 +207,7 @@ namespace KeyValueStorage.AzureTable
 
         protected ulong getNextSequenceValue(string key, int increment, int tryCount)
         {
-            try
-            {
-                ulong cas;
-                var obj = Get(key, out cas);
-                ulong seqVal;
-
-                if (!ulong.TryParse(obj, out seqVal))
-                {
-                    seqVal = 0;
-                }
-                seqVal = seqVal + (ulong)increment;
-                Set(key, seqVal.ToString(), cas);
-                return seqVal;
-            }
-            catch (CASException casEx)
-            {
-                if (tryCount >= 10)
-                    throw new Exception("Could not get sequence value", casEx);
-
-                System.Threading.Thread.Sleep(20);
-                //retry
-                return getNextSequenceValue(key, increment,tryCount++);
-            }
-            return 0;
+            return IStoreProviderInternalHelpers.GetNextSequenceValueViaCASWithRetries(this, key, increment, tryCount);
         }
 
         public void Append(string key, string value)

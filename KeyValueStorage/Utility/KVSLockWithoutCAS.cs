@@ -35,6 +35,12 @@ namespace KeyValueStorage.Utility
 
         }
 
+        public KVSLockWithoutCAS(string lockKey, DateTime expires, IStoreProvider provider)
+            : this(lockKey, expires, System.Environment.MachineName, provider, new ServiceStackTextSerializer())
+        {
+
+        }
+
         private void AcquireLock()
         {
             var lockPOCO = Get(LockKey);

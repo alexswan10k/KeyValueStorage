@@ -68,6 +68,7 @@
     <Compile Include="Utility\Data\StoreKeyLock.cs" />
     <Compile Include="Utility\Data\StoreExpiryStateData.cs" />
     <Compile Include="Utility\Helpers.cs" />
+    <Compile Include="Utility\IStoreProviderInternalHelpers.cs" />
     <Compile Include="Utility\KVSExpiredKeyCleaner.cs" />
     <Compile Include="Utility\KVSLockWithCAS.cs" />
     <Compile Include="Utility\KVSLockWithoutCAS.cs" />

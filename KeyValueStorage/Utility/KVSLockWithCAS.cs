@@ -36,6 +36,12 @@ namespace KeyValueStorage.Utility
 
         }
 
+        public KVSLockWithCAS(string lockKey, DateTime expires, IStoreProvider provider)
+            : this(lockKey, expires, System.Environment.MachineName, provider, new ServiceStackTextSerializer())
+        {
+
+        }
+
         private void AcquireLockCAS()
         {
             ulong cas;

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using KeyValueStorage.Interfaces;
 using Cassandra;
+using KeyValueStorage.Utility;
 
 namespace KeyValueStorage.Cassandra
 {
@@ -13,6 +14,7 @@ namespace KeyValueStorage.Cassandra
         public Session Session { get; set; }
         public const string KVSKeyspaceDefault = "KVSKS";
         const string KVSTableNameDefault = "KVS";
+        const string LockPrefix = "-L-";
 
         public CassandraStoreProvider(Session session)
         {
@@ -46,7 +48,7 @@ namespace KeyValueStorage.Cassandra
 
         public void Set(string key, string value)
         {
-            Session.Execute("Insert into " + KVSTableNameDefault + " (Key, Value) values ('" + key + "','" + value + "')");
+            Session.Execute("Insert into " + KVSTableNameDefault + " (Key, Value, CAS) values ('" + key + "','" + value + ", 1')");
         }
 
         public void Remove(string key)
@@ -56,11 +58,34 @@ namespace KeyValueStorage.Cassandra
 
         public string Get(string key, out ulong cas)
         {
+            var row = Session.Execute("Select Value, CAS from " + KVSTableNameDefault + " where Key = '" + key + "'").GetRows().FirstOrDefault();
+
+            if (row != null)
+            {
+                if (row.Columns.Count() == 2)
+                    cas = row.GetValue<ulong>(1);
+                else
+                    cas = 0;
+
+                return row.GetValue<string>(0);
+            }
+            else
+            {
+                //set CAS even if null entry
+            }
+            cas = 0;
+            return string.Empty;
+
             throw new NotImplementedException();
         }
 
         public void Set(string key, string value, ulong cas)
         {
+            using (var keyLock = new KVSLockWithoutCAS(LockPrefix + key, DateTime.Now.AddSeconds(10), this))
+            {
+
+            }
+
             throw new NotImplementedException();
         }
 
