@@ -37,18 +37,8 @@ namespace KeyValueStorage.Utility
         {
             try
             {
-                ulong lockCas;
-                var lockVal = Serializer.Deserialize<StoreExpiryLock>(Provider.Get(LockKey, out lockCas));
-
-                if (lockVal == null || lockVal.Expiry < DateTime.UtcNow)
+                using (var keyLock = new KVSLockWithCAS(LockKey, DateTime.UtcNow.AddSeconds(LockExpiryTimeS), "T", Provider))
                 {
-                    //!Set a lock for this machine
-                    Provider.Set(LockKey, Serializer.Serialize(new StoreExpiryLock()
-                    {
-                        Expiry = DateTime.UtcNow.AddSeconds(LockExpiryTimeS),
-                        MachineName = System.Environment.MachineName,
-                    }), lockCas);
-
                     var stateData = GetStateData();
 
                     //check row-1 to avoid race conditions in the unlikely event where a reference is written into window n and the sequence is moved on to n+1
@@ -62,9 +52,6 @@ namespace KeyValueStorage.Utility
                         stateData.WindowStart = DateTime.UtcNow;
                         Provider.Set(StoreExpiryStateDataKey, Serializer.Serialize(stateData));
                     }
-
-                    //release the lock
-                    Provider.Remove(LockKey);
                 }
             }
             catch (CASException ex)

@@ -57,6 +57,7 @@
     <Compile Include="Interfaces\IRDbStoreProvider.cs" />
     <Compile Include="Interfaces\IStoreProvider.cs" />
     <Compile Include="Interfaces\ITextSerializer.cs" />
+    <Compile Include="Interfaces\Utility\IKeyLock.cs" />
     <Compile Include="Interfaces\Utility\ISqlDialectProvider.cs" />
     <Compile Include="KVStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,10 +65,12 @@
     <Compile Include="Utility\ArrayHelpers.cs" />
     <Compile Include="Utility\CharSubstitutor.cs" />
     <Compile Include="Utility\Data\StoreExpiryData.cs" />
-    <Compile Include="Utility\Data\StoreExpiryLock.cs" />
+    <Compile Include="Utility\Data\StoreKeyLock.cs" />
     <Compile Include="Utility\Data\StoreExpiryStateData.cs" />
     <Compile Include="Utility\Helpers.cs" />
     <Compile Include="Utility\KVSExpiredKeyCleaner.cs" />
+    <Compile Include="Utility\KVSLockWithCAS.cs" />
+    <Compile Include="Utility\KVSLockWithoutCAS.cs" />
     <Compile Include="Utility\RDBExpiredKeyCleaner.cs" />
     <Compile Include="Utility\SqlDialectProviderCommon.cs" />
     <Compile Include="Utility\Sql\ColumnValue.cs" />
