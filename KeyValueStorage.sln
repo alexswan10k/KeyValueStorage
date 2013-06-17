@@ -59,6 +59,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyValueStorage.Cassandra",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyValueStorage.Cassandra.Tests", "Cassandra\KeyValueStorage.Cassandra.Tests\KeyValueStorage.Cassandra.Tests.csproj", "{BB6568A6-D122-4B84-B810-B73350EB99DD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ORM", "ORM", "{3F906FD1-643B-4A43-B555-1E5BA8744888}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyValueStorage.ORM", "ORM\KeyValueStorage.ORM\KeyValueStorage.ORM.csproj", "{93225386-ED92-4799-91E4-53B2E5C67AA3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -129,6 +133,10 @@ Global
 		{BB6568A6-D122-4B84-B810-B73350EB99DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB6568A6-D122-4B84-B810-B73350EB99DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB6568A6-D122-4B84-B810-B73350EB99DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93225386-ED92-4799-91E4-53B2E5C67AA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93225386-ED92-4799-91E4-53B2E5C67AA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93225386-ED92-4799-91E4-53B2E5C67AA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93225386-ED92-4799-91E4-53B2E5C67AA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -148,5 +156,6 @@ Global
 		{900C070F-B73C-4D32-A0C3-2CA1431A8DD1} = {3B530A91-9FCE-482B-96FF-49A3302A1F0E}
 		{36D948E3-89EC-4744-AE6C-CFFD90C1813C} = {DA1C5390-A883-4AF3-8645-7ED7B6E6C820}
 		{BB6568A6-D122-4B84-B810-B73350EB99DD} = {DA1C5390-A883-4AF3-8645-7ED7B6E6C820}
+		{93225386-ED92-4799-91E4-53B2E5C67AA3} = {3F906FD1-643B-4A43-B555-1E5BA8744888}
 	EndGlobalSection
 EndGlobal
