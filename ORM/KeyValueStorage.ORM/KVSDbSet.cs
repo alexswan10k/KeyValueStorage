@@ -14,6 +14,11 @@ namespace KeyValueStorage.ORM
         public IKVStore Store { get; set; }
         public const string CollectionPrefix = ":C:";
         public const string SequenceSuffix = ":S";
+
+        public IEnumerator GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class KVSDbSet<T> : KVSDbSet, ICollection<T> where T : class
@@ -48,8 +53,8 @@ namespace KeyValueStorage.ORM
                 CachedCollection.Add(keyIdx, collection.ElementAt(i));
             }
 
-            if (CollectionRefreshed != null)
-                CollectionRefreshed.Invoke(this, CachedCollection);
+            //if (CollectionRefreshed != null)
+            //    CollectionRefreshed.Invoke(this, CachedCollection);
         }
 
         protected ulong GetNextSequenceValue()
@@ -61,7 +66,7 @@ namespace KeyValueStorage.ORM
         {
             var seqVal =GetNextSequenceValue();
             Store.Set(BaseKey + CollectionPrefix + seqVal, item);
-            CachedCollection.Add(seqVal, item);
+            CachedCollection.Add(seqVal, item); 
         }
 
         public void Clear()
@@ -176,8 +181,14 @@ namespace KeyValueStorage.ORM
             return CachedCollection.Values.GetEnumerator();
         }
 
-        public event EventHandler<IDictionary<ulong, T>> CollectionRefreshed;
-        public event EventHandler<KeyValuePair<ulong, T>> ItemAdded;
-        public event EventHandler<KeyValuePair<ulong, T>> ItemRemoved;
+        protected void CleanAndSet(ulong id, T value)
+        {
+            var dictionary = value.ToStringDictionary();
+            //remove reference types
+        }
+
+        //public event EventHandler<IDictionary<ulong, T>> CollectionRefreshed;
+        //public event EventHandler<KeyValuePair<ulong, T>> ItemAdded;
+        //public event EventHandler<KeyValuePair<ulong, T>> ItemRemoved;
     }
 }

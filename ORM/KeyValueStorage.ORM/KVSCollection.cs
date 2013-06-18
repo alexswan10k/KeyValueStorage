@@ -7,7 +7,7 @@ using KeyValueStorage.ORM.Mapping;
 
 namespace KeyValueStorage.ORM
 {
-    public class KVSCollection<T> : ICollection<T>
+    public class KVSCollection<T> : ICollection<T> where T : class
     {
         public const string FKCollectionSeparator = ":F:";
 

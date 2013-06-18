@@ -47,6 +47,8 @@
     <Compile Include="ContextBase.cs" />
     <Compile Include="KVSCollection.cs" />
     <Compile Include="KVSDbSet.cs" />
+    <Compile Include="Mapping\ContextMap.cs" />
+    <Compile Include="Mapping\EntityMap.cs" />
     <Compile Include="Mapping\RelationshipMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

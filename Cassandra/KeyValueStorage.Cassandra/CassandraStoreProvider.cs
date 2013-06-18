@@ -147,6 +147,7 @@ namespace KeyValueStorage.Cassandra
         public ulong GetNextSequenceValue(string key, int increment)
         {
             throw new NotImplementedException();
+            //Session.Execute()
         }
 
         public void Append(string key, string value)

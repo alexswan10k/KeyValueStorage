@@ -7,16 +7,16 @@ namespace KeyValueStorage.ORM.Mapping
 {
     public class RelationshipMap
     {
-        public string ObjectTableA { get; set; }
-        public string ObjectTableB { get; set; }
+        public EntityMap LocalObjectMap { get; set; }
+        public EntityMap TargetObjectMap { get; set; }
         public RelationshipMapType MapType { get; set; }
 
         public string GetForeignTableRef (string myTableRef)
         {
-            if (myTableRef == ObjectTableA)
-                return ObjectTableB;
-            else if (myTableRef == ObjectTableB)
-                return ObjectTableA;
+            if (myTableRef == LocalObjectMap.TableName)
+                return TargetObjectMap.TableName;
+            else if (myTableRef == TargetObjectMap.TableName)
+                return LocalObjectMap.TableName;
             else
                 throw new ArgumentException(myTableRef + " does not exist for this mapping");
         }
