@@ -12,14 +12,23 @@ namespace KeyValueStorage.ORM
         public const string FKCollectionSeparator = ":F:";
 
         public string BaseKey { get; set; }
-        public IStoreProvider Provider { get; set; }
+        public IKVStore Store { get; set; }
         public RelationshipMap Map { get; protected set; }
         protected KVSDbSet<T> ForeignCollection { get; set; }
         protected KVSDbSet LocalCollection { get; set; }
 
+        public string FKString
+        {
+            get
+            {
+                return BaseKey + FKCollectionSeparator + ForeignCollection.BaseKey; 
+            }
+        }
+
         public void Add(T item)
         {
-            throw new NotImplementedException();
+            ForeignCollection.Add(item);
+            Store.AppendToCollection(FKString, item);
         }
 
         public void Clear()

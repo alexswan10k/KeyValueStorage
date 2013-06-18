@@ -159,11 +159,13 @@ namespace KeyValueStorage.Utility
 
         protected virtual StringBuilder WhereBuilder(IDbCommand cmd, IEnumerable<WhereClause> whereClauses, int startAt = 1)
         {
-            var colWhereSql = new StringBuilder("Where ");
+            var colWhereSql = new StringBuilder();
             int i = 0;
             foreach (var whereClause in whereClauses)
             {
-                if (i > 0)
+                if (i == 0)
+                    colWhereSql.Append("Where ");
+                else if (i > 0)
                     colWhereSql.Append(" And ");
 
                 var par = cmd.CreateParameter();

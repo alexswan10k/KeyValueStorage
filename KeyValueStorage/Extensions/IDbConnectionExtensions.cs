@@ -8,7 +8,7 @@ namespace KeyValueStorage.Extensions
 {
     public static class IDbConnectionExtensions
     {
-        public static int ExecuteNonQuery(this IDbConnection connection, string sql, params object[] parameters)//object p1 = null, object p2 = null)
+        public static int ExecuteNonQuery(this IDbConnection connection, string sql, params object[] parameters)
         {
             var cmd = connection.CreateCommand();
             cmd.CommandText = sql;
