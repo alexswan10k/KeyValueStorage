@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.ORM.Mapping;
+using KeyValueStorage.ORM.Tracking;
 using ServiceStack.Text;
 
 namespace KeyValueStorage.ORM
@@ -14,30 +16,39 @@ namespace KeyValueStorage.ORM
         public IKVStore Store { get; set; }
         public const string CollectionPrefix = ":C:";
         public const string SequenceSuffix = ":S";
+        public ContextBase Context { get; set; }
+        public EntityMap EntityMap { get; set; }
 
-        public IEnumerator GetEnumerator()
+        public virtual IEnumerator GetEnumerator()
         {
             throw new NotImplementedException();
+        }
+
+        public ulong GetNextSequenceValue()
+        {
+            return Store.GetNextSequenceValue(BaseKey + SequenceSuffix);
         }
     }
 
     public class KVSDbSet<T> : KVSDbSet, ICollection<T> where T : class
     {
-        public IDictionary<ulong, T> CachedCollection { get; protected set; }
+        public IDictionary<ulong, T> KeyedItems { get; protected set; }
         public bool CachedIsFullList { get; protected set; }
 
-        public KVSDbSet()
+        internal KVSDbSet(EntityMap map, ContextBase context)
         {
-            CachedCollection = new Dictionary<ulong, T>();
+            KeyedItems = new Dictionary<ulong, T>();
+            Context = context;
+            EntityMap = map;
         }
 
         protected void LoadIfNotLoaded()
         {
             if (!CachedIsFullList)
-                RefreshCachedCollection();
+                RefreshKeyedItems();
         }
 
-        protected void RefreshCachedCollection()
+        protected void RefreshKeyedItems()
         {
             var keys = Store.GetKeysStartingWith(BaseKey + CollectionPrefix);
             var collection = Store.GetStartingWith<T>(BaseKey + CollectionPrefix);
@@ -45,28 +56,27 @@ namespace KeyValueStorage.ORM
             if (keys.Count() != collection.Count())
                 throw new InvalidProgramException("Keys returned and collection do not match");
 
-            CachedCollection.Clear();
+            KeyedItems.Clear();
 
             for (int i = 0; i < keys.Count(); i++)
             {
                 var keyIdx = ulong.Parse(keys.ElementAt(i).Split(':').Last());
-                CachedCollection.Add(keyIdx, collection.ElementAt(i));
+                KeyedItems.Add(keyIdx, collection.ElementAt(i));
             }
 
             //if (CollectionRefreshed != null)
             //    CollectionRefreshed.Invoke(this, CachedCollection);
         }
 
-        protected ulong GetNextSequenceValue()
-        {
-            return Store.GetNextSequenceValue(BaseKey + SequenceSuffix);
-        }
-
         public void Add(T item)
         {
-            var seqVal =GetNextSequenceValue();
-            Store.Set(BaseKey + CollectionPrefix + seqVal, item);
-            CachedCollection.Add(seqVal, item); 
+            ObjectTrackingInfo trackInfo;
+            if (!Context.ObjectTracker.ObjectsToTrack.TryGetValue(item, out trackInfo))
+                Context.ObjectTracker.AttachObject(item, new ObjectTrackingInfo(item, this, true));
+            else
+            {
+                trackInfo.State = ObjectTrackingInfoState.New;
+            }
         }
 
         public void Clear()
@@ -74,26 +84,26 @@ namespace KeyValueStorage.ORM
             if (!CachedIsFullList)
                 LoadIfNotLoaded();
 
-            foreach (var key in CachedCollection.Keys)
+            foreach (var item in KeyedItems)
             {
-                Store.Delete(BaseKey + CollectionPrefix + key.ToString());
+                Context.ObjectTracker.DetachObject(item);
             }
 
-            CachedCollection.Clear();
+            KeyedItems.Clear();
         }
 
         public bool Contains(T item)
         {
-            if (CachedCollection.Values.Contains(item))
+            if (KeyedItems.Values.Contains(item))
                 return true;
-            else if(CachedCollection.Select( s=> s.Value.Dump()).Contains(item.Dump()))
+            else if(KeyedItems.Select( s=> s.Value.Dump()).Contains(item.Dump()))
                 return true;
 
-            RefreshCachedCollection();
+            RefreshKeyedItems();
 
-            if (CachedCollection.Values.Contains(item))
+            if (KeyedItems.Values.Contains(item))
                 return true;
-            else if (CachedCollection.Select(s => s.Value.Dump()).Contains(item.Dump()))
+            else if (KeyedItems.Select(s => s.Value.Dump()).Contains(item.Dump()))
                 return true;
             return false;
         }
@@ -113,7 +123,7 @@ namespace KeyValueStorage.ORM
                 if (!CachedIsFullList)
                     LoadIfNotLoaded();
 
-                return CachedCollection.Count;
+                return KeyedItems.Count;
             }
         }
 
@@ -124,34 +134,15 @@ namespace KeyValueStorage.ORM
 
         public bool Remove(T item)
         {
-            if (CachedCollection.Values.Contains(item))
-            {
-                var key = CachedCollection.First(q => q.Value == item).Key;
-                Store.Delete(BaseKey + CollectionPrefix + key.ToString());
-                CachedCollection.Remove(key);
-                return true;
-            }
-            else if (CachedCollection.Select(s => s.Value.Dump()).Contains(item.Dump()))
-            {
-                var key = CachedCollection.First(q => q.Value.Dump() == item.Dump()).Key;
-                Store.Delete(BaseKey + CollectionPrefix + key.ToString());
-                CachedCollection.Remove(key);
-            }
+            ObjectTrackingInfo trackInfo;
+            if (!Context.ObjectTracker.ObjectsToTrack.TryGetValue(item, out trackInfo))
+                trackInfo = new ObjectTrackingInfo(item, this, false);
 
-            RefreshCachedCollection();
+            trackInfo.State = ObjectTrackingInfoState.FlaggedForDeletion;
 
-            if (CachedCollection.Values.Contains(item))
-            {
-                var key = CachedCollection.First(q => q.Value.Dump() == item.Dump()).Key;
-                Store.Delete(BaseKey + CollectionPrefix + key.ToString());
-                CachedCollection.Remove(key);
-            }
-            else if (CachedCollection.Select(s => s.Value.Dump()).Contains(item.Dump()))
-            {
-                var key = CachedCollection.First(q => q.Value.Dump() == item.Dump()).Key;
-                Store.Delete(BaseKey + CollectionPrefix + key.ToString());
-                CachedCollection.Remove(key);
-            }
+            if (KeyedItems.ContainsKey(trackInfo.Key))
+                KeyedItems.Remove(trackInfo.Key);
+
             return false;
         }
 
@@ -160,17 +151,21 @@ namespace KeyValueStorage.ORM
             if (!CachedIsFullList)
                 LoadIfNotLoaded();
 
-            return CachedCollection.Values.GetEnumerator();
+            return KeyedItems.Values.GetEnumerator();
         }
 
         public T GetById(ulong id)
         {
-            return Store.Get<T>(BaseKey + CollectionPrefix + id);
-        }
+            T item;
 
-        public void Save(ulong id, T value)
-        {
-            Store.Set(BaseKey + CollectionPrefix + id.ToString(), value);
+            if (!KeyedItems.TryGetValue(id, out item))
+            {
+                item = Store.Get<T>(BaseKey + CollectionPrefix + id);
+
+                if (item != null)
+                    Context.ObjectTracker.AttachObject(item, new ObjectTrackingInfo(item, this, false));
+            }
+            return item;
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
@@ -178,7 +173,7 @@ namespace KeyValueStorage.ORM
             if (!CachedIsFullList)
                 LoadIfNotLoaded();
 
-            return CachedCollection.Values.GetEnumerator();
+            return KeyedItems.Values.GetEnumerator();
         }
 
         protected void CleanAndSet(ulong id, T value)

@@ -15,7 +15,10 @@ namespace KeyValueStorage.ORM.Mapping
             //magic
             foreach (var map in EntityMaps)
             {
-                
+                //get the relationship maps for each entity map
+
+                //set the items
+                map.DbSetPropSetter.Invoke(map.DbSetCtor.Invoke(new object[] { map, context }), new object[] { });
             }
         }
     }

@@ -8,11 +8,12 @@ namespace KeyValueStorage.ORM.Mapping
 {
     public class EntityMap
     {
-        public EntityMap(Type entityType, MethodInfo getter, MethodInfo setter)
+        public EntityMap(Type entityType, MethodInfo getter, MethodInfo setter, ConstructorInfo ctor)
         {
             EntityType = entityType;
             DBSetPropGetter = getter;
             DbSetPropSetter = setter;
+            DbSetCtor = ctor;
 
             //work out the key field
         }
@@ -22,6 +23,12 @@ namespace KeyValueStorage.ORM.Mapping
         public string KeyField { get; set; }
         public MethodInfo DBSetPropGetter { get; protected set; }
         public MethodInfo DbSetPropSetter { get; protected set; }
-        public IList<RelationshipMap> RelationshipMaps { get; set; }    
+        public ConstructorInfo DbSetCtor { get; protected set; }
+        public IList<RelationshipMap> RelationshipMaps { get; set; }   
+ 
+        public KVSDbSet GetDbSet(ContextBase context)
+        {
+            return (KVSDbSet)DBSetPropGetter.Invoke(context, new object[]{});
+        }
     }
 }
