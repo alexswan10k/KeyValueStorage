@@ -16,6 +16,7 @@ namespace KeyValueStorage.ORM.Mapping
             DbSetCtor = ctor;
 
             //work out the key field
+            RelationshipMaps = new List<RelationshipMap>();
         }
 
         public string TableName { get; set; }

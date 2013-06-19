@@ -13,7 +13,7 @@ namespace KeyValueStorage.ORM.Tracking
         {
             get
             {
-                return EntityReflectionHelpers.GetEntityKey(this);
+                return EntityReflectionHelpers.GetEntityKey(ObjectRef);
             }
         }
 

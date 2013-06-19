@@ -97,7 +97,7 @@ namespace KeyValueStorage
         #region Queries
         public IEnumerable<T> GetStartingWith<T>(string key)
         {
-            return StoreProvider.GetStartingWith(key).Select(s => Serializer.Deserialize<T>(s));
+            return StoreProvider.GetStartingWith(key).Select(s => Serializer.Deserialize<T>(s)).ToList();
         }
 
         public IEnumerable<string> GetAllKeys()
@@ -139,12 +139,12 @@ namespace KeyValueStorage
         #region CollectionOperations
         public IEnumerable<T> GetCollection<T>(string key)
         {
-            return Helpers.SeparateJsonArray(StoreProvider.Get(key)).Select(s => Serializer.Deserialize<T>(s));
+            return Helpers.SeparateJsonArray(StoreProvider.Get(key)).Select(s => Serializer.Deserialize<T>(s)).ToList();
         }
 
         public IEnumerable<T> GetCollection<T>(string key, out ulong cas)
         {
-            return Helpers.SeparateJsonArray(StoreProvider.Get(key, out cas)).Select(s => Serializer.Deserialize<T>(s));
+            return Helpers.SeparateJsonArray(StoreProvider.Get(key, out cas)).Select(s => Serializer.Deserialize<T>(s)).ToList();
         }
 
         public void SetCollection<T>(string key, IEnumerable<T> values)

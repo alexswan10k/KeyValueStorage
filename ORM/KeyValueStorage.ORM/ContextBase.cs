@@ -39,7 +39,7 @@ namespace KeyValueStorage.ORM
 
         public void Dispose()
         {
-            
+            Store.Dispose();
         }
 
         protected static ContextMap SetupMaps(ContextBase thisItem)
@@ -55,7 +55,7 @@ namespace KeyValueStorage.ORM
                 {
                     Type entityType = prop.PropertyType.GetGenericArguments().Last();
 
-                    var entityMap = new EntityMap(entityType, prop.GetGetMethod(), prop.GetSetMethod(), prop.PropertyType.GetConstructor(new Type[]{typeof(EntityMap), typeof(ContextBase)}));
+                    var entityMap = new EntityMap(entityType, prop.GetGetMethod(), prop.GetSetMethod(), prop.PropertyType.GetConstructor(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic, null, new Type[]{typeof(EntityMap), typeof(ContextBase)}, new System.Reflection.ParameterModifier[]{}));
                     contextMap.EntityMaps.Add(entityMap);
                 }
             }
@@ -101,7 +101,9 @@ namespace KeyValueStorage.ORM
         {
             foreach (var objKV in ObjectTracker.ObjectsToTrack)
             {
-                if (objKV.Value.State == (ObjectTrackingInfoState.New | ObjectTrackingInfoState.Changed | ObjectTrackingInfoState.FlaggedForDeletion))
+                if (objKV.Value.State == ObjectTrackingInfoState.New 
+                    || objKV.Value.State == ObjectTrackingInfoState.Changed 
+                    || objKV.Value.State == ObjectTrackingInfoState.FlaggedForDeletion)
                 {
                     var objTrackingInfo = objKV.Value;
 
@@ -109,17 +111,17 @@ namespace KeyValueStorage.ORM
                     {
                         var seq = objTrackingInfo.DbSetAssociatedWith.GetNextSequenceValue();
                         EntityReflectionHelpers.SetEntityKey(objKV.Key, seq);
-                        Store.Set(objTrackingInfo.DbSetAssociatedWith.BaseKey + KVSDbSet.CollectionPrefix, objKV.Key.ToStringDictionaryExcludingRefs());
+                        Store.Set(objTrackingInfo.DbSetAssociatedWith.BaseKey + KVSDbSet.CollectionPrefix + EntityReflectionHelpers.GetEntityKey(objKV.Key), objKV.Key.ToStringDictionaryExcludingRefs());
                     }
                     else if (objKV.Value.State == ObjectTrackingInfoState.Changed)
                     {
-                        Store.Set(objTrackingInfo.DbSetAssociatedWith.BaseKey + KVSDbSet.CollectionPrefix, objKV.Key.ToStringDictionaryExcludingRefs());
+                        Store.Set(objTrackingInfo.DbSetAssociatedWith.BaseKey + KVSDbSet.CollectionPrefix + EntityReflectionHelpers.GetEntityKey(objKV.Key), objKV.Key.ToStringDictionaryExcludingRefs());
                         objKV.Value.State = ObjectTrackingInfoState.Unchanged;
                     }
                     else if (objKV.Value.State == ObjectTrackingInfoState.FlaggedForDeletion)
                     {
                         var seq = EntityReflectionHelpers.GetEntityKey(objKV.Key);
-                        Store.Delete(objTrackingInfo.DbSetAssociatedWith.BaseKey + KVSDbSet.CollectionPrefix);
+                        Store.Delete(objTrackingInfo.DbSetAssociatedWith.BaseKey + KVSDbSet.CollectionPrefix + EntityReflectionHelpers.GetEntityKey(objKV.Key));
                         objKV.Value.State = ObjectTrackingInfoState.Deleted;
                     }
                 }

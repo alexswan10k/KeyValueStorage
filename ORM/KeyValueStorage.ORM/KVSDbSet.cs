@@ -6,14 +6,14 @@ using System.Text;
 using KeyValueStorage.Interfaces;
 using KeyValueStorage.ORM.Mapping;
 using KeyValueStorage.ORM.Tracking;
+using KeyValueStorage.ORM.Utility;
 using ServiceStack.Text;
 
 namespace KeyValueStorage.ORM
 {
     public abstract class KVSDbSet : IEnumerable
     {
-        public string BaseKey { get; set; }
-        public IKVStore Store { get; set; }
+        public string BaseKey { get; protected set; }
         public const string CollectionPrefix = ":C:";
         public const string SequenceSuffix = ":S";
         public ContextBase Context { get; set; }
@@ -26,7 +26,7 @@ namespace KeyValueStorage.ORM
 
         public ulong GetNextSequenceValue()
         {
-            return Store.GetNextSequenceValue(BaseKey + SequenceSuffix);
+            return Context.Store.GetNextSequenceValue(BaseKey + SequenceSuffix);
         }
     }
 
@@ -40,18 +40,21 @@ namespace KeyValueStorage.ORM
             KeyedItems = new Dictionary<ulong, T>();
             Context = context;
             EntityMap = map;
+            BaseKey = map.EntityType.Name;
         }
 
         protected void LoadIfNotLoaded()
         {
             if (!CachedIsFullList)
                 RefreshKeyedItems();
+
+            CachedIsFullList = true;
         }
 
         protected void RefreshKeyedItems()
         {
-            var keys = Store.GetKeysStartingWith(BaseKey + CollectionPrefix);
-            var collection = Store.GetStartingWith<T>(BaseKey + CollectionPrefix);
+            var keys = Context.Store.GetKeysStartingWith(BaseKey + CollectionPrefix);
+            var collection = Context.Store.GetStartingWith<T>(BaseKey + CollectionPrefix);
 
             if (keys.Count() != collection.Count())
                 throw new InvalidProgramException("Keys returned and collection do not match");
@@ -61,7 +64,11 @@ namespace KeyValueStorage.ORM
             for (int i = 0; i < keys.Count(); i++)
             {
                 var keyIdx = ulong.Parse(keys.ElementAt(i).Split(':').Last());
-                KeyedItems.Add(keyIdx, collection.ElementAt(i));
+                var entity = collection.ElementAt(i);
+                if (EntityReflectionHelpers.GetEntityKey(entity) == 0)
+                    EntityReflectionHelpers.SetEntityKey(entity, keyIdx);
+                KeyedItems.Add(keyIdx, entity);
+                Context.ObjectTracker.TryAttachObject(entity, new ObjectTrackingInfo(entity, this, false));
             }
 
             //if (CollectionRefreshed != null)
@@ -141,7 +148,7 @@ namespace KeyValueStorage.ORM
             trackInfo.State = ObjectTrackingInfoState.FlaggedForDeletion;
 
             if (KeyedItems.ContainsKey(trackInfo.Key))
-                KeyedItems.Remove(trackInfo.Key);
+                return KeyedItems.Remove(trackInfo.Key);
 
             return false;
         }
@@ -160,7 +167,7 @@ namespace KeyValueStorage.ORM
 
             if (!KeyedItems.TryGetValue(id, out item))
             {
-                item = Store.Get<T>(BaseKey + CollectionPrefix + id);
+                item = Context.Store.Get<T>(BaseKey + CollectionPrefix + id);
 
                 if (item != null)
                     Context.ObjectTracker.AttachObject(item, new ObjectTrackingInfo(item, this, false));
@@ -174,12 +181,6 @@ namespace KeyValueStorage.ORM
                 LoadIfNotLoaded();
 
             return KeyedItems.Values.GetEnumerator();
-        }
-
-        protected void CleanAndSet(ulong id, T value)
-        {
-            var dictionary = value.ToStringDictionary();
-            //remove reference types
         }
 
         //public event EventHandler<IDictionary<ulong, T>> CollectionRefreshed;

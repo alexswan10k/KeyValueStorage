@@ -26,6 +26,7 @@ namespace KeyValueStorage.ORM.Tests
 
                 context.TestEntitiesA.Add(a1);
                 context.TestEntitiesA.Add(a2);
+                context.SaveChanges();
             }
 
             using (var context = new TestKVContext())
@@ -41,6 +42,7 @@ namespace KeyValueStorage.ORM.Tests
 
                 context.TestEntitiesA.Remove(a1);
                 context.TestEntitiesA.Remove(a2);
+                context.SaveChanges();
             }
 
             using (var context = new TestKVContext())

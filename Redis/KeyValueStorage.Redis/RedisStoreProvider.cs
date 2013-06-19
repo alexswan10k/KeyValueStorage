@@ -127,17 +127,17 @@ namespace KeyValueStorage.Redis
 
         public IEnumerable<string> GetAllKeys()
         {
-            return Client.GetAllKeys();
+            return Client.GetAllKeys().ToList();
         }
 
         public IEnumerable<string> GetKeysStartingWith(string key)
         {
-            return Client.SearchKeys(key + "*");
+            return Client.SearchKeys(key + "*").ToList();
         }
 
         public IEnumerable<string> GetKeysContaining(string key)
         {
-            return Client.SearchKeys("*" + key + "*");
+            return Client.SearchKeys("*" + key + "*").ToList();
         }
 
         public int CountStartingWith(string key)

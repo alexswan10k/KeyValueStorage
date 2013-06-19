@@ -12,7 +12,7 @@ namespace KeyValueStorage.ORM.Utility
             var props = obj.GetType().GetProperties();
 
             var idPropInfo = props.Single(q => q.Name == "Id");
-            return (ulong)idPropInfo.GetGetMethod().Invoke(obj, new object[] { });
+            return (ulong)Convert.ChangeType(idPropInfo.GetGetMethod().Invoke(obj, new object[] { }), typeof(ulong));
         }
 
         public static void SetEntityKey(object obj, ulong key)
@@ -20,7 +20,7 @@ namespace KeyValueStorage.ORM.Utility
             var props = obj.GetType().GetProperties();
 
             var idPropInfo = props.Single(q => q.Name == "Id");
-            idPropInfo.GetSetMethod().Invoke(obj, new object[] { key });
+            idPropInfo.GetSetMethod().Invoke(obj, new object[] { Convert.ChangeType(key, idPropInfo.PropertyType) });
         }
     }
 }
