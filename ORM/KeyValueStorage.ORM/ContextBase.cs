@@ -66,7 +66,7 @@ namespace KeyValueStorage.ORM
                 {
                     if (prop.PropertyType.Name == "KVSCollection`1" || prop.PropertyType.Name == "ICollection`1")
                     {
-                        entityMap.RelationshipMaps.Add(new RelationshipMap() { LocalObjectMap = entityMap, MapType = RelationshipMapType.ManyToMany });
+                        entityMap.RelationshipMaps.Add(new RelationshipMap() { LocalObjectMap = entityMap });
                         //many relationship
                     }
                     else if (contextMap.EntityMaps.Any(q => q.EntityType == prop.PropertyType))

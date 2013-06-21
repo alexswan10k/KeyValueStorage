@@ -21,5 +21,18 @@ namespace KeyValueStorage.ORM.Utility
 
             return dict;
         }
+
+        public static T DynamicMapSer<T>(this T obj, IEnumerable<string> excludeProps) where T: class
+        {
+            var strDictionary = obj.ToStringDictionary();
+
+            foreach (var str in excludeProps)
+            {
+                if (strDictionary.ContainsKey(str)) 
+                    strDictionary.Remove(str);
+            }
+
+            ServiceStack.Text.
+        }
     }
 }

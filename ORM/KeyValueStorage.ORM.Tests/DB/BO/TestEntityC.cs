@@ -9,7 +9,7 @@ namespace KeyValueStorage.ORM.Tests.DB.BO
     {
         public int Id { get; set; }
         public string Description { get; set; }
-        public KVSCollection<TestEntityB> EntitiesB { get; set; }
-        public KVSCollection<TestEntityA> EntitiesA { get; set; }
+        public virtual KVSCollection<TestEntityB> EntitiesB { get; set; }
+        public virtual KVSCollection<TestEntityA> EntitiesA { get; set; }
     }
 }

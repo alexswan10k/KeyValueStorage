@@ -23,7 +23,7 @@ namespace KeyValueStorage.ORM.Tests
             {
                 var a1 = new DB.BO.TestEntityA(){ Description = "a1"};
                 var a2 = new DB.BO.TestEntityA(){ Description = "a2"};
-
+                
                 context.TestEntitiesA.Add(a1);
                 context.TestEntitiesA.Add(a2);
                 context.SaveChanges();
@@ -58,7 +58,7 @@ namespace KeyValueStorage.ORM.Tests
             {
                 var a1 = new DB.BO.TestEntityA() { Description = "a1" };
                 var a2 = new DB.BO.TestEntityA() { Description = "a2" };
-
+                context.TestEntitiesA.CreateProxy(a1);
                 var b1 = new DB.BO.TestEntityB() { Description = "b1" };
                 var c1 = new DB.BO.TestEntityC() { Description = "c1", EntitiesA = new KVSCollection<DB.BO.TestEntityA>() { a1, a2 }, EntitiesB = new KVSCollection<DB.BO.TestEntityB>(){ b1 } };
 

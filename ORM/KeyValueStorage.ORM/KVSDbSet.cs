@@ -78,6 +78,7 @@ namespace KeyValueStorage.ORM
         public void Add(T item)
         {
             ObjectTrackingInfo trackInfo;
+
             if (!Context.ObjectTracker.ObjectsToTrack.TryGetValue(item, out trackInfo))
                 Context.ObjectTracker.AttachObject(item, new ObjectTrackingInfo(item, this, true));
             else
@@ -181,6 +182,13 @@ namespace KeyValueStorage.ORM
                 LoadIfNotLoaded();
 
             return KeyedItems.Values.GetEnumerator();
+        }
+
+        public T CreateProxy(T obj)
+        {
+            Castle.DynamicProxy.ProxyGenerator pr = new Castle.DynamicProxy.ProxyGenerator();
+            var interceptor = new AssocTypeInterceptor(this.Context);
+            return (T)pr.CreateClassProxy(typeof(T), interceptor);
         }
 
         //public event EventHandler<IDictionary<ulong, T>> CollectionRefreshed;
