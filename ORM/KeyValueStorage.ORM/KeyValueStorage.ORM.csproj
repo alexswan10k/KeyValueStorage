@@ -55,12 +55,14 @@
     <Compile Include="KVSDbSet.cs" />
     <Compile Include="Mapping\ContextMap.cs" />
     <Compile Include="Mapping\EntityMap.cs" />
+    <Compile Include="Mapping\Relationship.cs" />
     <Compile Include="Mapping\RelationshipMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tracking\ObjectTracker.cs" />
     <Compile Include="Tracking\ObjectTrackingInfo.cs" />
     <Compile Include="Utility\AssocTypeInterceptor.cs" />
     <Compile Include="Utility\EntityReflectionHelpers.cs" />
+    <Compile Include="Utility\ProxyBuilder.cs" />
     <Compile Include="Utility\TextExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

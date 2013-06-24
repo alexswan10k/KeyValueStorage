@@ -13,21 +13,19 @@ namespace KeyValueStorage.ORM
 
         public string BaseKey { get; set; }
         public IKVStore Store { get; set; }
-        public RelationshipMap Map { get; protected set; }
-        protected KVSDbSet<T> ForeignCollection { get; set; }
-        protected KVSDbSet LocalCollection { get; set; }
+        public Relationship Relationship { get; protected set; }
 
         public string FKString
         {
             get
             {
-                return BaseKey + FKCollectionSeparator + ForeignCollection.BaseKey; 
+                return BaseKey + FKCollectionSeparator + Relationship.TargetDbSet.BaseKey; 
             }
         }
 
         public void Add(T item)
         {
-            ForeignCollection.Add(item);
+            Relationship.TargetDbSet.Add(item);
             Store.AppendToCollection(FKString, item);
         }
 

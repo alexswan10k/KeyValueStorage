@@ -32,9 +32,37 @@ namespace KeyValueStorage.ORM
             else
                 contextMap = ContextMaps[this.GetType()];
 
+            ContextMap = contextMap;
+            SetupDbSets();
+
             ObjectTracker = new ObjectTracker();
             contextMap.InitializeContext(this);
-            ContextMap = contextMap;
+            
+        }
+
+        public void SetupDbSets()
+        {
+            //foreach (var prop in this.GetType().GetProperties())
+            //{
+            //    if (prop.PropertyType.Name == "KVSDbSet`1" || prop.PropertyType.Name == "ICollection`1")
+            //    {
+            //        var targetType = prop.PropertyType.GetGenericArguments().First();
+            //        var ctor = typeof(KVSDbSet<>).MakeGenericType(targetType).GetConstructors(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).First();
+
+                    
+
+            //        var map = ContextMap.EntityMaps.Single(q => q.EntityType == targetType);
+
+            //        var obj = ctor.Invoke(new object[] { map, this });
+
+            //        prop.GetSetMethod().Invoke(this, new object[] { obj });
+            //    }
+            //}
+
+            foreach (var map in this.ContextMap.EntityMaps)
+            {
+                map.DbSetPropSetter.Invoke(this, new object[]{map.DbSetCtor.Invoke(new object[] { map, this })});
+            }
         }
 
         public void Dispose()
@@ -66,12 +94,37 @@ namespace KeyValueStorage.ORM
                 {
                     if (prop.PropertyType.Name == "KVSCollection`1" || prop.PropertyType.Name == "ICollection`1")
                     {
-                        entityMap.RelationshipMaps.Add(new RelationshipMap() { LocalObjectMap = entityMap });
+                        Type targetEntityType = prop.PropertyType.GetGenericArguments().Last();
+                        var targetEntityMap = contextMap.EntityMaps.SingleOrDefault(q => q.EntityType == targetEntityType);
+
+                        if (targetEntityMap != null)
+                        {
+                            var relationshipMap = new RelationshipMap() 
+                            { 
+                                LocalObjectMap = entityMap, 
+                                TargetObjectMap = targetEntityMap, 
+                                PropertyName = prop.Name, 
+                                IsManyToTarget = true 
+                            };
+
+                            contextMap.RelationshipMaps.Add(relationshipMap);
+                            entityMap.RelationshipMaps.Add(relationshipMap);
+                        }
                         //many relationship
                     }
                     else if (contextMap.EntityMaps.Any(q => q.EntityType == prop.PropertyType))
                     {
                         //foreign key ref (single relationship)
+
+                        Type targetEntityType = prop.PropertyType;
+                        var targetEntityMap = contextMap.EntityMaps.SingleOrDefault(q => q.EntityType == targetEntityType);
+
+                        if (targetEntityMap != null)
+                        {
+                            var relationshipMap = new RelationshipMap() { LocalObjectMap = entityMap, TargetObjectMap = targetEntityMap };
+                            contextMap.RelationshipMaps.Add(relationshipMap);
+                            entityMap.RelationshipMaps.Add(relationshipMap);
+                        }
                     }
                 }
 

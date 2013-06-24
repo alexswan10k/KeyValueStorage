@@ -28,6 +28,11 @@ namespace KeyValueStorage.ORM
         {
             return Context.Store.GetNextSequenceValue(BaseKey + SequenceSuffix);
         }
+
+        public void Add(object obj)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class KVSDbSet<T> : KVSDbSet, ICollection<T> where T : class
@@ -78,7 +83,7 @@ namespace KeyValueStorage.ORM
         public void Add(T item)
         {
             ObjectTrackingInfo trackInfo;
-
+            item = CreateProxy(item);
             if (!Context.ObjectTracker.ObjectsToTrack.TryGetValue(item, out trackInfo))
                 Context.ObjectTracker.AttachObject(item, new ObjectTrackingInfo(item, this, true));
             else

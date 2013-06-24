@@ -12,11 +12,11 @@ namespace KeyValueStorage.ORM.Utility
         public ContextBase Context { get; protected set; }
         public string EntityFullKey { get; protected set; }
 
-        public AssocTypeInterceptor(ContextBase context, string fullKey)
+        public AssocTypeInterceptor(ContextBase context)//, string fullKey)
         {
             Context = context;
             LazyLoadedProps = new Dictionary<string, string>();
-            EntityFullKey = fullKey;
+            //EntityFullKey = fullKey;
         }
 
         public bool EntityIsLoaded = false;
@@ -25,11 +25,18 @@ namespace KeyValueStorage.ORM.Utility
         {
             if (invocation.Method.Name.StartsWith("get_"))
             {
-                if (!EntityIsLoaded)
+                //if (!EntityIsLoaded)
+                //{
+                //    //load!
+                //    Context.Store.Get<Dictionary<string, string>>(EntityFullKey);
+                //    EntityIsLoaded = true;
+                //}
+
+                var relMap = Context.ContextMap.RelationshipMaps.FirstOrDefault(q=>q.LocalObjectMap.EntityType == invocation.Method.ReturnType);
+
+                if (relMap != null)
                 {
-                    //load!
-                    Context.Store.Get<Dictionary<string, string>>(EntityFullKey);
-                    EntityIsLoaded = true;
+
                 }
 
                 //check the types

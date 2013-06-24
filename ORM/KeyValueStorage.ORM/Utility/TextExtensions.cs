@@ -24,6 +24,7 @@ namespace KeyValueStorage.ORM.Utility
 
         public static T DynamicMapSer<T>(this T obj, IEnumerable<string> excludeProps) where T: class
         {
+            throw new NotImplementedException();
             var strDictionary = obj.ToStringDictionary();
 
             foreach (var str in excludeProps)
@@ -32,7 +33,7 @@ namespace KeyValueStorage.ORM.Utility
                     strDictionary.Remove(str);
             }
 
-            ServiceStack.Text.
+            //ServiceStack.Text.
         }
     }
 }

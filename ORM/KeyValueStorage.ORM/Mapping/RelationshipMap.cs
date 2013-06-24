@@ -10,25 +10,21 @@ namespace KeyValueStorage.ORM.Mapping
     {
         public EntityMap LocalObjectMap { get; set; }
         public EntityMap TargetObjectMap { get; set; }
+        public string PropertyName { get; set; }
+        public bool IsManyToTarget { get; set; }
         //public RelationshipMapType MapType { get; set; }
-        public ContextBase Context {get;set;}
 
-        public string GetForeignTableRef (string myTableRef)
-        {
-            if (myTableRef == LocalObjectMap.TableName)
-                return TargetObjectMap.TableName;
-            else if (myTableRef == TargetObjectMap.TableName)
-                return LocalObjectMap.TableName;
-            else
-                throw new ArgumentException(myTableRef + " does not exist for this mapping");
-        }
 
-        public void UpdateRelationshipObject(object obj)
-        {
-            ObjectTrackingInfo trkInfo;
-            if (!Context.ObjectTracker.ObjectsToTrack.TryGetValue(obj, out trkInfo))
-                return;
-        }
+        //public string GetForeignTableRef (string myTableRef)
+        //{
+        //    if (myTableRef == LocalObjectMap.TableName)
+        //        return TargetObjectMap.TableName;
+        //    else if (myTableRef == TargetObjectMap.TableName)
+        //        return LocalObjectMap.TableName;
+        //    else
+        //        throw new ArgumentException(myTableRef + " does not exist for this mapping");
+        //}
+
     }
 
     //public enum RelationshipMapType
