@@ -21,6 +21,7 @@ namespace KeyValueStorage.ORM.Tracking
 
         public object ObjectRef{get;protected set;}
         public Dictionary<string, string> InitialValues{get; protected set;}
+        public IList<RelationshipTrackingInfo> Relationships { get; protected set; }
 
         public ObjectTrackingInfo(object objectRef, KVSDbSet setAssociatedWith, bool isNew)
         {
@@ -31,6 +32,8 @@ namespace KeyValueStorage.ORM.Tracking
                 State = ObjectTrackingInfoState.New;
             else
                 State = ObjectTrackingInfoState.Unchanged;
+
+            Relationships = new List<RelationshipTrackingInfo>();
         }
 
         public bool HasChanges()

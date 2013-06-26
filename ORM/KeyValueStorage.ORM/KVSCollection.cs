@@ -9,29 +9,44 @@ namespace KeyValueStorage.ORM
 {
     public class KVSCollection<T> : ICollection<T> where T : class
     {
-        public const string FKCollectionSeparator = ":F:";
+        public ContextBase Context { get; protected set; }
+        public Relationship Rel { get; protected set; }
 
-        public string BaseKey { get; set; }
-        public IKVStore Store { get; set; }
-        public Relationship Relationship { get; protected set; }
+        public ICollection<T> InternalCollection { get; protected set; }
+        public ICollection<ulong> InternalKeys { get; set; }
+        public ICollection<T> ItemsAdded { get; protected set; }
+        public ICollection<T> ItemsDeleted { get; protected set; }
+        public bool IsAttached { get; protected set; }
+        public bool IsLoaded { get; protected set; }
 
-        public string FKString
+
+        public KVSCollection()
         {
-            get
-            {
-                return BaseKey + FKCollectionSeparator + Relationship.TargetDbSet.BaseKey; 
-            }
+            InternalCollection = new List<T>();
+            ItemsAdded = new List<T>();
+            ItemsDeleted = new List<T>();
         }
 
         public void Add(T item)
         {
-            Relationship.TargetDbSet.Add(item);
-            Store.AppendToCollection(FKString, item);
+            if (IsAttached)
+            {
+                var trackingInfo = Context.ObjectTracker.GetObjectTrackingInfo(item);
+
+                if(trackingInfo == null)
+                    Rel.TargetDbSet.Add(item);
+
+                ItemsAdded.Add(item);
+            }
+            else
+            {
+                InternalCollection.Add(item);
+            }
         }
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            InternalCollection.Clear();
         }
 
         public bool Contains(T item)
@@ -59,14 +74,41 @@ namespace KeyValueStorage.ORM
             throw new NotImplementedException();
         }
 
+        public void Load()
+        {
+            if (!IsAttached)
+                throw new InvalidOperationException("Cannot load as collection is not attached");
+
+            else
+            {
+                this.InternalCollection.Clear();
+
+                foreach (var key in InternalKeys)
+                {
+                    var existingKeys = this.InternalCollection
+                        .Select(s => this.Rel.RelationshipMap.TargetObjectMap.ThisKeyGetter.Invoke(s, new object[] { }))
+                        .ToList();
+
+                    if (!existingKeys.Contains(key))
+                        this.InternalCollection.Add(this.Rel.TargetDbSet.GetByIdWeak(key) as T);
+                }
+            }
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
-            throw new NotImplementedException();
+            if (!IsAttached)
+                return InternalCollection.GetEnumerator();
+
+            if (!IsLoaded)
+                Load();
+
+            return InternalCollection.GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return GetEnumerator();
         }
     }
 }

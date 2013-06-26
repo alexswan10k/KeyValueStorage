@@ -8,10 +8,25 @@ namespace KeyValueStorage.ORM.Mapping
 {
     public class RelationshipMap
     {
+        public const string FKCollectionSeparator = ":F:";
         public EntityMap LocalObjectMap { get; set; }
         public EntityMap TargetObjectMap { get; set; }
         public string PropertyName { get; set; }
         public bool IsManyToTarget { get; set; }
+
+        public string FKString
+        {
+            get
+            {
+                return LocalObjectMap.TableName + FKCollectionSeparator + TargetObjectMap.TableName;
+            }
+        }
+
+        public IEnumerable<ulong> GetForeignKeys(ContextBase context)
+        {
+            return context.Store.GetCollection<ulong>(FKString);
+        }
+
         //public RelationshipMapType MapType { get; set; }
 
 

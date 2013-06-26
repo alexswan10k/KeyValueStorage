@@ -33,6 +33,8 @@ namespace KeyValueStorage.ORM
         {
             throw new NotImplementedException();
         }
+
+        public abstract object GetByIdWeak(ulong id);
     }
 
     public class KVSDbSet<T> : KVSDbSet, ICollection<T> where T : class
@@ -73,7 +75,7 @@ namespace KeyValueStorage.ORM
                 if (EntityReflectionHelpers.GetEntityKey(entity) == 0)
                     EntityReflectionHelpers.SetEntityKey(entity, keyIdx);
                 KeyedItems.Add(keyIdx, entity);
-                Context.ObjectTracker.TryAttachObject(entity, new ObjectTrackingInfo(entity, this, false));
+                Context.ObjectTracker.TryAttachObject(entity);
             }
 
             //if (CollectionRefreshed != null)
@@ -84,8 +86,11 @@ namespace KeyValueStorage.ORM
         {
             ObjectTrackingInfo trackInfo;
             item = CreateProxy(item);
-            if (!Context.ObjectTracker.ObjectsToTrack.TryGetValue(item, out trackInfo))
-                Context.ObjectTracker.AttachObject(item, new ObjectTrackingInfo(item, this, true));
+            if (!Context.ObjectTracker.ObjectsTracking.TryGetValue(item, out trackInfo))
+            {
+                trackInfo = Context.ObjectTracker.AttachObject(item);
+                trackInfo.State = ObjectTrackingInfoState.New;
+            }
             else
             {
                 trackInfo.State = ObjectTrackingInfoState.New;
@@ -147,9 +152,7 @@ namespace KeyValueStorage.ORM
 
         public bool Remove(T item)
         {
-            ObjectTrackingInfo trackInfo;
-            if (!Context.ObjectTracker.ObjectsToTrack.TryGetValue(item, out trackInfo))
-                trackInfo = new ObjectTrackingInfo(item, this, false);
+            ObjectTrackingInfo trackInfo = Context.ObjectTracker.GetObjectTrackingInfo(item);
 
             trackInfo.State = ObjectTrackingInfoState.FlaggedForDeletion;
 
@@ -176,9 +179,14 @@ namespace KeyValueStorage.ORM
                 item = Context.Store.Get<T>(BaseKey + CollectionPrefix + id);
 
                 if (item != null)
-                    Context.ObjectTracker.AttachObject(item, new ObjectTrackingInfo(item, this, false));
+                    Context.ObjectTracker.TryAttachObject(item);
             }
             return item;
+        }
+
+        public override object GetByIdWeak(ulong id)
+        {
+            return GetById(id);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

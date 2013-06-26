@@ -35,30 +35,13 @@ namespace KeyValueStorage.ORM
             ContextMap = contextMap;
             SetupDbSets();
 
-            ObjectTracker = new ObjectTracker();
+            ObjectTracker = new ObjectTracker(this);
             contextMap.InitializeContext(this);
             
         }
 
         public void SetupDbSets()
         {
-            //foreach (var prop in this.GetType().GetProperties())
-            //{
-            //    if (prop.PropertyType.Name == "KVSDbSet`1" || prop.PropertyType.Name == "ICollection`1")
-            //    {
-            //        var targetType = prop.PropertyType.GetGenericArguments().First();
-            //        var ctor = typeof(KVSDbSet<>).MakeGenericType(targetType).GetConstructors(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).First();
-
-                    
-
-            //        var map = ContextMap.EntityMaps.Single(q => q.EntityType == targetType);
-
-            //        var obj = ctor.Invoke(new object[] { map, this });
-
-            //        prop.GetSetMethod().Invoke(this, new object[] { obj });
-            //    }
-            //}
-
             foreach (var map in this.ContextMap.EntityMaps)
             {
                 map.DbSetPropSetter.Invoke(this, new object[]{map.DbSetCtor.Invoke(new object[] { map, this })});
@@ -83,7 +66,10 @@ namespace KeyValueStorage.ORM
                 {
                     Type entityType = prop.PropertyType.GetGenericArguments().Last();
 
-                    var entityMap = new EntityMap(entityType, prop.GetGetMethod(), prop.GetSetMethod(), prop.PropertyType.GetConstructor(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic, null, new Type[]{typeof(EntityMap), typeof(ContextBase)}, new System.Reflection.ParameterModifier[]{}));
+                    var entityProps = entityType.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                    var keyProp = entityProps.SingleOrDefault(q => q.Name == "Key" || q.Name == "Id");
+
+                    var entityMap = new EntityMap(entityType, prop.GetGetMethod(), prop.GetSetMethod(), prop.PropertyType.GetConstructor(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic, null, new Type[] { typeof(EntityMap), typeof(ContextBase) }, new System.Reflection.ParameterModifier[] { }), keyProp.Name, keyProp.GetGetMethod());
                     contextMap.EntityMaps.Add(entityMap);
                 }
             }
@@ -121,7 +107,7 @@ namespace KeyValueStorage.ORM
 
                         if (targetEntityMap != null)
                         {
-                            var relationshipMap = new RelationshipMap() { LocalObjectMap = entityMap, TargetObjectMap = targetEntityMap };
+                            var relationshipMap = new RelationshipMap() { LocalObjectMap = entityMap, TargetObjectMap = targetEntityMap, PropertyName = prop.Name};
                             contextMap.RelationshipMaps.Add(relationshipMap);
                             entityMap.RelationshipMaps.Add(relationshipMap);
                         }
@@ -142,7 +128,7 @@ namespace KeyValueStorage.ORM
             if (entityMap == null)
                 throw new Exception("Object type " + obj.GetType().ToString() + " is not supported by context");
 
-            ObjectTracker.AttachObject(obj, new ObjectTrackingInfo(obj, entityMap.GetDbSet(this), false));
+            ObjectTracker.AttachObject(obj);
         }
 
         public void DetachObject(object obj)
@@ -152,7 +138,7 @@ namespace KeyValueStorage.ORM
 
         public virtual void SaveChanges()
         {
-            foreach (var objKV in ObjectTracker.ObjectsToTrack)
+            foreach (var objKV in ObjectTracker.ObjectsTracking)
             {
                 if (objKV.Value.State == ObjectTrackingInfoState.New 
                     || objKV.Value.State == ObjectTrackingInfoState.Changed 
