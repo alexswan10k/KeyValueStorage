@@ -26,7 +26,7 @@ namespace KeyValueStorage.ORM
 
         public ulong GetNextSequenceValue()
         {
-            return Context.Store.GetNextSequenceValue(BaseKey + SequenceSuffix);
+            return Context.ObjectMaterializer.Store.GetNextSequenceValue(BaseKey + SequenceSuffix);
         }
 
         public void Add(object obj)
@@ -60,8 +60,8 @@ namespace KeyValueStorage.ORM
 
         protected void RefreshKeyedItems()
         {
-            var keys = Context.Store.GetKeysStartingWith(BaseKey + CollectionPrefix);
-            var collection = Context.Store.GetStartingWith<T>(BaseKey + CollectionPrefix);
+            var keys = Context.ObjectMaterializer.Store.GetKeysStartingWith(BaseKey + CollectionPrefix);
+            var collection = Context.ObjectMaterializer.GetStartingWith<T>(BaseKey + CollectionPrefix);
 
             if (keys.Count() != collection.Count())
                 throw new InvalidProgramException("Keys returned and collection do not match");
@@ -176,7 +176,7 @@ namespace KeyValueStorage.ORM
 
             if (!KeyedItems.TryGetValue(id, out item))
             {
-                item = Context.Store.Get<T>(BaseKey + CollectionPrefix + id);
+                item = Context.ObjectMaterializer.GetObject<T>(BaseKey + CollectionPrefix + id);
 
                 if (item != null)
                     Context.ObjectTracker.TryAttachObject(item);

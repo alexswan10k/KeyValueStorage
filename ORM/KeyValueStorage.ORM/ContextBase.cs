@@ -17,14 +17,12 @@ namespace KeyValueStorage.ORM
             ContextMaps = new ConcurrentDictionary<Type, ContextMap>();
         }
 
-        public IKVStore Store { get; protected set; }
+        public ObjectMaterializer ObjectMaterializer { get; private set; }
         public ObjectTracker ObjectTracker { get; private set; }
         public ContextMap ContextMap { get; private set; }
 
         public ContextBase()
         {
-            Store = KVStore.Factory.Get();
-
             ContextMap contextMap = null;
 
             if (!ContextMaps.ContainsKey(this.GetType()))
@@ -36,6 +34,7 @@ namespace KeyValueStorage.ORM
             SetupDbSets();
 
             ObjectTracker = new ObjectTracker(this);
+            ObjectMaterializer = new Tracking.ObjectMaterializer(ObjectTracker);
             contextMap.InitializeContext(this);
             
         }
@@ -50,7 +49,7 @@ namespace KeyValueStorage.ORM
 
         public void Dispose()
         {
-            Store.Dispose();
+            ObjectMaterializer.Dispose();
         }
 
         protected static ContextMap SetupMaps(ContextBase thisItem)
@@ -150,17 +149,17 @@ namespace KeyValueStorage.ORM
                     {
                         var seq = objTrackingInfo.DbSetAssociatedWith.GetNextSequenceValue();
                         EntityReflectionHelpers.SetEntityKey(objKV.Key, seq);
-                        Store.Set(objTrackingInfo.DbSetAssociatedWith.BaseKey + KVSDbSet.CollectionPrefix + EntityReflectionHelpers.GetEntityKey(objKV.Key), objKV.Key.ToStringDictionaryExcludingRefs());
+                        ObjectMaterializer.Store.Set(objTrackingInfo.DbSetAssociatedWith.BaseKey + KVSDbSet.CollectionPrefix + EntityReflectionHelpers.GetEntityKey(objKV.Key), objKV.Key.ToStringDictionaryExcludingRefs());
                     }
                     else if (objKV.Value.State == ObjectTrackingInfoState.Changed)
                     {
-                        Store.Set(objTrackingInfo.DbSetAssociatedWith.BaseKey + KVSDbSet.CollectionPrefix + EntityReflectionHelpers.GetEntityKey(objKV.Key), objKV.Key.ToStringDictionaryExcludingRefs());
+                        ObjectMaterializer.Store.Set(objTrackingInfo.DbSetAssociatedWith.BaseKey + KVSDbSet.CollectionPrefix + EntityReflectionHelpers.GetEntityKey(objKV.Key), objKV.Key.ToStringDictionaryExcludingRefs());
                         objKV.Value.State = ObjectTrackingInfoState.Unchanged;
                     }
                     else if (objKV.Value.State == ObjectTrackingInfoState.FlaggedForDeletion)
                     {
                         var seq = EntityReflectionHelpers.GetEntityKey(objKV.Key);
-                        Store.Delete(objTrackingInfo.DbSetAssociatedWith.BaseKey + KVSDbSet.CollectionPrefix + EntityReflectionHelpers.GetEntityKey(objKV.Key));
+                        ObjectMaterializer.Store.Delete(objTrackingInfo.DbSetAssociatedWith.BaseKey + KVSDbSet.CollectionPrefix + EntityReflectionHelpers.GetEntityKey(objKV.Key));
                         objKV.Value.State = ObjectTrackingInfoState.Deleted;
                     }
                 }

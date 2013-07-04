@@ -8,13 +8,15 @@ namespace KeyValueStorage.ORM.Tracking
     public class ObjectTracker
     {
         public Dictionary<object, ObjectTrackingInfo> ObjectsTracking { get; protected set; }
-        public Dictionary<object, RelationshipTrackingInfo> RelationshipToTrack { get; protected set; }
+        //public Dictionary<object, RelationshipTrackingInfo> RelationshipToTrack { get; protected set; }
+        public List<RelationshipTrackingInfoPair> RelationshipTrackingInfoPairs { get; protected set; }
         public ContextBase Context { get; protected set; }
 
         public ObjectTracker(ContextBase context)
         {
             ObjectsTracking = new Dictionary<object, ObjectTrackingInfo>();
-            RelationshipToTrack = new Dictionary<object, RelationshipTrackingInfo>();
+            //RelationshipToTrack = new Dictionary<object, RelationshipTrackingInfo>();
+            RelationshipTrackingInfoPairs = new List<RelationshipTrackingInfoPair>();
             Context = context;
         }
 
