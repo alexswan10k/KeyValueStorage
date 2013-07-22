@@ -24,7 +24,7 @@ namespace KeyValueStorage.ORM.Mapping
 
         public IEnumerable<ulong> GetForeignKeys(ContextBase context)
         {
-            return context.Store.GetCollection<ulong>(FKString);
+            return context.ObjectMaterializer.Store.GetCollection<ulong>(FKString);
         }
 
         //public RelationshipMapType MapType { get; set; }
