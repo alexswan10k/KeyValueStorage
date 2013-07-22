@@ -74,14 +74,21 @@
     <Compile Include="Utility\KVSLockWithoutCAS.cs" />
     <Compile Include="Utility\RDBExpiredKeyCleaner.cs" />
     <Compile Include="Utility\SqlDialectProviderCommon.cs" />
+    <Compile Include="Utility\Sql\ColumnValue.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utility\Sql\Operator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utility\Sql\WhereClause.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Utility\StoreExpiryManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Utility\Sql\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
