@@ -60,7 +60,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="DeployNugetPackager\DeployLocal.bat" />
+    <None Include="DeployNugetPackager\DeployNuget.ps1" />
+    <None Include="DeployNugetPackager\DeployServer.bat" />
+    <None Include="DeployNugetPackager\IncrementVersion.bat" />
+    <None Include="DeployNugetPackager\IncrementVersion.ps1" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DeployNugetPackager\DeployNugetReadme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

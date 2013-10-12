@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <id>KeyValueStorage.SqlServer</id>
+    <version>0.0.0.1-alpha</version>
+    <title>KeyValueStorage SQL Server Implementation</title>
+    <authors>Metal10k</authors>
+    <summary></summary>
+    <description>This is the SQL Server implementation of the key value storage abstraction.</description>
+    <language>en-us</language>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <dependencies>
+      <dependency id="ServiceStack.Text" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\bin\Release\KeyValueStorage.dll" target="lib\net40\KeyValueStorage.dll" />
+     <file src="..\bin\Release\KeyValueStorage.SqlServer.dll" target="lib\net40\KeyValueStorage.SqlServer.dll" />
+  </files>
+</package>
