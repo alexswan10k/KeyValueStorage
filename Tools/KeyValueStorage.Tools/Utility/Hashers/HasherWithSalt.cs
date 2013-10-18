@@ -1,6 +1,8 @@
 ﻿using System.Security.Cryptography;
+using KeyValueStorage.Tools.Extensions;
+using KeyValueStorage.Tools.Utility.CharGenerators;
 
-namespace KeyValueStorage.Tools
+namespace KeyValueStorage.Tools.Utility.Hashers
 {
 	public abstract class HasherWithSalt : IHasher
 	{

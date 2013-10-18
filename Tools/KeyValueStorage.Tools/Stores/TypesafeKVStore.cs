@@ -1,9 +1,9 @@
 ﻿using System;
 using KeyValueStorage.Interfaces;
 
-namespace KeyValueStorage.Tools
+namespace KeyValueStorage.Tools.Stores
 {
-	public class TypesafeKVStore<T> : KVStoreWithKeyTransform
+	public class TypesafeKVStore<T> : KeyTransformKVStore
 	{
 		public TypesafeKVStore(IKVStore underlyingStore)
 			: base(underlyingStore)

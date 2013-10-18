@@ -1,4 +1,4 @@
-﻿namespace KeyValueStorage.Tools
+﻿namespace KeyValueStorage.Tools.Utility.Hashers
 {
 	public interface IHasher
 	{

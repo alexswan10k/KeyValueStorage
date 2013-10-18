@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
+using KeyValueStorage.Tools.Extensions;
 
-namespace KeyValueStorage.Tools
+namespace KeyValueStorage.Tools.Utility.Hashers
 {
 	public class Md5Hasher : IHasher
 	{

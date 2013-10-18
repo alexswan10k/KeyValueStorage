@@ -1,4 +1,4 @@
-﻿namespace KeyValueStorage.Tools
+﻿namespace KeyValueStorage.Tools.Extensions
 {
 	public static class StringExtensions
 	{

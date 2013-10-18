@@ -1,5 +1,9 @@
 ﻿using System;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.Tools.Stores;
+using KeyValueStorage.Tools.Utility.CharGenerators;
+using KeyValueStorage.Tools.Utility.Hashers;
+using KeyValueStorage.Tools.Utility.Strings;
 
 namespace KeyValueStorage.Tools
 {
@@ -13,7 +17,7 @@ namespace KeyValueStorage.Tools
 
 		public KvLoginProvider(IKVStore store, string namespacePrefix = "ULP:", IRandomCharacterGenerator characterGen = null, IHasher hasher = null, IStringVerifier usernameVerifier= null, IStringVerifier passwordVerifier = null)
 		{
-			_store = new PrefixKVStore(namespacePrefix, store);
+            _store = new KeyTransformKVStore(store, new PrefixTransformer(namespacePrefix));
 			_usernameVerifier = usernameVerifier ?? new NullStringVerifier();
 			_passwordVerifier = passwordVerifier ?? new NullStringVerifier();
 			_characterGen = characterGen ?? new SimpleRandomCharacterGenerator();
@@ -117,16 +121,18 @@ namespace KeyValueStorage.Tools
 		{
 			_store.Set(username, details);
 		}
+
+        class UserLoginDetailsInt
+        {
+            public EncryptedData EncryptedData { get; set; }
+            public DateTime LastLogin { get; set; }
+            public DateTime DateCreated { get; set; }
+            public DateTime DatePasswordChanged { get; set; }
+            public int FailedLogins { get; set; }
+        }
 	}
 
-	public class EncryptedData
-	{
-		public string Hash { get; set; }
-		public string Salt { get; set; }
-		public string EncrType { get; set; }
-	}
-
-	public class UserCreationResult
+    public class UserCreationResult
 	{
 		public UserCreationResultCode Code{get;set;}
 		public UserCreationResult(UserCreationResultCode code)
@@ -150,19 +156,5 @@ namespace KeyValueStorage.Tools
 		PasswordInvalid,
 		ExceededMaxLoginAttempts,
 		CannotFindIHashAlgorithmImplementation
-	}
-
-	public class UserLoginDetailsInt
-	{
-		public EncryptedData EncryptedData { get; set; }
-		public DateTime LastLogin{get;set;}
-		public DateTime DateCreated{get;set;}
-		public DateTime DatePasswordChanged{get;set;}
-		public int FailedLogins{get;set;}
-	}
-
-	public class UserLoginDetails
-	{
-		public string Username {get;set;}
 	}
 }

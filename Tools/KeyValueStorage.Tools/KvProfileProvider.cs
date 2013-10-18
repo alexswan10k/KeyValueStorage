@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.Tools.Stores;
+using KeyValueStorage.Tools.Utility.Strings;
 
 namespace KeyValueStorage.Tools
 {
@@ -9,7 +11,7 @@ namespace KeyValueStorage.Tools
 
 		public ProfileProvider(IKVStore store, string namespacePrefix = "UPP:")
 		{
-			_store = new PrefixKVStore(namespacePrefix, store);
+            _store = new KeyTransformKVStore(store, new PrefixTransformer(namespacePrefix));
 		}
 
 		public ProfileWrapper<T> GetProfile(string username)

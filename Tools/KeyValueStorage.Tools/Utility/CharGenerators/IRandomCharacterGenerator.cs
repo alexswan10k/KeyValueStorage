@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace KeyValueStorage.Tools
+namespace KeyValueStorage.Tools.Utility.CharGenerators
 {
 	public interface IRandomCharacterGenerator
 	{

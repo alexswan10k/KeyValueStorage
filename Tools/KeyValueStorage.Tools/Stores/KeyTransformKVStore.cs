@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.Tools.Utility.Strings;
 
-namespace KeyValueStorage.Tools
+namespace KeyValueStorage.Tools.Stores
 {
-	public abstract class KVStoreWithKeyTransform : IKVStore
+	public class KeyTransformKVStore : IKVStore
 	{
 		private readonly IKVStore _store;
+	    private readonly IStringTransformer _transformer;
 
-		public KVStoreWithKeyTransform(IKVStore underlyingStore)
+	    public KeyTransformKVStore(IKVStore underlyingStore, IStringTransformer transformer = null)
 		{
-			_store = underlyingStore;
+		    _store = underlyingStore;
+		    _transformer = transformer ?? new NullStringTransformer();
 		}
 
-		public void Dispose()
+	    public void Dispose()
 		{
 			_store.Dispose();
 		}
@@ -138,7 +141,7 @@ namespace KeyValueStorage.Tools
 
 		protected virtual string _GetTransformedKey(string key)
 		{
-			return key;
+			return _transformer.Transform(key);
 		}
 
 		protected virtual string _GetTransformedKey<T>(string key)
