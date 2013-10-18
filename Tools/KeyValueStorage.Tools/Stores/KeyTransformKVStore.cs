@@ -31,7 +31,7 @@ namespace KeyValueStorage.Tools.Stores
 
 		public void Set<T>(string key, T value)
 		{
-			_store.Set<T>(_GetTransformedKey<T>(key), value);
+			_store.Set(_GetTransformedKey<T>(key), value);
 		}
 
 		public void Delete(string key)
@@ -46,17 +46,17 @@ namespace KeyValueStorage.Tools.Stores
 
 		public void Set<T>(string key, T value, ulong cas)
 		{
-			_store.Set<T>(_GetTransformedKey<T>(key), value, cas);
+			_store.Set(_GetTransformedKey<T>(key), value, cas);
 		}
 
 		public void Set<T>(string key, T value, DateTime expires)
 		{
-			_store.Set<T>(_GetTransformedKey<T>(key), value, expires);
+			_store.Set(_GetTransformedKey<T>(key), value, expires);
 		}
 
 		public void Set<T>(string key, T value, TimeSpan expiresIn)
 		{
-			_store.Set<T>(_GetTransformedKey<T>(key), value, expiresIn);
+			_store.Set(_GetTransformedKey<T>(key), value, expiresIn);
 		}
 
 		public void Set<T>(string key, T value, ulong CAS, DateTime expires)

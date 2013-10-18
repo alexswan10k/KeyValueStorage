@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="KeyWithRelationship.cs" />
+    <Compile Include="Stores\LazySetKeyValueStore.cs" />
     <Compile Include="Utility\Hashers\EncryptedData.cs" />
     <Compile Include="Utility\KVForeignKeyRelationshipProvider.cs" />
     <Compile Include="Utility\Hashers\HasherWithSalt.cs" />
