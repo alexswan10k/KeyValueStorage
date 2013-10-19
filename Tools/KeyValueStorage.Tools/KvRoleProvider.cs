@@ -4,6 +4,7 @@ using System.Linq;
 using KeyValueStorage.Interfaces;
 using KeyValueStorage.Tools.Stores;
 using KeyValueStorage.Tools.Utility;
+using KeyValueStorage.Tools.Utility.Relationships;
 using KeyValueStorage.Tools.Utility.Strings;
 
 namespace KeyValueStorage.Tools
@@ -11,13 +12,14 @@ namespace KeyValueStorage.Tools
 	public class KvRoleProvider
 	{
 		private readonly IKVStore _store;
-	    private readonly KeyWithRelationshipFactory _relationshipFactory;
+	    private KVForeignKeyStoreRelationshipProvider _usersToRolesFK;
+	    private KVForeignKeyStoreRelationshipProvider _rolesToUsersFK;
 
 	    public KvRoleProvider(IKVStore store, string namespacePrefix = "URP:")
 		{
 			_store = new KeyTransformKVStore(store, new PrefixTransformer(namespacePrefix));
-	        _relationshipFactory = new KeyWithRelationshipFactory(s => new KeyWithRelationship(s, new KVForeignKeyRelationshipProvider(_store)));
-
+	        _usersToRolesFK = new KVForeignKeyStoreRelationshipProvider(_store, "Roles");
+            _rolesToUsersFK = new KVForeignKeyStoreRelationshipProvider(_store, "Users");
 		}
 
 		public IEnumerable<string> GetRoles()
@@ -27,15 +29,14 @@ namespace KeyValueStorage.Tools
 
 		public IEnumerable<string> GetUserRoles(string username)
 		{
-		    return _relationshipFactory
-                .Get(username)
-                .GetReferences();
+            return new KeyWithRelationship(new RelationalKey(username), _usersToRolesFK)
+                .GetReferences().Select(s => s.Value);
 		}
 
 		public IEnumerable<string> GetUsersInRole(string rolename)
 		{
-		    return _relationshipFactory.Get(rolename)
-                .GetReferences();
+            return new KeyWithRelationship(new RelationalKey(rolename), _rolesToUsersFK)
+                .GetReferences().Select(s => s.Value);
 		}
 
 		public bool UserIsInRole(string username, string rolename)
@@ -45,14 +46,14 @@ namespace KeyValueStorage.Tools
 
 		public void AddUserToRole(string username, string rolename)
 		{
-		    var relationship = _relationshipFactory.Get(username);
-            relationship.Add(rolename);
+		    var relationship = new KeyWithRelationship(new RelationalKey(username), _usersToRolesFK);
+            relationship.Add(new RelationalKey(rolename), _rolesToUsersFK);
 		}
 
 		public void RemoveUserFromRole(string username, string rolename)
 		{
-		    var relationship = _relationshipFactory.Get(username);
-            relationship.Remove(rolename);
+		    var relationship = new KeyWithRelationship(new RelationalKey(username), _usersToRolesFK);
+            relationship.Remove(new RelationalKey(rolename), _rolesToUsersFK);
 		}
 	}
 
