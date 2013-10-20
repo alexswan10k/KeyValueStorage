@@ -22,14 +22,17 @@ namespace KeyValueStorage.Tools
         private readonly IStoreSchema _schema;
         private readonly IKVStore _store;
         private T _value;
+        private bool _isLoaded;
 
         public T Value 
         { 
             get 
             {
-                if (_value == null)
-                    if (!string.IsNullOrEmpty(Key.Value))
-                        _value = _store.Get<T>(Key.Value);
+                if (Key != null && !_isLoaded && Value == null)
+                {
+                    _value = _store.Get<T>(Key.Value);
+                    _isLoaded = true;
+                }
 
                 return _value; 
             } 
@@ -47,15 +50,6 @@ namespace KeyValueStorage.Tools
         {
             _schema = schema;
             _store = store;
-        }
-
-        /// <summary>
-        /// Use factory
-        /// </summary>
-        internal KVRelationalObject(IRelationalKey key, IStoreSchema schema, IKVStore store, T existingObject)
-            :this(key, schema, store)
-        {
-            Value = existingObject;
         }
 
         private KeyWithRelationship GetRelationship<U>()
@@ -87,8 +81,12 @@ namespace KeyValueStorage.Tools
                 .Select(foreignKey => new KVRelationalObject<U>(
                     foreignKey, 
                     _schema, 
-                    _store, 
-                    _store.Get<U>(foreignKey.Value)));
+                    _store));
         }
+
+        //public void Save()
+        //{
+           
+        //}
     }
 }

@@ -14,54 +14,71 @@ namespace KeyValueStorage.Tools
         private readonly IKVStore _store;
         private readonly IStoreSchema _schema;
 
+        public IKVStore Store
+        {
+            get { return _store; }
+        }
+
+        public IStoreSchema Schema
+        {
+            get { return _schema; }
+        }
+
         public KVRelationalStore(IKVStore store, IStoreSchema schema)
         {
             _store = store;
             _schema = schema;
         }
 
-        public KVRelationalObject<T> Build<T>() where T : new()
+        public KVRelationalObject<T> New<T>() where T : new()
         {
-            return new KVRelationalObject<T>(null,_schema, _store);
+            return new KVRelationalObject<T>(GenerateKey<T>(), Schema, Store);
         }
 
-        public KVRelationalObject<T> Build<T>(T existingObject)
+        public KVRelationalObject<T> New<T>(T objetToWrap) where T : new()
         {
-            return new KVRelationalObject<T>(null, _schema, _store, existingObject);
+            var relObject = new KVRelationalObject<T>(GenerateKey<T>(), Schema, Store);
+            relObject.Value = objetToWrap;
+            return relObject;
         }
 
         public KVRelationalObject<T> Get<T>(IRelationalKey key)
         {
-            var value = _store.Get<T>(key.Value);
+            var value = Store.Get<T>(key.Value);
 
-            return new KVRelationalObject<T>(key, _schema, _store);
+            return new KVRelationalObject<T>(key, Schema, Store);
         }
 
-        public void Set<T>(KVRelationalObject<T> obj)
+        public void Save<T>(KVRelationalObject<T> obj)
         {
             if (string.IsNullOrEmpty(obj.Key.Value))
-                obj.Key = _schema.GetObjectSchema<T>().GenerateKey(_store.GetNextSequenceValue(_schema.GetObjectSchema<T>().GetIncerementorKey()));
+                obj.Key = GenerateKey<T>();
             else
             {
-                _store.Set(obj.Key.Value, obj.Value);
+                Store.Set(obj.Key.Value, obj.Value);
             }
         }
 
         public void Remove<T>(IRelationalKey key)
         {
             //find all other references
-            foreach(var rel in _schema.BuildKeyRelationships<T>(_store, key))
+            foreach(var rel in Schema.BuildKeyRelationships<T>(Store, key))
             {
-                rel.Remove<T>(key, _store, _schema);
+                rel.Remove<T>(key, Store, Schema);
             }
 
-            _store.Delete(key.Value);
+            Store.Delete(key.Value);
         }
 
         public void Remove<T>(KVRelationalObject<T> value)
         {
             Remove<T>(value.Key);
             value.Key = null;
+        }
+
+        private IRelationalKey GenerateKey<T>()
+        {
+            return Schema.GetObjectSchema<T>().GenerateKey(Store);
         }
     }
 }

@@ -40,14 +40,10 @@ namespace KeyValueStorage.Tools.Schema
             return null;
         }
 
-        public string GetIncerementorKey()
+        public IRelationalKey GenerateKey(IKVStore store)
         {
-            //todo : replace with customisable logic
-            return string.Format("{0}:i", _conceptualTableKeyPrefix);
-        }
+            var sequenceValue = store.GetNextSequenceValue(string.Format("{0}:i", _conceptualTableKeyPrefix));
 
-        public IRelationalKey GenerateKey(ulong sequenceValue)
-        {
             //todo : replace with customisable logic
             return new RelationalKey(string.Format("{0}:{1}", _conceptualTableKeyPrefix, sequenceValue.ToString()));
         }

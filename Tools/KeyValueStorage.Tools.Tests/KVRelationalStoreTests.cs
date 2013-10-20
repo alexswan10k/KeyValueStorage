@@ -35,8 +35,8 @@ namespace KeyValueStorage.Tools.Tests
             var store = new KVRelationalStore(mockStore.Object, storeSchema);
 
 
-            var obj = store.Build<TestObjA>();
-            obj.AddRelationship<TestObjA>();
+            var obj = store.New<TestObjA>();
+            store.Save(obj);
 
             obj.Get<TestObjB>();
         }
