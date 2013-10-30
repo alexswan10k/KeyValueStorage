@@ -25,7 +25,12 @@ namespace KeyValueStorage.Tools.Schema
             get { return _objectType; }
         }
 
-        public IEnumerable<KeyWithRelationship> BuildKeyRelationships(IKVStore store, IRelationalKey key)
+	    public string ConceptualTableKeyPrefix
+	    {
+		    get { return _conceptualTableKeyPrefix; }
+	    }
+
+	    public IEnumerable<KeyWithRelationship> BuildKeyRelationships(IKVStore store, IRelationalKey key)
         {
             return _foreignTypeAliases.Select(
                 s => new KeyWithRelationship(key, new KVForeignKeyStoreRelationshipProvider(store, s.Value)));
@@ -42,10 +47,10 @@ namespace KeyValueStorage.Tools.Schema
 
         public IRelationalKey GenerateKey(IKVStore store)
         {
-            var sequenceValue = store.GetNextSequenceValue(string.Format("{0}:i", _conceptualTableKeyPrefix));
+            var sequenceValue = store.GetNextSequenceValue(string.Format("{0}:i", ConceptualTableKeyPrefix));
 
             //todo : replace with customisable logic
-            return new RelationalKey(string.Format("{0}:{1}", _conceptualTableKeyPrefix, sequenceValue.ToString()));
+            return new RelationalKey(string.Format("{0}:{1}", ConceptualTableKeyPrefix, sequenceValue.ToString()));
         }
 
         public void AddRelationship<T>(string conceptualTableAlias = null)

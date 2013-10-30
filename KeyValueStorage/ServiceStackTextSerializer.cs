@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KeyValueStorage.Interfaces;
+using ServiceStack;
 using ServiceStack.Text;
 
 namespace KeyValueStorage

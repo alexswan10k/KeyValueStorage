@@ -49,6 +49,12 @@ namespace KeyValueStorage.Tools
             return new KVRelationalObject<T>(key, Schema, Store);
         }
 
+		public KVRelationalObject<T> Get<T>(decimal id)
+		{
+			var key = Schema.GetObjectSchema<T>().ConceptualTableKeyPrefix + ":" + id;
+			return new KVRelationalObject<T>(new RelationalKey(key),Schema, Store);
+		}
+
         public void Save<T>(KVRelationalObject<T> obj)
         {
             if (string.IsNullOrEmpty(obj.Key.Value))

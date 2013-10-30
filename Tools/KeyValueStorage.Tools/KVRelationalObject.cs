@@ -28,7 +28,7 @@ namespace KeyValueStorage.Tools
         { 
             get 
             {
-                if (Key != null && !_isLoaded && Value == null)
+                if (Key != null && !_isLoaded && _value == null)
                 {
                     _value = _store.Get<T>(Key.Value);
                     _isLoaded = true;

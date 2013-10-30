@@ -10,7 +10,8 @@ namespace KeyValueStorage.Tools.Schema
         IEnumerable<KeyWithRelationship> BuildKeyRelationships(IKVStore store, IRelationalKey key);
         void AddRelationship<T>(string conceptualTableAlias = null);
         Type ObjectType { get; }
-        KeyWithRelationship GetRelationshipFor<T>(IKVStore store, IRelationalKey key);
+	    string ConceptualTableKeyPrefix { get; }
+	    KeyWithRelationship GetRelationshipFor<T>(IKVStore store, IRelationalKey key);
         IRelationalKey GenerateKey(IKVStore store);
     }
 }

@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyValueStorage", "KeyValue
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyValueStorage.Tools", "Tools\KeyValueStorage.Tools\KeyValueStorage.Tools.csproj", "{93983290-F55C-4077-B832-1FE50537A9AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyValueStorage.Tools.Tests", "Tools\KeyValueStorage.Tools.Tests\KeyValueStorage.Tools.Tests.csproj", "{5FF1818D-4F6D-4AF7-87C8-B8A1C9941013}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyValueStorage.Tools.UnitTests", "Tools\KeyValueStorage.Tools.Tests\KeyValueStorage.Tools.UnitTests.csproj", "{5FF1818D-4F6D-4AF7-87C8-B8A1C9941013}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
