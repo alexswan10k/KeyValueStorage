@@ -62,7 +62,7 @@ namespace KeyValueStorage.Tools.Tests
 			mockStore.Setup(m => m.Get<TestObjA>("TestObjAs:10")).Returns(testObjA);
 			
 			var store = new KVRelationalStore(mockStore.Object, _storeSchema);
-
+			
 			var item = store.Get<TestObjA>(10);
 
 			Assert.IsNotNull(item.Value);
@@ -70,7 +70,13 @@ namespace KeyValueStorage.Tools.Tests
 		}
 
 		[Test]
-		public void ShouldLoadRelationship()
+		public void ShouldCreateNewObject()
+		{
+			
+		}
+
+		[Test]
+		public void ShouldDeleteExistingObjectAndReferences()
 		{
 			
 		}

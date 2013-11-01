@@ -12,9 +12,9 @@ namespace KeyValueStorage.Tools.Tests
 	[TestFixture]
 	public class KVRelationalObjectTests
 	{
-		private Mock<IRelationalKey> _key;
-		private Mock<IStoreSchema> _schema;
-		private Mock<IKVStore> _store;
+		private readonly Mock<IRelationalKey> _key;
+		private readonly Mock<IStoreSchema> _schema;
+		private readonly Mock<IKVStore> _store;
 
 		public KVRelationalObjectTests()
 		{
@@ -56,51 +56,73 @@ namespace KeyValueStorage.Tools.Tests
 		[Test]
 		public void ShouldCorrectlyAddRelatedObject()
 		{
-			var foreignKeyRelationshipProviderMock = new Mock<IKVForeignKeyRelationshipProvider>();
+			var keyMock2 = new Mock<IRelationalKey>();
+			keyMock2.Setup(m => m.Value).Returns("B:1");
 
-			foreignKeyRelationshipProviderMock.Setup(m => m.GetKeys(_key.Object))
+			var foreignKeyRelationshipProvider = new Mock<IKVForeignKeyRelationshipProvider>();
+
+			foreignKeyRelationshipProvider.Setup(m => m.GetKeys(_key.Object))
 				.Returns(new IRelationalKey[]
 				{
 					new RelationalKey("B:1"), 
 					new RelationalKey("B:2")
 				});
 
+			var generatedRelationshipProvider = new Mock<IKVForeignKeyRelationshipProvider>();
+
 			_schema.Setup(s => s.GetObjectSchema<TestObjA>()
 				.GetRelationshipFor<TestObjB>(_store.Object, _key.Object))
-				.Returns(new KeyWithRelationship(_key.Object, foreignKeyRelationshipProviderMock.Object));
+				.Returns(new KeyWithRelationship(_key.Object, foreignKeyRelationshipProvider.Object));
 
-			
-
-			//_schema.Setup(s => s.GetObjectSchema<TestObjA>()
-			//	.GetRelationshipFor<TestObjA>()(_store.Object, newkey)
-
-			//for both providers
-			foreignKeyRelationshipProviderMock.Setup(m => m.Add(It.IsAny<IRelationalKey>(), It.IsAny<IRelationalKey>()));
+			_schema.Setup(m => m.GetObjectSchema<TestObjA>().BuildKeyRelationships(_store.Object, _key.Object)).Returns(new[]
+			{
+				new KeyWithRelationship(keyMock2.Object, generatedRelationshipProvider.Object)
+			});
 
 			var o1 = new KVRelationalObject<TestObjA>(_key.Object, _schema.Object, _store.Object);
 
-			Mock<IRelationalKey> keyMock2 = new Mock<IRelationalKey>();
-			keyMock2.Setup(m => m.Value).Returns("B:1");
-
-			//new KVForeignKeyStoreRelationshipProvider(_store.Object)
-
-			Mock<IKVForeignKeyRelationshipProvider> mock = new Mock<IKVForeignKeyRelationshipProvider>();
-			
-			_schema.Setup(m => m.GetObjectSchema<TestObjA>().BuildKeyRelationships(_store.Object, _key.Object)).Returns(new KeyWithRelationship[]
-			{
-				new KeyWithRelationship(keyMock2.Object, mock.Object)
-			});
-
+			//run
 			o1.AddRelationship(new KVRelationalObject<TestObjB>(keyMock2.Object, _schema.Object, _store.Object));
 
-			mock.Verify(m => m.Add(keyMock2.Object, _key.Object));
-			//verify local one
+
+			generatedRelationshipProvider.Verify(m => m.Add(keyMock2.Object, _key.Object));
+			foreignKeyRelationshipProvider.Verify(s => s.Add(_key.Object, keyMock2.Object));
 		}
 
 		[Test]
 		public void ShouldCorrectlyRemoveRelatedObject()
 		{
-			
+			var keyMock2 = new Mock<IRelationalKey>();
+			keyMock2.Setup(m => m.Value).Returns("B:1");
+
+			var foreignKeyRelationshipProvider = new Mock<IKVForeignKeyRelationshipProvider>();
+
+			foreignKeyRelationshipProvider.Setup(m => m.GetKeys(_key.Object))
+				.Returns(new IRelationalKey[]
+				{
+					new RelationalKey("B:1"), 
+					new RelationalKey("B:2")
+				});
+
+			var generatedRelationshipProvider = new Mock<IKVForeignKeyRelationshipProvider>();
+
+			_schema.Setup(s => s.GetObjectSchema<TestObjA>()
+				.GetRelationshipFor<TestObjB>(_store.Object, _key.Object))
+				.Returns(new KeyWithRelationship(_key.Object, foreignKeyRelationshipProvider.Object));
+
+			_schema.Setup(m => m.GetObjectSchema<TestObjA>().BuildKeyRelationships(_store.Object, _key.Object)).Returns(new[]
+			{
+				new KeyWithRelationship(keyMock2.Object, generatedRelationshipProvider.Object)
+			});
+
+			var o1 = new KVRelationalObject<TestObjA>(_key.Object, _schema.Object, _store.Object);
+
+			//run
+			o1.RemoveRelationship(new KVRelationalObject<TestObjB>(keyMock2.Object, _schema.Object, _store.Object));
+
+
+			generatedRelationshipProvider.Verify(m => m.Remove(keyMock2.Object, _key.Object));
+			foreignKeyRelationshipProvider.Verify(s => s.Remove(_key.Object, keyMock2.Object));
 		}
 	}
 }
