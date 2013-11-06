@@ -33,9 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ServiceStack.Text">
-      <HintPath>..\..\packages\ServiceStack.Text.4.0.0\lib\net35\ServiceStack.Text.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -85,7 +82,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="DeployNugetPackager\Deploy.nuspec" />
     <None Include="DeployNugetPackager\DeployLocal.bat" />
+    <None Include="DeployNugetPackager\DeployNuget.config" />
     <None Include="DeployNugetPackager\DeployNuget.ps1" />
     <None Include="DeployNugetPackager\DeployServer.bat" />
     <None Include="DeployNugetPackager\IncrementVersion.bat" />

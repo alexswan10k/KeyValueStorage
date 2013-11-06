@@ -2,7 +2,7 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>KeyValueStorage.Redis</id>
-    <version>0.0.0.1-alpha</version>
+    <version>0.0.0.2-alpha</version>
     <title>KeyValueStorage Redis Implementation</title>
     <authors>Metal10k</authors>
     <summary></summary>
@@ -12,10 +12,10 @@
     <dependencies>
       <dependency id="ServiceStack.Text" />
       <dependency id="ServiceStack.Redis" />
+      <dependency id="KeyValueStorage.Core" />
     </dependencies>
   </metadata>
   <files>
-    <file src="..\bin\Release\KeyValueStorage.dll" target="lib\net40\KeyValueStorage.dll" />
      <file src="..\bin\Release\KeyValueStorage.Redis.dll" target="lib\net40\KeyValueStorage.Redis.dll" />
   </files>
 </package>
