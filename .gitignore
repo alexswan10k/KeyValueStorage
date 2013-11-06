@@ -158,3 +158,5 @@ $RECYCLE.BIN/
 /Oracle/KeyValueStorage.Oracle/NugetPackageStaging
 /Redis/KeyValueStorage.Redis/NugetPackageStaging
 /SQLServer/KeyValueStorage.SqlServer/NugetPackageStaging
+/KeyValueStorage/NugetPackageStaging
+/Tools/KeyValueStorage.Tools/NugetPackageStaging
