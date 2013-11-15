@@ -50,6 +50,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cryptography\Hashers\HasherTests.cs" />
+    <Compile Include="Cryptography\StringSymmetricAlgorithms\RijndaelManagedStringCryptoSymmetricTests.cs" />
     <Compile Include="KVRelationalObjectTests.cs" />
     <Compile Include="KVRelationalStoreTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -69,6 +71,7 @@
       <Name>KeyValueStorage.Tools</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

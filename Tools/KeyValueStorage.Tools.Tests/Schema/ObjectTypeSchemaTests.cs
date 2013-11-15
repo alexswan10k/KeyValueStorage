@@ -25,7 +25,8 @@ namespace KeyValueStorage.Tools.Tests.Schema
 
 		private ObjectTypeSchema _CreateObjectTypeSchema()
 		{
-			var objectSchema = new ObjectTypeSchema(typeof(TestTypeA), _foreignTypeWithAliasesForA);
+            //need to copy dict for concurrency issues
+			var objectSchema = new ObjectTypeSchema(typeof(TestTypeA), _foreignTypeWithAliasesForA.ToDictionary(i => i.Key, i => i.Value));
 			return objectSchema;
 		}
 

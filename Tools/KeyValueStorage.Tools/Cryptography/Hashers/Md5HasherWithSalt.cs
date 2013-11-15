@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using KeyValueStorage.Tools.Utility.CharGenerators;
 
-namespace KeyValueStorage.Tools.Utility.Hashers
+namespace KeyValueStorage.Tools.Cryptography.Hashers
 {
 	public class Md5HasherWithSalt : HasherWithSalt
 	{

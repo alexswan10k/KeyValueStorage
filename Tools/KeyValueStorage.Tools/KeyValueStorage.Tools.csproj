@@ -42,6 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cryptography\CryptoTextSerializer.cs" />
+    <Compile Include="Cryptography\StringSymmetricAlgorithms\IStringSymmetricAlgorithm.cs" />
+    <Compile Include="Cryptography\StringSymmetricAlgorithms\RijndaelManagedStringSymmetricAlgorithm.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="KVStoreMigrator.cs" />
     <Compile Include="Utility\Relationships\KeyWithRelationship.cs" />
@@ -49,9 +52,9 @@
     <Compile Include="KVRelationalObject.cs" />
     <Compile Include="KVRelationalStore.cs" />
     <Compile Include="Stores\LazySetKeyValueStore.cs" />
-    <Compile Include="Utility\Hashers\EncryptedData.cs" />
-    <Compile Include="Utility\Hashers\HasherWithSalt.cs" />
-    <Compile Include="Utility\Hashers\IHasher.cs" />
+    <Compile Include="Cryptography\Hashers\HashedData.cs" />
+    <Compile Include="Cryptography\Hashers\HasherWithSalt.cs" />
+    <Compile Include="Cryptography\Hashers\IHasher.cs" />
     <Compile Include="Utility\CharGenerators\IRandomCharacterGenerator.cs" />
     <Compile Include="Schema\IObjectTypeSchema.cs" />
     <Compile Include="Schema\IStoreSchema.cs" />
@@ -69,8 +72,8 @@
     <Compile Include="Stores\KeyTransformKVStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stores\TypesafeKVStore.cs" />
-    <Compile Include="Utility\Hashers\Md5Hasher.cs" />
-    <Compile Include="Utility\Hashers\Md5HasherWithSalt.cs" />
+    <Compile Include="Cryptography\Hashers\Md5Hasher.cs" />
+    <Compile Include="Cryptography\Hashers\Md5HasherWithSalt.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

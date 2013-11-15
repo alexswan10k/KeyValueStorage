@@ -1,8 +1,8 @@
 ﻿using System;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.Tools.Cryptography.Hashers;
 using KeyValueStorage.Tools.Stores;
 using KeyValueStorage.Tools.Utility.CharGenerators;
-using KeyValueStorage.Tools.Utility.Hashers;
 using KeyValueStorage.Tools.Utility.Strings;
 
 namespace KeyValueStorage.Tools
@@ -35,7 +35,7 @@ namespace KeyValueStorage.Tools
 			if(_passwordVerifier.Verify(password))
 				return new UserCreationResult(UserCreationResultCode.PasswordInvalid);
 
-			_SetUser(username, new UserLoginDetailsInt(){EncryptedData = _hasher.Encrypt(password), DateCreated = DateTime.UtcNow});
+			_SetUser(username, new UserLoginDetailsInt(){HashedData = _hasher.ComputeHash(password), DateCreated = DateTime.UtcNow});
 			return new UserCreationResult(UserCreationResultCode.Success);
 		}
 
@@ -50,18 +50,18 @@ namespace KeyValueStorage.Tools
 
 			IHasher hasherLocal;
 
-			if(_hasher.GetType().FullName == user.EncryptedData.EncrType)
+			if(_hasher.GetType().FullName == user.HashedData.EncrType)
 				hasherLocal = _hasher;
 			else
 			{
-				var hashAlgoType = Type.GetType(user.EncryptedData.EncrType, false);
+				var hashAlgoType = Type.GetType(user.HashedData.EncrType, false);
 				if(hashAlgoType == null)
 					return AutherizationRequest.CannotFindIHashAlgorithmImplementation;
 
 				hasherLocal = Activator.CreateInstance(hashAlgoType) as IHasher;
 			}
 
-			if(hasherLocal.Verify(password, user.EncryptedData))
+			if(hasherLocal.Verify(password, user.HashedData))
 			{
 				user.LastLogin = DateTime.UtcNow;
 				user.FailedLogins = 0;
@@ -82,7 +82,7 @@ namespace KeyValueStorage.Tools
 			if(user == null)
 				return false;
 
-			user.EncryptedData= _hasher.Encrypt(newPassword);
+			user.HashedData= _hasher.ComputeHash(newPassword);
 
 			_SetUser(username, user);
             return true;
@@ -96,7 +96,7 @@ namespace KeyValueStorage.Tools
 
 			var newPassword= _characterGen.Generate();
 
-			user.EncryptedData= _hasher.Encrypt(newPassword);
+			user.HashedData= _hasher.ComputeHash(newPassword);
 			_SetUser(username, user);
 
 			return newPassword;
@@ -124,7 +124,7 @@ namespace KeyValueStorage.Tools
 
         class UserLoginDetailsInt
         {
-            public EncryptedData EncryptedData { get; set; }
+            public HashedData HashedData { get; set; }
             public DateTime LastLogin { get; set; }
             public DateTime DateCreated { get; set; }
             public DateTime DatePasswordChanged { get; set; }

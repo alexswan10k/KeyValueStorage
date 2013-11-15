@@ -2,7 +2,7 @@
 using KeyValueStorage.Tools.Extensions;
 using KeyValueStorage.Tools.Utility.CharGenerators;
 
-namespace KeyValueStorage.Tools.Utility.Hashers
+namespace KeyValueStorage.Tools.Cryptography.Hashers
 {
 	public abstract class HasherWithSalt : IHasher
 	{
@@ -15,14 +15,14 @@ namespace KeyValueStorage.Tools.Utility.Hashers
 			_generator = saltGenerator?? new SimpleRandomCharacterGenerator(16);
 		}
 
-		public EncryptedData Encrypt(string stringToHash)
+		public HashedData ComputeHash(string stringToHash)
 		{
 			var salt = _generator.Generate();
 			var hash = _ComputeHash(stringToHash, salt);
-			return new EncryptedData() { Hash = hash, Salt = salt, EncrType = typeof(Md5HasherWithSalt).FullName };
+			return new HashedData() { Hash = hash, Salt = salt, EncrType = typeof(Md5HasherWithSalt).FullName };
 		}
 
-		public bool Verify(string stringToVerify, EncryptedData data)
+		public bool Verify(string stringToVerify, HashedData data)
 		{
 			return _ComputeHash(stringToVerify, data.Salt) == data.Hash;
 		}

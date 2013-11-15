@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using KeyValueStorage.Tools.Extensions;
 
-namespace KeyValueStorage.Tools.Utility.Hashers
+namespace KeyValueStorage.Tools.Cryptography.Hashers
 {
 	public class Md5Hasher : IHasher
 	{
@@ -12,13 +12,13 @@ namespace KeyValueStorage.Tools.Utility.Hashers
 			_algo = MD5.Create();
 		}
 
-		public EncryptedData Encrypt(string stringToHash)
+		public HashedData ComputeHash(string stringToHash)
 		{
 			var hash = _algo.ComputeHash(stringToHash.GetBytes());
-			return new EncryptedData() { Hash = hash.GetString(), EncrType = typeof(Md5Hasher).FullName };
+			return new HashedData() { Hash = hash.GetString(), EncrType = typeof(Md5Hasher).FullName };
 		}
 
-		public bool Verify(string stringToVerify, EncryptedData data)
+		public bool Verify(string stringToVerify, HashedData data)
 		{
 			var hash = _algo.ComputeHash(stringToVerify.GetBytes());
 			return data.Hash == hash.GetString();

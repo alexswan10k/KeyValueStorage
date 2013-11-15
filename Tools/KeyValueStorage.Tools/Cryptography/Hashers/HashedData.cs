@@ -1,6 +1,6 @@
-namespace KeyValueStorage.Tools.Utility.Hashers
+namespace KeyValueStorage.Tools.Cryptography.Hashers
 {
-    public class EncryptedData
+    public class HashedData
     {
         public string Hash { get; set; }
         public string Salt { get; set; }
