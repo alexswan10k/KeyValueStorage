@@ -1,23 +1,31 @@
-KeyValueStorage is a project aimed at bridging the gap between various NoSql solutions, 
-and strives to provide a common interface that can be shared between all providers.
+KeyValueStorage is a project aimed at making storage of data simple, bridging the gap between various NoSql solutions, 
+and strives to provide a common interface that can be shared between all providers. Tools are also available to build more complex
+
+
+(http://nuget.org/List/Packages/KeyValueStorage.FSText)
 
 Features
 
-	Get/Set by key operations
+	Get/Set complex types by key operations
 	Sequences
 	CAS
 	Key expiry
 	One common interface for all abstractions
+	Tools for Membership/Role/Profile substitutes
+	Tools for encryption and decryption of keys on insertion
+	Tools for storing relational data (currently somewhat experimental)
+	Written using TDD and loosely coupled code. Plenty of extension points to customize behaviour.
+	Available on NuGet!
+	
+In progress
+	Locking
+	Collections
 
 Possible features to support in the future:
 		
 	Locking (or some other mechanism for performing atomic operations)
 	Atomic Collections
-	Nuget!
 	
-Future Vision:
-	
-	Higher level abstractions to support relational data of strongly typed objects
 
 
 Write code like:
@@ -59,10 +67,6 @@ Partly supported:
 	Oracle (all except CAS, Expiry, and sequence ops)
 	SqlServer (all except CAS, Expiry, and sequence ops)	
 	Cassandra (CRUD support)
-
-Planned:
-
-	
 
 
 
