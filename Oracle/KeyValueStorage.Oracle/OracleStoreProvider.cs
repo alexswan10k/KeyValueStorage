@@ -23,7 +23,7 @@ namespace KeyValueStorage.Oracle
         public string KVSTableName { get; protected set; }
         const string KVSTableNameDefault = "KVS";
 
-        public RDBExpiredKeyCleaner KeyCleaner { get; protected set; } 
+        public RdbExpiredKeyCleaner KeyCleaner { get; protected set; } 
 
         const int OracleCharLimit = 4000;
         const int JsonValueParams = 10;
@@ -44,12 +44,12 @@ namespace KeyValueStorage.Oracle
             KVSTableName = KVSTableNameDefault;
         }
 
-        public OracleStoreProvider(global::Oracle.ManagedDataAccess.Client.OracleConnection connection, RDBExpiredKeyCleaner keyCleaner)
+        public OracleStoreProvider(global::Oracle.ManagedDataAccess.Client.OracleConnection connection, RdbExpiredKeyCleaner keyCleaner)
         {
             KeyCleaner = keyCleaner;
         }
 
-        public OracleStoreProvider(string connectionString, RDBExpiredKeyCleaner keyCleaner)
+        public OracleStoreProvider(string connectionString, RdbExpiredKeyCleaner keyCleaner)
             :this(connectionString)
         {
             KeyCleaner = keyCleaner;

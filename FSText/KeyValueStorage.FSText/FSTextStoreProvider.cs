@@ -28,6 +28,12 @@ namespace KeyValueStorage.FSText
         public CharSubstitutor KeyCharSubstitutor {get;protected set;}
         public KVSExpiredKeyCleaner KeyCleaner { get; protected set; } 
 
+		public FSTextStoreProvider()
+			:this(AppDomain.CurrentDomain.RelativeSearchPath + @"\KVS\")
+		{
+			
+		}
+
         public FSTextStoreProvider(string path)
         {
             DI = new DirectoryInfo(path);
@@ -36,12 +42,7 @@ namespace KeyValueStorage.FSText
                 DI.Create();
 
             KeyCharSubstitutor = KeyCharSubstitutorDefault;
-        }
-
-        public FSTextStoreProvider(string path, KVSExpiredKeyCleaner keyCleaner)
-            :this(path)
-        {
-            KeyCleaner = KeyCleaner;
+			KeyCleaner = new KVSExpiredKeyCleaner(this, lockPrefix + "KC",new TimeSpan(1,0,0,0));
         }
 
         public FSTextStoreProvider(string path, CharSubstitutor keyCharsubstitutor)
@@ -50,7 +51,7 @@ namespace KeyValueStorage.FSText
             KeyCharSubstitutor = keyCharsubstitutor;
         }
 
-        FileInfo GetFileInfo(string key, bool isData = false)
+        FileInfo _GetFileInfo(string key, bool isData = false)
         {
             return new FileInfo(Path.Combine(DI.FullName, !isData? key + suffix : key + dataSuffix));
         }
@@ -66,7 +67,7 @@ namespace KeyValueStorage.FSText
         {
             key = KeyCharSubstitutor.Convert(key);
 
-            var fi = GetFileInfo(key);
+            var fi = _GetFileInfo(key);
 
             if (!fi.Exists)
                 return null;
@@ -81,7 +82,7 @@ namespace KeyValueStorage.FSText
         {
             key = KeyCharSubstitutor.Convert(key);
 
-            var fi = GetFileInfo(key);
+            var fi = _GetFileInfo(key);
 
             if(fi.Exists)
                 fi.Delete();
@@ -96,7 +97,7 @@ namespace KeyValueStorage.FSText
         {
             key = KeyCharSubstitutor.Convert(key);
 
-            var fi = GetFileInfo(key);
+            var fi = _GetFileInfo(key);
 
             if (fi.Exists)
                 fi.Delete();
@@ -106,7 +107,7 @@ namespace KeyValueStorage.FSText
         {
             key = KeyCharSubstitutor.Convert(key);
 
-            var fi = GetFileInfo(casPrefix + key, true);
+            var fi = _GetFileInfo(casPrefix + key, true);
 
             if (fi.Exists)
             {
@@ -140,15 +141,15 @@ namespace KeyValueStorage.FSText
         {
             key = KeyCharSubstitutor.Convert(key);
 
-            var fi = GetFileInfo(casPrefix + key, true);
-            var fiLock = GetFileInfo(lockPrefix + key, true);
+            var fi = _GetFileInfo(casPrefix + key, true);
+            var fiLock = _GetFileInfo(lockPrefix + key, true);
 
             if (!fi.Exists)
                 fi.Create().Dispose();
 
             using(var swLock = fiLock.Create())
             {
-                ulong readCASVal = 0;
+                ulong readCasVal = 0;
 
                 //get current cas
                 byte[] bytes = null;
@@ -163,9 +164,9 @@ namespace KeyValueStorage.FSText
                     swCAS.Seek(0, SeekOrigin.Begin);
 
                     if (bytes.Count() > 0)
-                        readCASVal = BitConverter.ToUInt64(bytes, 0);
+                        readCasVal = BitConverter.ToUInt64(bytes, 0);
 
-                    if (readCASVal != cas)
+                    if (readCasVal != cas)
                         throw new CASException("CAS expired");
 
                     //do our actual set operation
@@ -182,7 +183,7 @@ namespace KeyValueStorage.FSText
         public void Set(string key, string value, DateTime expires)
         {
             Set(key, value);
-            SetKeyExpiry(key, expires);
+            _SetKeyExpiry(key, expires);
         }
 
         public void Set(string key, string value, TimeSpan expiresIn)
@@ -190,13 +191,13 @@ namespace KeyValueStorage.FSText
             var expires = DateTime.UtcNow + expiresIn;
 
             Set(key, value);
-            SetKeyExpiry(key, expires);
+            _SetKeyExpiry(key, expires);
         }
 
         public void Set(string key, string value, ulong CAS, DateTime expires)
         {
             Set(key, value, CAS);
-            SetKeyExpiry(key, expires);
+            _SetKeyExpiry(key, expires);
         }
 
         public void Set(string key, string value, ulong CAS, TimeSpan expiresIn)
@@ -204,7 +205,7 @@ namespace KeyValueStorage.FSText
             var expires = DateTime.UtcNow + expiresIn;
 
             Set(key, value, CAS);
-            SetKeyExpiry(key, expires);
+            _SetKeyExpiry(key, expires);
         }
 
 
@@ -212,7 +213,7 @@ namespace KeyValueStorage.FSText
         {
             key = KeyCharSubstitutor.Convert(key);
 
-            if (GetFileInfo(key).Exists)
+            if (_GetFileInfo(key).Exists)
                 return true;
             return false;
         }
@@ -339,7 +340,7 @@ namespace KeyValueStorage.FSText
         {
             key = KeyCharSubstitutor.Convert(key);
 
-            var fi = GetFileInfo(key);
+            var fi = _GetFileInfo(key);
 
             if (!fi.Exists)
                 fi.Create();
@@ -353,7 +354,7 @@ namespace KeyValueStorage.FSText
         }
         #endregion
 
-        private void SetKeyExpiry(string key, DateTime expires)
+        private void _SetKeyExpiry(string key, DateTime expires)
         {
             if (KeyCleaner == null)
                 throw new InvalidOperationException("Expiry date cannot be set if no key cleaner is present");

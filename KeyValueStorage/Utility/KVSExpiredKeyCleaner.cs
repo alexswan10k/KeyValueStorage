@@ -39,13 +39,13 @@ namespace KeyValueStorage.Utility
             {
                 using (var keyLock = new KVSLockWithCAS(LockKey, DateTime.UtcNow.AddSeconds(LockExpiryTimeS), "T", Provider))
                 {
-                    var stateData = GetStateData();
+                    var stateData = _GetStateData();
 
                     //check row-1 to avoid race conditions in the unlikely event where a reference is written into window n and the sequence is moved on to n+1
-                    RemoveItemsFromWindow(stateData.SequenceCurrentVal - 1);
+                    _RemoveItemsFromWindow(stateData.SequenceCurrentVal - 1);
 
                     //If we can clear multiple rows, do this. This will not normally occur. Allows catching up if data has not yet been processed.
-                    while (RemoveItemsFromWindow(stateData.SequenceCurrentVal) == 0)
+                    while (_RemoveItemsFromWindow(stateData.SequenceCurrentVal) == 0)
                     {
                         stateData.SequenceCurrentVal = Provider.GetNextSequenceValue(StoreExpirySequenceKey, 1);
                         stateData.LastUpdated = DateTime.UtcNow;
@@ -67,8 +67,8 @@ namespace KeyValueStorage.Utility
             //get the date-key collection and cas
             //add or update the expiry
             //write back the collection
-            var stateData = GetStateData();
-            var window = GetWindow(expires, stateData);
+            var stateData = _GetStateData();
+            var window = _GetWindow(expires, stateData);
 
             Provider.Append(StoreExpiryDateRowPrefix + window, Serializer.Serialize(new StoreExpiryData() { TargetKey = key, Expires = expires }));
 
@@ -80,13 +80,13 @@ namespace KeyValueStorage.Utility
             return Serializer.Deserialize<DateTime>(Provider.Get(StoreExpiryDataExpiryKeyPrefix + key));
         }
 
-        protected int RemoveItemsFromWindow(ulong offsetWindow)
+	    private int _RemoveItemsFromWindow(ulong offsetWindow)
         {
             try
             {
                 //grab the currnent sequence value
                 ulong dataRowCAS;
-                var dataRow = GetExpiryDataRow(offsetWindow, out dataRowCAS);
+                var dataRow = _GetExpiryDataRow(offsetWindow, out dataRowCAS);
                 List<StoreExpiryData> dataRowItemsToRemove = new List<StoreExpiryData>();
                 foreach (var item in dataRow)
                 {
@@ -112,7 +112,7 @@ namespace KeyValueStorage.Utility
 
                 //If all hve been succesfully removed, we can update our refs.
                 var itemsLeft = dataRow.Except(dataRowItemsToRemove).ToList();
-                SetExpiryDataRow(offsetWindow, itemsLeft, dataRowCAS);
+                _SetExpiryDataRow(offsetWindow, itemsLeft, dataRowCAS);
                 return itemsLeft.Count();
             }
             catch (CASException ex)
@@ -122,7 +122,7 @@ namespace KeyValueStorage.Utility
             return -1;
         }
 
-        private ulong GetWindow(DateTime date, StoreExpiryStateData stateData)
+        private ulong _GetWindow(DateTime date, StoreExpiryStateData stateData)
         {
             var windowStartDate = stateData.WindowStart;
 
@@ -139,7 +139,7 @@ namespace KeyValueStorage.Utility
             return i;
         }
 
-        private StoreExpiryStateData GetStateData()
+        private StoreExpiryStateData _GetStateData()
         {
             StoreExpiryStateData stateData = null;
             Serializer.Deserialize<StoreExpiryStateData>(Provider.Get(StoreExpiryStateDataKey));
@@ -156,13 +156,13 @@ namespace KeyValueStorage.Utility
             return stateData;
         }
 
-        private IEnumerable<StoreExpiryData> GetExpiryDataRow(ulong offsetWindow, out ulong cas)
+        private IEnumerable<StoreExpiryData> _GetExpiryDataRow(ulong offsetWindow, out ulong cas)
         {
             var key = StoreExpiryDateRowPrefix + offsetWindow;
             return Helpers.SeparateJsonArray(Provider.Get(key, out cas)).Select(s => Serializer.Deserialize<StoreExpiryData>(s));
         }
 
-        private void SetExpiryDataRow(ulong offsetWindow, IEnumerable<StoreExpiryData> data, ulong cas)
+        private void _SetExpiryDataRow(ulong offsetWindow, IEnumerable<StoreExpiryData> data, ulong cas)
         {
             var key = StoreExpiryDateRowPrefix + offsetWindow;
             Provider.Set(key, String.Concat(data.Select(s => Serializer.Serialize(s))), cas);

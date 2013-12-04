@@ -9,5 +9,7 @@ namespace KeyValueStorage.Interfaces.Utility
     {
         IStoreProvider Provider { get; }
         void CleanupKeys();
+	    void SetKeyExpiry(string key, DateTime expires);
+	    DateTime GetKeyExpiry(string key);
     }
 }

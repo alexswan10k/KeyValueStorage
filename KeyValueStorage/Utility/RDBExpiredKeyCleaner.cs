@@ -7,12 +7,12 @@ using KeyValueStorage.Interfaces.Utility;
 
 namespace KeyValueStorage.Utility
 {
-    public class RDBExpiredKeyCleaner : IExpiredKeyCleaner
+    public class RdbExpiredKeyCleaner : IExpiredKeyCleaner
     {
         public IStoreProvider Provider { get { return _provider; } }
         protected IRDbStoreProvider _provider;
 
-        public RDBExpiredKeyCleaner(IRDbStoreProvider provider)
+        public RdbExpiredKeyCleaner(IRDbStoreProvider provider)
         {
             _provider = provider;
         }
@@ -21,5 +21,15 @@ namespace KeyValueStorage.Utility
         {
             throw new NotImplementedException();
         }
+
+	    public void SetKeyExpiry(string key, DateTime expires)
+	    {
+		    throw new NotImplementedException();
+	    }
+
+	    public DateTime GetKeyExpiry(string key)
+	    {
+		    throw new NotImplementedException();
+	    }
     }
 }

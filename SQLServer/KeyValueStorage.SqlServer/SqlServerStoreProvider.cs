@@ -17,7 +17,7 @@ namespace KeyValueStorage.SqlServer
             public string KVSTableName { get; protected set; }
             const string KVSTableNameDefault = "KVS";
 
-            public RDBExpiredKeyCleaner KeyCleaner { get; protected set; } 
+            public RdbExpiredKeyCleaner KeyCleaner { get; protected set; } 
 
             public SqlServerStoreProvider(System.Data.SqlClient.SqlConnection connection)
             {
@@ -35,12 +35,12 @@ namespace KeyValueStorage.SqlServer
                 KVSTableName = KVSTableNameDefault;
             }
 
-            public SqlServerStoreProvider(System.Data.SqlClient.SqlConnection connection, RDBExpiredKeyCleaner keyCleaner)
+            public SqlServerStoreProvider(System.Data.SqlClient.SqlConnection connection, RdbExpiredKeyCleaner keyCleaner)
             {
                 KeyCleaner = keyCleaner;
             }
 
-            public SqlServerStoreProvider(string connectionString, RDBExpiredKeyCleaner keyCleaner)
+            public SqlServerStoreProvider(string connectionString, RdbExpiredKeyCleaner keyCleaner)
             {
                 KeyCleaner = keyCleaner;
             }
