@@ -1,6 +1,5 @@
 KeyValueStorage is a project aimed at making storage of data simple, bridging the gap between various NoSql solutions, 
-and strives to provide a common interface that can be shared between all providers. Tools are also available to build more complex
-
+and strives to provide a common interface that can be shared between all providers. Tools are also available to deal with more complex scenarios such as relational data and encryption.
 
 (http://nuget.org/List/Packages/KeyValueStorage.FSText)
 
@@ -14,12 +13,10 @@ Features
 	Tools for Membership/Role/Profile substitutes
 	Tools for encryption and decryption of keys on insertion
 	Tools for storing relational data (currently somewhat experimental)
+	Locking
 	Written using TDD and loosely coupled code. Plenty of extension points to customize behaviour.
 	Available on NuGet!
 	
-In progress
-	Locking
-	Collections
 
 Possible features to support in the future:
 		
@@ -58,14 +55,13 @@ Currently fully supported:
 
 	Couchbase
 	Redis
+	SqlServer
+	FileSystem
 
 Partly supported:
 
 	AzureTable (expiry early proto)
-	FileSystemText (expiry early proto) - Provides a mechanism to store objects directly on the file system as json or similar
-	
 	Oracle (all except CAS, Expiry, and sequence ops)
-	SqlServer (all except CAS, Expiry, and sequence ops)	
 	Cassandra (CRUD support)
 
 
@@ -78,3 +74,5 @@ There are currently 4 components:
 	The Provider (IStoreProvider) - Bridges the key(string)/value(string) interface to a database implementation
 	The Serializer (ITextSerializer) - Provides serialization of a strongly typed object to string. By default we use ServiceStack.Text due to its fantastic performance.
 	The Store(IKVStore) - Bridges the key(string)/value(T) interface to the provider via a serializer or other intermediary logic. A standard bridge implementation is provided so normally speaking it is not necessary to implement this interface.
+	
+
