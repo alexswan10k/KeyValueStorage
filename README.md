@@ -13,12 +13,10 @@ Features
 	Tools for Membership/Role/Profile substitutes
 	Tools for encryption and decryption of keys on insertion
 	Tools for storing relational data (currently somewhat experimental)
+	Locking
 	Written using TDD and loosely coupled code. Plenty of extension points to customize behaviour.
 	Available on NuGet!
 	
-In progress
-	Locking
-	Collections
 
 Possible features to support in the future:
 		
