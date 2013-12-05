@@ -21,16 +21,17 @@ namespace KeyValueStorage.Utility
         public string StoreExpiryDataExpiryKeyPrefix { get; protected set; }
         public TimeSpan WindowResolution { get; protected set; }
 
-        public KVSExpiredKeyCleaner(IStoreProvider provider, string lockKey, TimeSpan windowResolution)
+        public KVSExpiredKeyCleaner(IStoreProvider provider, string lockKey, TimeSpan windowResolution, ITextSerializer serializer = null)
         {
             LockKey = lockKey;
             WindowResolution = windowResolution;
             LockExpiryTimeS = 320;
-            Serializer = new ServiceStackTextSerializer();
+            Serializer = serializer ?? new ServiceStackTextSerializer();
             StoreExpiryDateRowPrefix = "-SE-";
             StoreExpirySequenceKey = "-SES";
             StoreExpiryStateDataKey = "-SESD";
             StoreExpiryDataExpiryKeyPrefix = "-E-";
+            Provider = provider;
         }
 
         public void CleanupKeys()

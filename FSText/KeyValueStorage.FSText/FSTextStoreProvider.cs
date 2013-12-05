@@ -34,21 +34,16 @@ namespace KeyValueStorage.FSText
 			
 		}
 
-        public FSTextStoreProvider(string path)
+
+        public FSTextStoreProvider(string path, CharSubstitutor keyCharsubstitutor = null)
         {
             DI = new DirectoryInfo(path);
 
             if (!DI.Exists)
                 DI.Create();
 
-            KeyCharSubstitutor = KeyCharSubstitutorDefault;
-			KeyCleaner = new KVSExpiredKeyCleaner(this, lockPrefix + "KC",new TimeSpan(1,0,0,0));
-        }
-
-        public FSTextStoreProvider(string path, CharSubstitutor keyCharsubstitutor)
-            :this(path)
-        {
-            KeyCharSubstitutor = keyCharsubstitutor;
+            KeyCharSubstitutor = keyCharsubstitutor ?? KeyCharSubstitutorDefault;
+            KeyCleaner = new KVSExpiredKeyCleaner(this, lockPrefix + "KC", new TimeSpan(1, 0, 0, 0));
         }
 
         FileInfo _GetFileInfo(string key, bool isData = false)
@@ -331,7 +326,8 @@ namespace KeyValueStorage.FSText
 
                 System.Threading.Thread.Sleep(20);
                 //retry
-                return getNextSequenceValue(key, increment, tryCount++);
+                tryCount++;
+                return getNextSequenceValue(key, increment, tryCount);
             }
             return 0;
         }
@@ -343,8 +339,8 @@ namespace KeyValueStorage.FSText
             var fi = _GetFileInfo(key);
 
             if (!fi.Exists)
-                fi.Create();
-
+                fi.Create().Dispose();
+            
             using (var fs = fi.OpenWrite())
             {
                 fs.Seek(fs.Length,SeekOrigin.Begin);
