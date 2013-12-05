@@ -2,12 +2,13 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>KeyValueStorage.Core</id>
-    <version>0.0.0.1-alpha</version>
+    <version>0.1.0.0</version>
     <title>KeyValueStorage Core Classes and Interfaces</title>
     <authors>Metal10k</authors>
     <summary></summary>
     <description>This is the core library for KVS. All other components depend on this.</description>
     <language>en-us</language>
+    <projectUrl>https://github.com/Metal10k/KeyValueStorage</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
       <dependency id="ServiceStack.Text" />

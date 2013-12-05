@@ -2,12 +2,13 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>KeyValueStorage.FSText</id>
-    <version>0.0.0.2-alpha</version>
+    <version>0.1.0.0</version>
     <title>KeyValueStorage File System Text Implementation</title>
     <authors>Metal10k</authors>
     <summary></summary>
     <description>This is the text to file implementation of the key value storage abstraction. It will allow you to work with your local file system as a key value store (such as couchbase)</description>
     <language>en-us</language>
+    <projectUrl>https://github.com/Metal10k/KeyValueStorage</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
       <dependency id="ServiceStack.Text" />
