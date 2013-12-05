@@ -178,12 +178,12 @@ namespace KeyValueStorage.Oracle
             throw new NotImplementedException();
         }
 
-        public void Set(string key, string value, ulong CAS, DateTime expires)
+        public void Set(string key, string value, ulong cas, DateTime expires)
         {
             throw new NotImplementedException();
         }
 
-        public void Set(string key, string value, ulong CAS, TimeSpan expiresIn)
+        public void Set(string key, string value, ulong cas, TimeSpan expiresIn)
         {
             throw new NotImplementedException();
         }

@@ -3,19 +3,24 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using KeyValueStorage.Exceptions;
 using KeyValueStorage.Interfaces;
 using KeyValueStorage.Extensions;
 using System.Data.SqlClient;
+using KeyValueStorage.Interfaces.Utility;
 using KeyValueStorage.Utility;
+using KeyValueStorage.Utility.Sql;
 
 namespace KeyValueStorage.SqlServer
 {
     public class SqlServerStoreProvider : IRDbStoreProvider
     {
-            public IDbConnection Connection { get; protected set; }
+        private SqlDialectProviderCommon _sqlDialect = new SqlDialectProviderCommon();
+        public IDbConnection Connection { get; protected set; }
             public bool OwnsConnection { get; protected set; }
             public string KVSTableName { get; protected set; }
             const string KVSTableNameDefault = "KVS";
+            const string lockPrefix = "-L-";
 
             public RdbExpiredKeyCleaner KeyCleaner { get; protected set; } 
 
@@ -25,6 +30,7 @@ namespace KeyValueStorage.SqlServer
                 OwnsConnection = false;
 
                 KVSTableName = KVSTableNameDefault;
+                KeyCleaner = new RdbExpiredKeyCleaner(this);
             }
 
             public SqlServerStoreProvider(string connectionString)
@@ -33,16 +39,7 @@ namespace KeyValueStorage.SqlServer
                 OwnsConnection = true;
 
                 KVSTableName = KVSTableNameDefault;
-            }
-
-            public SqlServerStoreProvider(System.Data.SqlClient.SqlConnection connection, RdbExpiredKeyCleaner keyCleaner)
-            {
-                KeyCleaner = keyCleaner;
-            }
-
-            public SqlServerStoreProvider(string connectionString, RdbExpiredKeyCleaner keyCleaner)
-            {
-                KeyCleaner = keyCleaner;
+                KeyCleaner = new RdbExpiredKeyCleaner(this);
             }
 
             protected void BeginOperation()
@@ -102,29 +99,15 @@ namespace KeyValueStorage.SqlServer
                 }
             }
 
+
+
             public void Set(string key, string value)
             {
                 BeginOperation();
-                try
-                {
-                    var count = (int)Connection.ExecuteSql("Select Count([Value]) from " + KVSTableName + " where [Key] = @p1", key).AsEnumerable().First()[0];
-
-                    if (count == 0)
-                    {
-                        Connection.ExecuteNonQuery("Insert into " + KVSTableName + "([Key], [Value]) values (@p1, @p2)", key, value);
-                    }
-                    else
-                    {
-                        var rows = Connection.ExecuteNonQuery("Update " + KVSTableName + " Set [Value] = @p1 where [Key] = @p2", value, key);
-                        if (rows != 1)
-                            throw new Exception("Update did not affect the expected number of rows");
-                    }
-                }
-                catch (SqlException ex)
-                {
-                    throw;
-                }
+                _Set(key, value, null);
             }
+
+
 
             public void Remove(string key)
             {
@@ -141,33 +124,83 @@ namespace KeyValueStorage.SqlServer
 
             public string Get(string key, out ulong cas)
             {
+                cas = 0;
+                BeginOperation();
+                var dt = _sqlDialect.ExecuteSelectParams(Connection, KVSTableName, new[] {"[Value]", "[Cas]"},
+                                                         new WhereClause("[Key]", Operator.Equals, key));
+                if (dt.Rows.Count != 1)
+                    return string.Empty;
+
+                cas = GenerateCas();
+                _sqlDialect.ExecuteUpdateParams(Connection, KVSTableName,
+                                                new[] {new WhereClause("[Key]", Operator.Equals, key)},
+                                                new ColumnValue("[Cas]",(int) cas));
+
+                if (dt.Rows.Count != 1)
+                    return string.Empty;
+
+                return (string) dt.Rows[0]["Value"];
+
                 //use triggers?
                 throw new NotImplementedException();
             }
 
-            public void Set(string key, string value, ulong cas)
+        private static ulong GenerateCas()
+        {
+            ulong cas;
+            byte[] bytes = new byte[4];
+            new Random().NextBytes(bytes);
+            cas = BitConverter.ToUInt16(bytes, 0);
+            return cas;
+        }
+
+        public void Set(string key, string value, ulong cas)
             {
-                throw new NotImplementedException();
+                BeginOperation();
+                AssertCasIsValid(key, cas);
+
+                _Set(key, value, null); 
             }
+
+        private void AssertCasIsValid(string key, ulong cas)
+        {
+            var casExisting =(int?)
+                Connection.ExecuteSql("Select [Cas] from " + KVSTableName + " where [Key] = '" + key + "'").AsEnumerable().First
+                    ()[0];
+
+            if(casExisting == null)
+                throw new CASException("Key does not exist for Cas " + cas);
+
+            var casExistingUlong = (ulong) casExisting;
+
+            if (casExistingUlong != cas)
+                throw new CASException();
+        }
 
             public void Set(string key, string value, DateTime expires)
             {
-                throw new NotImplementedException();
+                BeginOperation();
+                _Set(key, value, expires); 
             }
 
             public void Set(string key, string value, TimeSpan expiresIn)
             {
-                throw new NotImplementedException();
+                BeginOperation();
+                _Set(key, value, DateTime.UtcNow + expiresIn);
             }
 
-            public void Set(string key, string value, ulong CAS, DateTime expires)
+            public void Set(string key, string value, ulong cas, DateTime expires)
             {
-                throw new NotImplementedException();
+                BeginOperation();
+                AssertCasIsValid(key, cas);
+                _Set(key, value, expires);
             }
 
-            public void Set(string key, string value, ulong CAS, TimeSpan expiresIn)
+            public void Set(string key, string value, ulong cas, TimeSpan expiresIn)
             {
-                throw new NotImplementedException();
+                BeginOperation();
+                AssertCasIsValid(key, cas);
+                _Set(key, value, DateTime.UtcNow + expiresIn);
             }
 
             public bool Exists(string key)
@@ -236,15 +269,55 @@ namespace KeyValueStorage.SqlServer
             public ulong GetNextSequenceValue(string key, int increment)
             {
                 //set up a sproc for this
-                throw new NotImplementedException();
+                using (IKeyLock keyLock = new KVSLockWithCAS(lockPrefix + key, DateTime.UtcNow.AddSeconds(10),this, retryingLock:true))
+                {
+                    ulong value = 0;
+                    var valueRaw = Get(key);
+
+                    if (valueRaw != string.Empty)
+                        value = (ulong)int.Parse(valueRaw);
+
+                    value = value + (ulong)increment;
+                    Set(key, value.ToString());
+                    return value;
+                }
             }
 
             public void Append(string key, string value)
             {
-                throw new NotImplementedException();
+                //This could be done far more efficiently and atomically with a sproc
+                using (IKeyLock keyLock = new KVSLockWithCAS(lockPrefix + key, DateTime.UtcNow.AddSeconds(10), this, retryingLock:true))
+                {
+                    var existingValue = Get(key);
+                    Set(key, existingValue + value);
+                }
             }
 
             #endregion
+
+            private void _Set(string key, string value, DateTime? expires)
+            {
+                try
+                {
+                    var count = (int)Connection.ExecuteSql("Select Count([Value]) from " + KVSTableName + " where [Key] = @p1", key).AsEnumerable().First()[0];
+
+                    if (count == 0)
+                    {
+                        Connection.ExecuteNonQuery("Insert into " + KVSTableName + "([Key], [Value], [Expires], [Cas]) values (@p1, @p2, @p3, @p4)", key, value, expires, (int)GenerateCas());
+                    }
+                    else
+                    {
+                        var rows = Connection.ExecuteNonQuery("Update " + KVSTableName + " Set [Value] = @p1, [Expires] = @p2, [Cas] = @p3 where [Key] = @p4", value, expires, 
+                            (int)GenerateCas(), key);
+                        if (rows != 1)
+                            throw new Exception("Update did not affect the expected number of rows");
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    throw;
+                }
+            }
 
             public void Dispose()
             {

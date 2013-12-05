@@ -29,12 +29,12 @@ namespace KeyValueStorage.Extensions
 
         public static int ExecuteUpdateParams(this IDbConnection connection, string tableName, IEnumerable<WhereClause> whereClauses, params ColumnValue[] values)
         {
-            return SqlDialect.ExecuteUpdateParams(connection, tableName, whereClauses, values);
+            return SqlDialect.ExecuteUpdateParams(connection, tableName, whereClauses.ToArray(), values);
         }
 
         public static int ExecuteUpdateParams(this IDbConnection connection, string tableName, WhereClause whereClause, params ColumnValue[] values)
         {
-            return SqlDialect.ExecuteUpdateParams(connection, tableName, new WhereClause[]{ whereClause}, values);
+            return SqlDialect.ExecuteUpdateParams(connection, tableName, new[]{ whereClause}, values);
         }
 
         public static int ExecuteUpdateParams(this IDbConnection connection, string tableName, params ColumnValue[] values)

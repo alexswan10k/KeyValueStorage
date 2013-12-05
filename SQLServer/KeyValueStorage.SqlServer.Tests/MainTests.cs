@@ -22,5 +22,36 @@ namespace KeyValueStorage.SqlServer.Tests
         {
             ReusableTests.CRUDSingleSimpleItemTest();
         }
+
+
+        [Test]
+        public void SequenceTest()
+        {
+            ReusableTests.SequenceTest();
+        }
+
+        [Test]
+        public void CASTest()
+        {
+            ReusableTests.CASTest();
+        }
+
+        [Test]
+        public void KeysStartingWithTest()
+        {
+            ReusableTests.KeysStartingWithTest();
+        }
+
+        [Test]
+        public void ValuesStartingWithTest()
+        {
+            ReusableTests.ValuesStartingWithTest();
+        }
+
+        [Test]
+        public void CollectionsTest()
+        {
+            ReusableTests.CollectionsTest();
+        }
     }
 }

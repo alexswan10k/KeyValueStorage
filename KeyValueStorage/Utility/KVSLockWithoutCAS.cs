@@ -11,6 +11,7 @@ namespace KeyValueStorage.Utility
 {
     public class KVSLockWithoutCAS : IKeyLock
     {
+        private int _retryingLockBackoffTimeMs;
         public string LockKey { get; protected set; }
         public DateTime Expires { get; protected set; }
         public string WorkerId { get; protected set; }
@@ -18,27 +19,38 @@ namespace KeyValueStorage.Utility
         public IStoreProvider Provider {get;set;}
         public ITextSerializer Serializer { get; set; }
 
-        public KVSLockWithoutCAS(string lockKey, DateTime expires, string workerId, IStoreProvider provider, ITextSerializer serializer)
+        public KVSLockWithoutCAS(string lockKey,
+            DateTime expires, 
+            IStoreProvider provider, 
+            bool retryingLock = false, 
+            string workerId = null, 
+            int retryingLockBackoffTimeMs = 100, 
+            ITextSerializer serializer = null)
         {
+            _retryingLockBackoffTimeMs = retryingLockBackoffTimeMs;
             LockKey = lockKey;
             Expires = expires;
             WorkerId = workerId;
             Provider = provider;
             Serializer = serializer;
 
+            if (retryingLock)
+                AcquireLockRecursiveRetry();
+
             AcquireLock();
         }
 
-        public KVSLockWithoutCAS(string lockKey, DateTime expires, string workerId, IStoreProvider provider)
-            :this(lockKey, expires, workerId, provider, new ServiceStackTextSerializer())
+        public void AcquireLockRecursiveRetry()
         {
-
-        }
-
-        public KVSLockWithoutCAS(string lockKey, DateTime expires, IStoreProvider provider)
-            : this(lockKey, expires, System.Environment.MachineName, provider, new ServiceStackTextSerializer())
-        {
-
+            try
+            {
+                AcquireLock();
+            }
+            catch (LockException)
+            {
+                System.Threading.Thread.Sleep(_retryingLockBackoffTimeMs);
+                AcquireLockRecursiveRetry();
+            }
         }
 
         private void AcquireLock()

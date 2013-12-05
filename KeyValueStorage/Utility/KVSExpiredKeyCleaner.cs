@@ -37,7 +37,7 @@ namespace KeyValueStorage.Utility
         {
             try
             {
-                using (var keyLock = new KVSLockWithCAS(LockKey, DateTime.UtcNow.AddSeconds(LockExpiryTimeS), "T", Provider))
+                using (var keyLock = new KVSLockWithCAS(LockKey, DateTime.UtcNow.AddSeconds(LockExpiryTimeS), Provider,false, "T"))
                 {
                     var stateData = _GetStateData();
 
@@ -75,12 +75,16 @@ namespace KeyValueStorage.Utility
             Provider.Set(StoreExpiryDataExpiryKeyPrefix + key, Serializer.Serialize(expires));
         }
 
-        public DateTime GetKeyExpiry(string key)
+        public DateTime? GetKeyExpiry(string key)
         {
-            return Serializer.Deserialize<DateTime>(Provider.Get(StoreExpiryDataExpiryKeyPrefix + key));
+            string item = Provider.Get(StoreExpiryDataExpiryKeyPrefix + key);
+            if (item == null)
+                return null;
+
+            return Serializer.Deserialize<DateTime?>(item);
         }
 
-	    private int _RemoveItemsFromWindow(ulong offsetWindow)
+        private int _RemoveItemsFromWindow(ulong offsetWindow)
         {
             try
             {

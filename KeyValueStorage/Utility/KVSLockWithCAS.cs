@@ -12,6 +12,8 @@ namespace KeyValueStorage.Utility
 {
     public class KVSLockWithCAS : IKeyLock
     {
+        private readonly bool _retryingLock;
+        private int _retryingLockBackoffTimeMs;
         public string LockKey { get; protected set; }
         public DateTime Expires { get; protected set; }
         public string WorkerId { get; protected set; }
@@ -19,37 +21,57 @@ namespace KeyValueStorage.Utility
         public IStoreProvider Provider {get;set;}
         public ITextSerializer Serializer { get; set; }
 
-        public KVSLockWithCAS(string lockKey, DateTime expires, string workerId, IStoreProvider provider, ITextSerializer serializer)
+        public KVSLockWithCAS(string lockKey, 
+            DateTime expires, 
+            IStoreProvider provider, 
+            bool retryingLock = false, 
+            string workerId = null, 
+            int retryingLockBackoffTimeMs = 100, 
+            ITextSerializer serializer = null)
         {
+            _retryingLockBackoffTimeMs = retryingLockBackoffTimeMs;
+            _retryingLock = retryingLock;
             LockKey = lockKey;
             Expires = expires;
-            WorkerId = workerId;
+            WorkerId = workerId ?? System.Environment.MachineName;
             Provider = provider;
-            Serializer = serializer;
+            Serializer = serializer ?? new ServiceStackTextSerializer();
 
-            AcquireLockCAS();
+            if(retryingLock)
+                AcquireLockRecursiveRetry();
+            else
+                AcquireLock();
         }
 
-        public KVSLockWithCAS(string lockKey, DateTime expires, string workerId, IStoreProvider provider)
-            :this(lockKey, expires, workerId, provider, new ServiceStackTextSerializer())
+        public void AcquireLockRecursiveRetry()
         {
-
+            try
+            {
+                AcquireLock();
+            }
+            catch(LockException)
+            {
+                System.Threading.Thread.Sleep(_retryingLockBackoffTimeMs);
+                AcquireLockRecursiveRetry();
+            }
         }
 
-        public KVSLockWithCAS(string lockKey, DateTime expires, IStoreProvider provider)
-            : this(lockKey, expires, System.Environment.MachineName, provider, new ServiceStackTextSerializer())
-        {
-
-        }
-
-        private void AcquireLockCAS()
+        private void AcquireLock()
         {
             ulong cas;
             var lockPOCO = Get(LockKey, out cas);
             if (lockPOCO != null)
                 CheckLockPocoIsMyLock(lockPOCO);
 
-            Set(LockKey, new StoreKeyLock() { Expiry = Expires, WorkerId = WorkerId, IsConfirmed = true }, cas);
+            var storeKeyLock = new StoreKeyLock() {Expiry = Expires, WorkerId = WorkerId, IsConfirmed = true};
+            if (cas > 0)
+            {
+                Set(LockKey, storeKeyLock, cas);
+            }
+            else
+            {
+                Set(LockKey, storeKeyLock);
+            }
         }
 
         private void CheckLockPocoIsMyLock(StoreKeyLock lockPOCO, bool isMyLock = false)
@@ -67,6 +89,11 @@ namespace KeyValueStorage.Utility
             }
             else
                 throw new ArgumentNullException("Lock POCO is null");
+        }
+
+        private void Set(string key, StoreKeyLock value)
+        {
+            Provider.Set(key, Serializer.Serialize(value));
         }
 
         private void Set(string key, StoreKeyLock value, ulong cas)

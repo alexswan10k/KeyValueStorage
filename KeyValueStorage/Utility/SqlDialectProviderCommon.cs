@@ -23,7 +23,7 @@ namespace KeyValueStorage.Utility
         /// <param name="connection">The connection.</param>
         /// <param name="tableName">Name of the table.</param>
         /// <param name="values">The column values to insert.</param>
-        public virtual int ExecuteInsertParams(IDbConnection connection, string tableName, IEnumerable<ColumnValue> values)
+        public virtual int ExecuteInsertParams(IDbConnection connection, string tableName, params ColumnValue[] values)
         {
             if (connection.State == ConnectionState.Closed)
                 connection.Open();
@@ -59,7 +59,8 @@ namespace KeyValueStorage.Utility
         /// <param name="connection">The connection.</param>
         /// <param name="tableName">Name of the table.</param>
         /// <param name="values">The column values to insert.</param>
-        public virtual int ExecuteUpdateParams(IDbConnection connection, string tableName, IEnumerable<WhereClause> whereClauses, IEnumerable<ColumnValue> values)
+        /// <param name="whereClauses"> </param>
+        public virtual int ExecuteUpdateParams(IDbConnection connection, string tableName, WhereClause[] whereClauses, params ColumnValue[] values)
         {
             if (connection.State == ConnectionState.Closed)
                 connection.Open();
@@ -102,7 +103,7 @@ namespace KeyValueStorage.Utility
         /// <param name="connection">The connection.</param>
         /// <param name="tableName">Name of the table.</param>
         /// <param name="values">The column values to insert.</param>
-        public virtual int ExecuteDeleteParams(IDbConnection connection, string tableName, IEnumerable<WhereClause> whereClauses)
+        public virtual int ExecuteDeleteParams(IDbConnection connection, string tableName, params WhereClause[] whereClauses)
         {
             if (connection.State == ConnectionState.Closed)
                 connection.Open();
@@ -127,7 +128,7 @@ namespace KeyValueStorage.Utility
         /// <param name="colNames">The col names.</param>
         /// <param name="whereClauses">The where clauses.</param>
         /// <returns>A data table object containing the rows retrieved from the selection.</returns>
-        public virtual DataTable ExecuteSelectParams(IDbConnection connection, string tableName, IEnumerable<string> colNames, IEnumerable<WhereClause> whereClauses)
+        public virtual DataTable ExecuteSelectParams(IDbConnection connection, string tableName, IEnumerable<string> colNames, params WhereClause[] whereClauses)
         {
             if (connection.State == ConnectionState.Closed)
                 connection.Open();

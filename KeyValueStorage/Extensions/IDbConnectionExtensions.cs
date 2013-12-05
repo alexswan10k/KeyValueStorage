@@ -11,16 +11,25 @@ namespace KeyValueStorage.Extensions
         public static int ExecuteNonQuery(this IDbConnection connection, string sql, params object[] parameters)
         {
             var cmd = connection.CreateCommand();
-            cmd.CommandText = sql;
+            
             int counter = 1;
             foreach (var param in parameters)
             {
-                var par = cmd.CreateParameter();
-                par.ParameterName = "p" + counter;
-                par.Value = param;
-                cmd.Parameters.Add(par);
+                string paramName = "@p" + counter;
+
+                if (param != null)
+                {
+                    var par = cmd.CreateParameter();
+                    par.ParameterName = paramName;
+                    par.Value = param;
+                    cmd.Parameters.Add(par);
+                }
+                else
+                    sql = sql.Replace(paramName, "NULL");
+
                 counter++;
             }
+            cmd.CommandText = sql;
 
             return cmd.ExecuteNonQuery();
         }

@@ -194,17 +194,17 @@ namespace KeyValueStorage.FSText
             _SetKeyExpiry(key, expires);
         }
 
-        public void Set(string key, string value, ulong CAS, DateTime expires)
+        public void Set(string key, string value, ulong cas, DateTime expires)
         {
-            Set(key, value, CAS);
+            Set(key, value, cas);
             _SetKeyExpiry(key, expires);
         }
 
-        public void Set(string key, string value, ulong CAS, TimeSpan expiresIn)
+        public void Set(string key, string value, ulong cas, TimeSpan expiresIn)
         {
             var expires = DateTime.UtcNow + expiresIn;
 
-            Set(key, value, CAS);
+            Set(key, value, cas);
             _SetKeyExpiry(key, expires);
         }
 

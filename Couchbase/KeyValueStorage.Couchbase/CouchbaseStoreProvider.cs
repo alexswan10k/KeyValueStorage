@@ -90,14 +90,14 @@ namespace KeyValueStorage.Couchbase
             Client.Store(Enyim.Caching.Memcached.StoreMode.Set, key, value,DateTime.UtcNow + expiresIn);
         }
 
-        public void Set(string key, string value, ulong CAS, DateTime expires)
+        public void Set(string key, string value, ulong cas, DateTime expires)
         {
-            Client.Cas(Enyim.Caching.Memcached.StoreMode.Set, key, value, expires, CAS);
+            Client.Cas(Enyim.Caching.Memcached.StoreMode.Set, key, value, expires, cas);
         }
 
-        public void Set(string key, string value, ulong CAS, TimeSpan expiresIn)
+        public void Set(string key, string value, ulong cas, TimeSpan expiresIn)
         {
-            Client.Cas(Enyim.Caching.Memcached.StoreMode.Set, key, value, DateTime.UtcNow + expiresIn, CAS);
+            Client.Cas(Enyim.Caching.Memcached.StoreMode.Set, key, value, DateTime.UtcNow + expiresIn, cas);
         }
 
         public bool Exists(string key)
