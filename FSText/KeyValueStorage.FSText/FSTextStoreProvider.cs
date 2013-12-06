@@ -31,7 +31,7 @@ namespace KeyValueStorage.FSText
 		public FSTextStoreProvider()
 			:this(AppDomain.CurrentDomain.RelativeSearchPath + @"\KVS\")
 		{
-			
+
 		}
 
 
@@ -348,6 +348,12 @@ namespace KeyValueStorage.FSText
                 fs.Write(bytes, 0, bytes.Length);
             }
         }
+
+        public IRetryStrategy GetDefaultRetryStrategy()
+        {
+            return new FSTextRetryStrategy(5, 500);
+        }
+
         #endregion
 
         private void _SetKeyExpiry(string key, DateTime expires)

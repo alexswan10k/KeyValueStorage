@@ -8,6 +8,7 @@ using KeyValueStorage.Interfaces;
 using KeyValueStorage.Extensions;
 using System.Data.SqlClient;
 using KeyValueStorage.Interfaces.Utility;
+using KeyValueStorage.RetryStrategies;
 using KeyValueStorage.Utility;
 using KeyValueStorage.Utility.Sql;
 
@@ -293,7 +294,12 @@ namespace KeyValueStorage.SqlServer
                 }
             }
 
-            #endregion
+        public IRetryStrategy GetDefaultRetryStrategy()
+        {
+            return new SimpleRetryStartegy(5, 1000);
+        }
+
+        #endregion
 
             private void _Set(string key, string value, DateTime? expires)
             {

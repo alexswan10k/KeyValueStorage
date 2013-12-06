@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using KeyValueStorage.Interfaces;
 using KeyValueStorage.Extensions;
+using KeyValueStorage.RetryStrategies;
 using Oracle.ManagedDataAccess.Client;
 using KeyValueStorage.Utility.Sql;
 using KeyValueStorage.Utility;
@@ -270,6 +271,12 @@ namespace KeyValueStorage.Oracle
         {
             throw new NotImplementedException();
         }
+
+        public IRetryStrategy GetDefaultRetryStrategy()
+        {
+            return new SimpleRetryStartegy(5, 1000);
+        }
+
         #endregion
 
         #region SqlHelpers

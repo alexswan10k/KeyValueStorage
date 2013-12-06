@@ -97,5 +97,7 @@ namespace KeyValueStorage.Interfaces
         #region CollectionBaseOperations
         void Append(string key, string value);
         #endregion
+
+        IRetryStrategy GetDefaultRetryStrategy();
     }
 }

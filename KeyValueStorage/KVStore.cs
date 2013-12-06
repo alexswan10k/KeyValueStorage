@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.RetryStrategies;
 using KeyValueStorage.Utility;
 
 namespace KeyValueStorage
 {
     public class KVStore : IKVStore
     {
+        private readonly IRetryStrategy _retryStrategy;
         public static Factory Factory { get; set; }
 
         public static void Initialize(Func<IStoreProvider> createProviderDel)
@@ -21,16 +23,14 @@ namespace KeyValueStorage
             Factory = new Factory(createProviderDel, serializer);
         }
 
-        public KVStore(IStoreProvider provider)
+        public KVStore(IStoreProvider provider, ITextSerializer serializer = null, IRetryStrategy retryStrategy = null)
         {
-            StoreProvider = provider;
-            Serializer = new ServiceStackTextSerializer();
-        }
+            if(provider == null)
+                throw new ArgumentException("Provider cannot be null", "provider");
 
-        public KVStore(IStoreProvider provider, ITextSerializer serializer)
-        {
+            _retryStrategy = retryStrategy ?? provider.GetDefaultRetryStrategy();
             StoreProvider = provider;
-            Serializer = serializer;
+            Serializer = serializer ?? new ServiceStackTextSerializer();
         }
 
         
@@ -40,98 +40,130 @@ namespace KeyValueStorage
         #region IKeyValueStore
         public T Get<T>(string key)
         {
-            return Serializer.Deserialize<T>(StoreProvider.Get(key));
+            return _retryStrategy.ExecuteFuncWithRetry(
+                () => Serializer.Deserialize<T>(StoreProvider.Get(key)));
         }
 
         public void Set<T>(string key, T value)
         {
-            StoreProvider.Set(key, Serializer.Serialize(value));
+            _retryStrategy.ExecuteDelegateWithRetry(
+                () => StoreProvider.Set(key, Serializer.Serialize(value)));
         }
 
         public void Delete(string key)
         {
-            StoreProvider.Remove(key);
+            _retryStrategy.ExecuteDelegateWithRetry(
+                () => StoreProvider.Remove(key));
         }
 
         public T Get<T>(string key, out ulong cas)
         {
-            return Serializer.Deserialize<T>(StoreProvider.Get(key, out cas));
+            //horrendous hack for accomodating out params!
+            ulong casOut = 0;
+
+            var outerResult =  _retryStrategy.ExecuteFuncWithRetry(
+                () =>
+                    {
+                        ulong cas2;
+                        var innerResult = Serializer.Deserialize<T>(StoreProvider.Get(key, out cas2));
+                        casOut = cas2;
+                        return innerResult;
+                    });
+
+            cas = casOut;
+            return outerResult;
         }
+
 
         public void Set<T>(string key, T value, ulong cas)
         {
-            StoreProvider.Set(key, Serializer.Serialize(value), cas);
+            _retryStrategy.ExecuteDelegateWithRetry(
+                () => StoreProvider.Set(key, Serializer.Serialize(value), cas));
         }
 
         public void Set<T>(string key, T value, DateTime expires)
         {
-            StoreProvider.Set(key, Serializer.Serialize(value), expires);
+            _retryStrategy.ExecuteDelegateWithRetry(
+                () => StoreProvider.Set(key, Serializer.Serialize(value), expires));
         }
 
         public void Set<T>(string key, T value, TimeSpan expiresIn)
         {
-            StoreProvider.Set(key, Serializer.Serialize(value), expiresIn);
+            _retryStrategy.ExecuteDelegateWithRetry(
+                () => StoreProvider.Set(key, Serializer.Serialize(value), expiresIn));
         }
 
         public void Set<T>(string key, T value, ulong cas, DateTime expires)
         {
-            StoreProvider.Set(key, Serializer.Serialize(value), cas, expires);
+            _retryStrategy.ExecuteDelegateWithRetry(
+                () => StoreProvider.Set(key, Serializer.Serialize(value), cas, expires));
         }
 
         public void Set<T>(string key, T value, ulong cas, TimeSpan expiresIn)
         {
-            StoreProvider.Set(key, Serializer.Serialize(value), cas, expiresIn);
+            _retryStrategy.ExecuteDelegateWithRetry(
+                () => StoreProvider.Set(key, Serializer.Serialize(value), cas, expiresIn));
         }
 
 
         public bool Exists(string key)
         {
-            return StoreProvider.Exists(key);
+            return _retryStrategy.ExecuteFuncWithRetry(
+                () => StoreProvider.Exists(key));
         }
 
         public DateTime? ExpiresOn(string key)
         {
-            return StoreProvider.ExpiresOn(key);
+            return _retryStrategy.ExecuteFuncWithRetry(
+                () => StoreProvider.ExpiresOn(key));
         }
 
         #region Queries
         public IEnumerable<T> GetStartingWith<T>(string key)
         {
-            return StoreProvider.GetStartingWith(key).Select(s => Serializer.Deserialize<T>(s)).ToList();
+            return _retryStrategy.ExecuteFuncWithRetry(
+                () => StoreProvider.GetStartingWith(key).Select(s => Serializer.Deserialize<T>(s)).ToList()
+            );
         }
 
         public IEnumerable<string> GetAllKeys()
         {
-            return StoreProvider.GetAllKeys();
+            return _retryStrategy.ExecuteFuncWithRetry(
+                () => StoreProvider.GetAllKeys());
         }
 
         public IEnumerable<string> GetKeysStartingWith(string key)
         {
-            return StoreProvider.GetKeysStartingWith(key);
+            return _retryStrategy.ExecuteFuncWithRetry(
+                () => StoreProvider.GetKeysStartingWith(key));
         }
         #endregion
 
         #region Scalar Queries
         public int CountStartingWith(string key)
         {
-            return StoreProvider.CountStartingWith(key);
+            return _retryStrategy.ExecuteFuncWithRetry(
+                () => StoreProvider.CountStartingWith(key));
         }
 
         public int CountAll()
         {
-            return StoreProvider.CountAll();
+            return _retryStrategy.ExecuteFuncWithRetry(
+                () => StoreProvider.CountAll());
         }
         #endregion
 
         #region Sequences
         public ulong GetNextSequenceValue(string key)
         {
-            return StoreProvider.GetNextSequenceValue(key, 1);
+            return _retryStrategy.ExecuteFuncWithRetry(
+                () => StoreProvider.GetNextSequenceValue(key, 1));
         }
 
         public ulong GetNextSequenceValue(string key, int increment)
         {
-            return StoreProvider.GetNextSequenceValue(key, increment);
+            return _retryStrategy.ExecuteFuncWithRetry(
+                () => StoreProvider.GetNextSequenceValue(key, increment));
         }
         #endregion
         #endregion
@@ -139,36 +171,67 @@ namespace KeyValueStorage
         #region CollectionOperations
         public IEnumerable<T> GetCollection<T>(string key)
         {
-            return Helpers.SeparateJsonArray(StoreProvider.Get(key)).Select(s => Serializer.Deserialize<T>(s)).ToList();
+            return _retryStrategy.ExecuteFuncWithRetry(
+                () =>
+                    Helpers.SeparateJsonArray(StoreProvider.Get(key)).Select(s => Serializer.Deserialize<T>(s)).ToList()
+                );
         }
 
         public IEnumerable<T> GetCollection<T>(string key, out ulong cas)
         {
-            return Helpers.SeparateJsonArray(StoreProvider.Get(key, out cas)).Select(s => Serializer.Deserialize<T>(s)).ToList();
+            // nasty hack for out params
+            ulong casOut = 0;
+
+            var outerResult = _retryStrategy.ExecuteFuncWithRetry(
+                () =>
+                    {
+                        ulong cas2;
+                        var innerResult =
+                            Helpers.SeparateJsonArray(StoreProvider.Get(key, out cas2)).Select(
+                                s => Serializer.Deserialize<T>(s)).ToList();
+                        casOut = cas2;
+                        return innerResult;
+                    });
+
+            cas = casOut;
+            return outerResult;
         }
 
         public void SetCollection<T>(string key, IEnumerable<T> values)
         {
-            StoreProvider.Set(key, String.Concat(values.Select(s => Serializer.Serialize(s))));
+            _retryStrategy.ExecuteDelegateWithRetry(
+                () =>
+                    StoreProvider.Set(key, String.Concat(values.Select(s => Serializer.Serialize(s))))
+                );
         }
 
         public void SetCollection<T>(string key, IEnumerable<T> values, ulong cas)
         {
-            StoreProvider.Set(key, String.Concat(values.Select(s => Serializer.Serialize(s))), cas);
+            _retryStrategy.ExecuteDelegateWithRetry(
+                () => 
+                    StoreProvider.Set(key, String.Concat(values.Select(s => Serializer.Serialize(s))), cas)
+                );
         }
 
         public void AppendToCollection<T>(string key, T value)
         {
-            StoreProvider.Append(key, Serializer.Serialize(value));
+            _retryStrategy.ExecuteDelegateWithRetry(
+                () =>
+                    StoreProvider.Append(key, Serializer.Serialize(value))
+                );
         }
 
         public void RemoveFromCollection<T>(string key, T value)
         {
-            ulong cas;
-            var collection = GetCollection<T>(key, out cas).ToList();
-            var itemToRemove = collection.SingleOrDefault(q => q.Equals(value));
-            collection.Remove(itemToRemove);
-            SetCollection(key, collection);
+            _retryStrategy.ExecuteDelegateWithRetry(
+                () =>
+                    {
+                        ulong cas;
+                        var collection = GetCollection<T>(key, out cas).ToList();
+                        var itemToRemove = collection.SingleOrDefault(q => q.Equals(value));
+                        collection.Remove(itemToRemove);
+                        SetCollection(key, collection);
+                    });
         }
         #endregion
 

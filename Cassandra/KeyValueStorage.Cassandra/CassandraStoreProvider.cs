@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using KeyValueStorage.Interfaces;
 using Cassandra;
+using KeyValueStorage.RetryStrategies;
 using KeyValueStorage.Utility;
 
 namespace KeyValueStorage.Cassandra
@@ -154,6 +155,12 @@ namespace KeyValueStorage.Cassandra
         {
             throw new NotImplementedException();
         }
+
+        public IRetryStrategy GetDefaultRetryStrategy()
+        {
+            return new SimpleRetryStartegy(5, 1000);
+        }
+
         #endregion
 
         public void Dispose()

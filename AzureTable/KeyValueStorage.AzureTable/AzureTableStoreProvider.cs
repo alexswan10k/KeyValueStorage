@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KeyValueStorage.Exceptions;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.RetryStrategies;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Table;
@@ -213,6 +214,11 @@ namespace KeyValueStorage.AzureTable
         public void Append(string key, string value)
         {
             append(key, value);
+        }
+
+        public IRetryStrategy GetDefaultRetryStrategy()
+        {
+            return new SimpleRetryStartegy(5, 1000);
         }
 
         private void append(string key, string value, int tryCount = 0)

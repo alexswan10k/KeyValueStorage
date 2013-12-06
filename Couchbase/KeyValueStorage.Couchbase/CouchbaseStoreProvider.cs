@@ -9,6 +9,7 @@ using Couchbase.Management;
 using KeyValueStorage.Exceptions;
 using System.Reflection;
 using System.IO;
+using KeyValueStorage.RetryStrategies;
 using KeyValueStorage.Utility;
 
 namespace KeyValueStorage.Couchbase
@@ -155,6 +156,12 @@ namespace KeyValueStorage.Couchbase
         {
             Client.Append(key, new ArraySegment<byte>(Encoding.UTF8.GetBytes(value)));
         }
+
+        public IRetryStrategy GetDefaultRetryStrategy()
+        {
+            return new SimpleRetryStartegy(5, 1000);
+        }
+
         #endregion
 
         public void Dispose()

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using KeyValueStorage.Exceptions;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.RetryStrategies;
 using ServiceStack.Redis;
 
 namespace KeyValueStorage.Redis
@@ -171,6 +172,12 @@ namespace KeyValueStorage.Redis
         {
             Client.Append(key, Encoding.UTF8.GetBytes(value));
         }
+
+        public IRetryStrategy GetDefaultRetryStrategy()
+        {
+            return new SimpleRetryStartegy(5, 1000);
+        }
+
         #endregion
 
         public void Dispose()
