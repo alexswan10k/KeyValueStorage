@@ -12,23 +12,14 @@ namespace KeyValueStorage
     {
         public static Factory Instance { get; set; }
 
-        Func<IKVStore> storeInitDel;
+        readonly Func<IKVStore> storeInitDel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Factory"/> class where the provider is set via the init delegate. This is usually used for shortlived providers.
         /// </summary>
-        /// <param name="providerInit">The provider init.</param>
-        public Factory(Func<IStoreProvider> providerInit, bool suppressInitialize = false)
+        public Factory(Func<IStoreProvider> providerInit, ITextSerializer serializer = null, IRetryStrategy retryStrategy = null, bool suppressInitialize = false)
         {
-            storeInitDel = () => new KVStore(providerInit());
-
-            if (!suppressInitialize)
-                Initialize();
-        }
-
-        public Factory(Func<IStoreProvider> providerInit, ITextSerializer serializer, bool suppressInitialize = false)
-        {
-            storeInitDel = () => new KVStore(providerInit());
+            storeInitDel = () => new KVStore(providerInit(), serializer, retryStrategy);
 
             if (!suppressInitialize)
                 Initialize();

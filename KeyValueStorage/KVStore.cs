@@ -13,14 +13,9 @@ namespace KeyValueStorage
         private readonly IRetryStrategy _retryStrategy;
         public static Factory Factory { get; set; }
 
-        public static void Initialize(Func<IStoreProvider> createProviderDel)
+        public static void Initialize(Func<IStoreProvider> createProviderDel, ITextSerializer serializer = null, IRetryStrategy retryStrategy = null)
         {
-            Factory = new Factory(createProviderDel);
-        }
-
-        public static void Initialize(Func<IStoreProvider> createProviderDel, ITextSerializer serializer)
-        {
-            Factory = new Factory(createProviderDel, serializer);
+            Factory = new Factory(createProviderDel, serializer, retryStrategy);
         }
 
         public KVStore(IStoreProvider provider, ITextSerializer serializer = null, IRetryStrategy retryStrategy = null)
