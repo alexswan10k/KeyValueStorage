@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using KeyValueStorage.Exceptions;
 using KeyValueStorage.Interfaces;
 
 namespace KeyValueStorage.RetryStrategies
@@ -33,6 +34,9 @@ namespace KeyValueStorage.RetryStrategies
             }
             catch (Exception ex)
             {
+                if (ex is CASException || ex is LockException)
+                    throw;
+
                 if (ShouldHandleException(ex))
                 {
                     fails++;
@@ -44,7 +48,7 @@ namespace KeyValueStorage.RetryStrategies
                         return;
                     }
                     else
-                        throw new Exception("exceeded max fails", ex);
+                        throw new Exception("Exceeded max fails", ex);
                 }
                 throw;
             }
@@ -58,6 +62,9 @@ namespace KeyValueStorage.RetryStrategies
             }
             catch (Exception ex)
             {
+                if (ex is CASException || ex is LockException)
+                    throw;
+
                 if (ShouldHandleException(ex))
                 {
                     fails++;
@@ -68,7 +75,7 @@ namespace KeyValueStorage.RetryStrategies
                         ExecuteFuncWithRetry(func, fails);
                     }
                     else
-                        throw new Exception("exceeded max fails", ex);
+                        throw new Exception("Exceeded max fails", ex);
                 }
                 throw;
             }
