@@ -9,6 +9,7 @@ Features
 	Sequences
 	CAS
 	Key expiry
+	Retry strategies
 	One common interface for all abstractions
 	Tools for Membership/Role/Profile substitutes
 	Tools for encryption and decryption of keys on insertion
