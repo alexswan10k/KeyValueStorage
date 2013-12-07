@@ -4,6 +4,6 @@ namespace KeyValueStorage.Interfaces
 {
     public interface IStoreBackup :IEnumerable<StoreBackupRow>
     {
-        void Add(StoreBackupRow row);
+        void AddRange(IEnumerable<StoreBackupRow> rows);
     }
 }

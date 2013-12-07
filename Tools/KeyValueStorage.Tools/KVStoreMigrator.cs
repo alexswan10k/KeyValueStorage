@@ -19,8 +19,7 @@ namespace KeyValueStorage.Tools
 
         public void Migrate()
         {
-            var backup = new MemoryStoreBackup();
-            _source.CreateBackup(backup);
+            var backup = _source.CreateBackup(() => new MemoryStoreBackup());
             _destination.ApplyBackup(backup);
         }
 	}

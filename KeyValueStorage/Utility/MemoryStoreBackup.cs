@@ -6,7 +6,7 @@ namespace KeyValueStorage.Interfaces
 {
     public class MemoryStoreBackup : IStoreBackup
     {
-        private ConcurrentBag<StoreBackupRow> _rows = new ConcurrentBag<StoreBackupRow>();
+        private readonly ConcurrentBag<StoreBackupRow> _rows = new ConcurrentBag<StoreBackupRow>();
 
         public void Add(StoreBackupRow row)
         {
@@ -16,6 +16,14 @@ namespace KeyValueStorage.Interfaces
         public IEnumerator<StoreBackupRow> GetEnumerator()
         {
             return _rows.GetEnumerator();
+        }
+
+        public void AddRange(IEnumerable<StoreBackupRow> rows)
+        {
+            foreach(var row in rows)
+            {
+                _rows.Add(row);
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()

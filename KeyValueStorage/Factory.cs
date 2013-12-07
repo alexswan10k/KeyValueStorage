@@ -12,22 +12,31 @@ namespace KeyValueStorage
     {
         public static Factory Instance { get; set; }
 
-        readonly Func<IKVStore> storeInitDel;
+        readonly Func<IKVStore> _storeInitDel;
+        private readonly Func<IExportableStore> _exportableStoreDel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Factory"/> class where the provider is set via the init delegate. This is usually used for shortlived providers.
         /// </summary>
-        public Factory(Func<IStoreProvider> providerInit, ITextSerializer serializer = null, IRetryStrategy retryStrategy = null, bool suppressInitialize = false)
+        public Factory(Func<IStoreProvider> providerInit, 
+            ITextSerializer serializer = null, 
+            IRetryStrategy retryStrategy = null, 
+            Func<IExportableStore> exportableStoreDel = null, 
+            bool suppressInitialize = false)
         {
-            storeInitDel = () => new KVStore(providerInit(), serializer, retryStrategy);
+            _exportableStoreDel = exportableStoreDel;
+            _storeInitDel = () => new KVStore(providerInit(), serializer, retryStrategy);
 
             if (!suppressInitialize)
                 Initialize();
         }
 
-        public Factory(Func<IKVStore> storeInit, bool suppressInitialize = false)
+        public Factory(Func<IKVStore> storeInit, 
+            Func<IExportableStore> exportableStoreDel = null,
+            bool suppressInitialize = false)
         {
-            storeInitDel = storeInit;
+            _storeInitDel = storeInit;
+            _exportableStoreDel = exportableStoreDel;
 
             if (!suppressInitialize)
                 Initialize();
@@ -40,7 +49,14 @@ namespace KeyValueStorage
 
         public IKVStore Get()
         {
-            return storeInitDel();
+            return _storeInitDel();
+        }
+
+        public IExportableStore GetExportableStore()
+        {
+            if (_exportableStoreDel != null)
+                return _exportableStoreDel();
+            return null;
         }
     }
 }
