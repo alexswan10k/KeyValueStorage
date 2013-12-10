@@ -55,7 +55,7 @@
     <Compile Include="Interfaces\IRetryStrategy.cs" />
     <Compile Include="Interfaces\IStoreBackup.cs" />
     <Compile Include="RetryStrategies\NoRetryStrategy.cs" />
-    <Compile Include="RetryStrategies\SimpleRetryStartegy.cs" />
+    <Compile Include="RetryStrategies\SimpleRetryStrategy.cs" />
     <Compile Include="Utility\MemoryStoreBackup.cs" />
     <Compile Include="Utility\Data\StoreBackupRow.cs" />
     <Compile Include="Interfaces\Utility\IExpiredKeyCleaner.cs" />

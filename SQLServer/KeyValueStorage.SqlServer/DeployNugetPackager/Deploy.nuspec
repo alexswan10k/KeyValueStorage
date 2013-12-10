@@ -2,7 +2,7 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>KeyValueStorage.SqlServer</id>
-    <version>0.1.0.0</version>
+    <version>0.1.0.2</version>
     <title>KeyValueStorage SQL Server Implementation</title>
     <authors>Metal10k</authors>
     <summary></summary>
@@ -17,5 +17,6 @@
   </metadata>
   <files>
      <file src="..\bin\Release\KeyValueStorage.SqlServer.dll" target="lib\net40\KeyValueStorage.SqlServer.dll" />
+      <file src="..\CreateTableScript.sql" target="CreateTableScript.sql" />
   </files>
 </package>

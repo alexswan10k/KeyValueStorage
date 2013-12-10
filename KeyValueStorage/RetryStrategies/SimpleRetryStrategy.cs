@@ -5,12 +5,12 @@ using KeyValueStorage.Interfaces;
 
 namespace KeyValueStorage.RetryStrategies
 {
-    public class SimpleRetryStartegy : IRetryStrategy
+    public class SimpleRetryStrategy : IRetryStrategy
     {
         private readonly int _maxFails;
         private readonly int _retryWaitPeriodMs;
 
-        public SimpleRetryStartegy(int maxFails, int retryWaitPeriodMs)
+        public SimpleRetryStrategy(int maxFails, int retryWaitPeriodMs)
         {
             _maxFails = maxFails;
             _retryWaitPeriodMs = retryWaitPeriodMs;

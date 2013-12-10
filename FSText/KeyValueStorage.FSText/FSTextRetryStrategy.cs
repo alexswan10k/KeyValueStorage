@@ -4,7 +4,7 @@ using KeyValueStorage.RetryStrategies;
 
 namespace KeyValueStorage.FSText
 {
-    public class FSTextRetryStrategy : SimpleRetryStartegy
+    public class FSTextRetryStrategy : SimpleRetryStrategy
     {
         public FSTextRetryStrategy(int maxFails, int retryWaitPeriodMs) : 
             base(maxFails, retryWaitPeriodMs)

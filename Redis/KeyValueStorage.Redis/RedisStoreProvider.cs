@@ -111,8 +111,12 @@ namespace KeyValueStorage.Redis
 
         public DateTime? ExpiresOn(string key)
         {
+            var ttlSec = Client.Ttl(key);
+
+            if (ttlSec <= 0)
+                return null;
             //looking for implementation
-            throw new NotImplementedException();
+            return DateTime.UtcNow + TimeSpan.FromSeconds(ttlSec);
         }
 
         public IEnumerable<string> GetStartingWith(string key)
@@ -175,7 +179,7 @@ namespace KeyValueStorage.Redis
 
         public IRetryStrategy GetDefaultRetryStrategy()
         {
-            return new SimpleRetryStartegy(5, 1000);
+            return new SimpleRetryStrategy(5, 1000);
         }
 
         #endregion

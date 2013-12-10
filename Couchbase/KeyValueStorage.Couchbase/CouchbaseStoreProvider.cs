@@ -159,7 +159,7 @@ namespace KeyValueStorage.Couchbase
 
         public IRetryStrategy GetDefaultRetryStrategy()
         {
-            return new SimpleRetryStartegy(5, 1000);
+            return new SimpleRetryStrategy(5, 1000);
         }
 
         #endregion

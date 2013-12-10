@@ -218,7 +218,7 @@ namespace KeyValueStorage.AzureTable
 
         public IRetryStrategy GetDefaultRetryStrategy()
         {
-            return new SimpleRetryStartegy(5, 1000);
+            return new SimpleRetryStrategy(5, 1000);
         }
 
         private void append(string key, string value, int tryCount = 0)

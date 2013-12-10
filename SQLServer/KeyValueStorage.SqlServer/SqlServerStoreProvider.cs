@@ -57,8 +57,8 @@ namespace KeyValueStorage.SqlServer
                     Connection.ExecuteNonQuery("create table " + KVSTableName + " ("
                         + "[Key] Varchar(128) not null,"
                         + "[Value] Varchar(MAX),"
-                        + "Expires datetime,"
-                        + "CAS int"
+                        + "[Expires] datetime,"
+                        + "[Cas] int"
                         + ")");
 
                     Connection.ExecuteNonQuery("Alter table "+ KVSTableName 
@@ -296,7 +296,7 @@ namespace KeyValueStorage.SqlServer
 
         public IRetryStrategy GetDefaultRetryStrategy()
         {
-            return new SimpleRetryStartegy(5, 1000);
+            return new SimpleRetryStrategy(5, 1000);
         }
 
         #endregion
