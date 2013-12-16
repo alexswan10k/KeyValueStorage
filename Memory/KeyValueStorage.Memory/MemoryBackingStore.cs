@@ -58,7 +58,7 @@ namespace KeyValueStorage.Memory
             }
         }
 
-        public void ApplyBackup(IStoreBackup backupToApply)
+		public void ApplyBackup(IStoreBackup backupToApply, RestoreStrategy strategy = RestoreStrategy.Overwrite)
         {
             lock (GetLockObject())
             {

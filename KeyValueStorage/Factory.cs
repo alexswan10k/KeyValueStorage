@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.Utility;
 
 namespace KeyValueStorage
 {
@@ -24,10 +25,10 @@ namespace KeyValueStorage
             Func<IExportableStore> exportableStoreDel = null, 
             bool suppressInitialize = false)
         {
-            _exportableStoreDel = exportableStoreDel;
-            _storeInitDel = () => new KVStore(providerInit(), serializer, retryStrategy);
+	        _storeInitDel = () => new KVStore(providerInit(), serializer, retryStrategy);
+	        _exportableStoreDel = exportableStoreDel ?? (() => new KVStoreProviderExportableStore(providerInit()));
 
-            if (!suppressInitialize)
+	        if (!suppressInitialize)
                 Initialize();
         }
 
@@ -36,7 +37,7 @@ namespace KeyValueStorage
             bool suppressInitialize = false)
         {
             _storeInitDel = storeInit;
-            _exportableStoreDel = exportableStoreDel;
+			_exportableStoreDel = exportableStoreDel ?? (() => new KVStoreProviderExportableStore(storeInit().StoreProvider));
 
             if (!suppressInitialize)
                 Initialize();

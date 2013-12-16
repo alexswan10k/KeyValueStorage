@@ -13,8 +13,10 @@ namespace KeyValueStorage.Utility
     public class KVSLockWithCAS : IKeyLock
     {
         private readonly bool _retryingLock;
-        private int _retryingLockBackoffTimeMs;
-        public string LockKey { get; protected set; }
+        private readonly int _retryingLockBackoffTimeMs;
+	    private int _lockFailureCount = 0;
+	    private const int _maxLockFailure = 20;
+	    public string LockKey { get; protected set; }
         public DateTime Expires { get; protected set; }
         public string WorkerId { get; protected set; }
 
@@ -48,9 +50,13 @@ namespace KeyValueStorage.Utility
             try
             {
                 AcquireLock();
+				_lockFailureCount = 0;
             }
-            catch(LockException)
+            catch(LockException ex)
             {
+	            _lockFailureCount++;
+	            if(_lockFailureCount > _maxLockFailure)
+					throw new Exception("Exceeded maximum retries "+ _maxLockFailure, ex);
                 System.Threading.Thread.Sleep(_retryingLockBackoffTimeMs);
                 AcquireLockRecursiveRetry();
             }
