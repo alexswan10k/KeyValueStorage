@@ -86,26 +86,4 @@ namespace KeyValueStorage.RetryStrategies
             return true;
         }
     }
-
-    //public class RetryStrategyParams
-    //{
-    //    private int _maxFails;
-    //    private TimeSpan _retryWaitPeriod;
-
-    //    public RetryStrategyParams(int maxFails = 4, int retryWaitPeriodMs = 1000)
-    //    {
-    //        _maxFails = maxFails;
-    //        _retryWaitPeriod = TimeSpan.FromMilliseconds(retryWaitPeriodMs);
-    //    }
-
-    //    public int MaxFails
-    //    {
-    //        get { return _maxFails; }
-    //    }
-
-    //    public TimeSpan RetryWaitPeriod
-    //    {
-    //        get { return _retryWaitPeriod; }
-    //    }
-    //}
 }

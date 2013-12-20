@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using C5;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.Utility.Logging;
 
 namespace KeyValueStorage.Memory
 {
@@ -48,7 +49,7 @@ namespace KeyValueStorage.Memory
             return _memoryStore.GetEnumerator();
         }
 
-        public IStoreBackup CreateBackup(Func<IStoreBackup> createEmptyStoreBackup)
+		public IStoreBackup CreateBackup(Func<IStoreBackup> createEmptyStoreBackup, IKVLogger logger = null)
         {
             lock (GetLockObject())
             {
@@ -58,7 +59,7 @@ namespace KeyValueStorage.Memory
             }
         }
 
-		public void ApplyBackup(IStoreBackup backupToApply, RestoreStrategy strategy = RestoreStrategy.Overwrite)
+		public void ApplyBackup(IStoreBackup backupToApply, RestoreStrategy strategy = RestoreStrategy.Overwrite, IKVLogger logger = null)
         {
             lock (GetLockObject())
             {

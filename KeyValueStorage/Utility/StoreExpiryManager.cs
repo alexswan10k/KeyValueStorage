@@ -20,17 +20,17 @@ namespace KeyValueStorage.Utility
 
         public IDisposable BeginTaskCleanupKeys(int period_ms)
         {
-            tickTimer = new System.Threading.Timer(new System.Threading.TimerCallback(o =>
+            _tickTimer = new System.Threading.Timer(new System.Threading.TimerCallback(o =>
             {
 
                 if (cleanupTask == null || cleanupTask.IsCompleted || cleanupTask.IsFaulted)
                     Task.Factory.StartNew(new Action(KeyCleaner.CleanupKeys));
             }), null, 0, period_ms);
 
-            return tickTimer;
+            return _tickTimer;
         }
 
-        System.Threading.Timer tickTimer;
+        System.Threading.Timer _tickTimer;
         Task cleanupTask = null;
     }
 }

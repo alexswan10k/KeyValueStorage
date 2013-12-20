@@ -7,6 +7,7 @@ using C5;
 using KeyValueStorage.Exceptions;
 using KeyValueStorage.Interfaces;
 using KeyValueStorage.RetryStrategies;
+using KeyValueStorage.Utility.Logging;
 
 namespace KeyValueStorage.Memory
 {
@@ -218,14 +219,14 @@ namespace KeyValueStorage.Memory
 
 
         #region
-        public IStoreBackup CreateBackup(Func<IStoreBackup> createEmptyStoreBackup)
+        public IStoreBackup CreateBackup(Func<IStoreBackup> createEmptyStoreBackup, IKVLogger logger = null)
         {
-            return _memoryBackingStore.CreateBackup(createEmptyStoreBackup);
+			return _memoryBackingStore.CreateBackup(createEmptyStoreBackup, logger);
         }
 
-        public void ApplyBackup(IStoreBackup backupToApply)
+		public void ApplyBackup(IStoreBackup backupToApply, RestoreStrategy strategy = RestoreStrategy.Overwrite, IKVLogger logger = null)
         {
-            _memoryBackingStore.ApplyBackup(backupToApply);
+			_memoryBackingStore.ApplyBackup(backupToApply, strategy, logger);
         }
         #endregion
     }

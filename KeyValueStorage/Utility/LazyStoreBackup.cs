@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using KeyValueStorage.Interfaces;
 
 namespace KeyValueStorage.Utility
 {
-	public class MemoryStoreBackup : IStoreBackup
+	public class LazyStoreBackup : IStoreBackup
 	{
-		private List<StoreBackupRow> _rows = new List<StoreBackupRow>();
+		private IEnumerable<StoreBackupRow> _rows = Enumerable.Empty<StoreBackupRow>();
 
 		public IEnumerator<StoreBackupRow> GetEnumerator()
 		{
@@ -15,7 +16,7 @@ namespace KeyValueStorage.Utility
 
 		public void AddRange(IEnumerable<StoreBackupRow> rows)
 		{
-			_rows.AddRange(rows);
+			_rows = _rows.Concat(rows);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()

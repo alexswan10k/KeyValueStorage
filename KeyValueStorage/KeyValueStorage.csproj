@@ -57,6 +57,8 @@
     <Compile Include="RetryStrategies\NoRetryStrategy.cs" />
     <Compile Include="RetryStrategies\SimpleRetryStrategy.cs" />
     <Compile Include="Utility\KVStoreProviderExportableStore.cs" />
+    <Compile Include="Utility\LazyStoreBackup.cs" />
+    <Compile Include="Utility\Logging\IKVLogger.cs" />
     <Compile Include="Utility\MemoryStoreBackup.cs" />
     <Compile Include="Utility\Data\StoreBackupRow.cs" />
     <Compile Include="Interfaces\Utility\IExpiredKeyCleaner.cs" />
