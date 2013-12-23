@@ -60,7 +60,7 @@
     <Compile Include="Utility\LazyStoreBackup.cs" />
     <Compile Include="Utility\Logging\IKVLogger.cs" />
     <Compile Include="Utility\MemoryStoreBackup.cs" />
-    <Compile Include="Utility\Data\StoreBackupRow.cs" />
+    <Compile Include="Utility\Data\StoreRow.cs" />
     <Compile Include="Interfaces\Utility\IExpiredKeyCleaner.cs" />
     <Compile Include="Interfaces\IKVStore.cs" />
     <Compile Include="Interfaces\IRDbStoreProvider.cs" />

@@ -10,22 +10,19 @@ namespace KeyValueStorage.Memory
             
         }
 
-        public MemoryStorageRow(StoreBackupRow backupRow)
+        public MemoryStorageRow(StoreRow row)
         {
-            Value = backupRow.Value;
-            Cas = backupRow.Cas;
-            Expiry = backupRow.Expiry;
-            IsIndex = backupRow.IsIndex;
+            Value = row.Value;
+            Expiry = row.Expiry;
         }
 
         public string Value { get; set; }
         public ulong Cas { get; set; }
-        public DateTime Expiry { get; set; }
-        public bool IsIndex { get; set; }
+        public DateTime? Expiry { get; set; }
 
-        public StoreBackupRow ToBackupRow(string key)
+        public StoreRow ToBackupRow(string key)
         {
-            return new StoreBackupRow() {Key = key, Value = Value, Cas = Cas, Expiry = Expiry, IsIndex = IsIndex};
+            return new StoreRow() {Key = key, Value = Value, Expiry = Expiry};
         }
     }
 }

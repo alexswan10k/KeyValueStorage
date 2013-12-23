@@ -6,14 +6,14 @@ namespace KeyValueStorage.Utility
 {
 	public class MemoryStoreBackup : IStoreBackup
 	{
-		private List<StoreBackupRow> _rows = new List<StoreBackupRow>();
+		private List<StoreRow> _rows = new List<StoreRow>();
 
-		public IEnumerator<StoreBackupRow> GetEnumerator()
+		public IEnumerator<StoreRow> GetEnumerator()
 		{
 			return _rows.GetEnumerator();
 		}
 
-		public void AddRange(IEnumerable<StoreBackupRow> rows)
+		public void AddRange(IEnumerable<StoreRow> rows)
 		{
 			_rows.AddRange(rows);
 		}

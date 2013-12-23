@@ -6,10 +6,18 @@ using KeyValueStorage.Interfaces;
 
 namespace KeyValueStorage.Utility.Logging
 {
+    public static class KVLoggerExtensions
+    {
+        public static void LogSet(this IKVLogger logger, StoreRow item)
+        {
+            
+        }
+    }
+
 	public interface IKVLogger
 	{
 		void LogMessage(string message);
-		void LogSet(StoreBackupRow item);
+		void LogSet(StoreRow item);
 	}
 
 	public class NullLogger : IKVLogger
@@ -19,7 +27,7 @@ namespace KeyValueStorage.Utility.Logging
 			
 		}
 
-		public void LogSet(StoreBackupRow item)
+		public void LogSet(StoreRow item)
 		{
 			
 		}

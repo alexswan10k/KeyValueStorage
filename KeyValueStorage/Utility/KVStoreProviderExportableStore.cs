@@ -36,7 +36,7 @@ namespace KeyValueStorage.Utility
 			}
 		}
 
-		private IEnumerable<StoreBackupRow> _CreateStoreBackupEnumerable(Func<IStoreBackup> createEmptyStoreBackup, IKVLogger logger)
+		private IEnumerable<StoreRow> _CreateStoreBackupEnumerable(Func<IStoreBackup> createEmptyStoreBackup, IKVLogger logger)
 		{
 			var keys = _provider.GetAllKeys();
 
@@ -51,7 +51,7 @@ namespace KeyValueStorage.Utility
 				catch (NotImplementedException)
 				{}
 
-				yield return new StoreBackupRow() { Expiry = expiry, Key = key, Value = value };
+				yield return new StoreRow() { Expiry = expiry, Key = key, Value = value };
 			}
 		}
 
@@ -97,7 +97,7 @@ namespace KeyValueStorage.Utility
 			}
 		}
 
-		private void _Set(StoreBackupRow item, IKVLogger logger)
+		private void _Set(StoreRow item, IKVLogger logger)
 		{
 			if (item.Expiry != null)
 				_provider.Set(item.Key, item.Value, item.Expiry.Value);
