@@ -29,7 +29,7 @@ namespace KeyValueStorage
 	        _exportableStoreDel = exportableStoreDel ?? (() => new KVStoreProviderExportableStore(providerInit()));
 
 	        if (!suppressInitialize)
-                Initialize();
+                _Initialize();
         }
 
         public Factory(Func<IKVStore> storeInit, 
@@ -40,10 +40,10 @@ namespace KeyValueStorage
 			_exportableStoreDel = exportableStoreDel ?? (() => new KVStoreProviderExportableStore(storeInit().StoreProvider));
 
             if (!suppressInitialize)
-                Initialize();
+                _Initialize();
         }
 
-        private void Initialize()
+        private void _Initialize()
         {
             Get().StoreProvider.Initialize();
         }

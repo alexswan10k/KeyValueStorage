@@ -8,7 +8,12 @@ using KeyValueStorage.Utility.Logging;
 
 namespace KeyValueStorage.Tools
 {
-	public class KVStoreMigrator
+	public interface IKVStoreMigrator
+	{
+		void Migrate(RestoreStrategy strategy = RestoreStrategy.Overwrite);
+	}
+
+	public class KVStoreMigrator : IKVStoreMigrator
 	{
         private readonly IExportableStore _source;
         private readonly IExportableStore _destination;

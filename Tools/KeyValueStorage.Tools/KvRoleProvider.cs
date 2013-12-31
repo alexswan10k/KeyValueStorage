@@ -9,7 +9,17 @@ using KeyValueStorage.Tools.Utility.Strings;
 
 namespace KeyValueStorage.Tools
 {
-	public class KvRoleProvider
+	public interface IKvRoleProvider
+	{
+		IEnumerable<string> GetRoles();
+		IEnumerable<string> GetUserRoles(string username);
+		IEnumerable<string> GetUsersInRole(string rolename);
+		bool UserIsInRole(string username, string rolename);
+		void AddUserToRole(string username, string rolename);
+		void RemoveUserFromRole(string username, string rolename);
+	}
+
+	public class KvRoleProvider : IKvRoleProvider
 	{
 		private readonly IKVStore _store;
 	    private KVForeignKeyStoreRelationshipProvider _usersToRolesFK;

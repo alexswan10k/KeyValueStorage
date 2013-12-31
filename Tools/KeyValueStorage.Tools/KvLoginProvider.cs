@@ -7,7 +7,17 @@ using KeyValueStorage.Tools.Utility.Strings;
 
 namespace KeyValueStorage.Tools
 {
-	public class KvLoginProvider
+	public interface IKvLoginProvider
+	{
+		UserCreationResult CreateUser(string username, string password);
+		bool UserExists(string username);
+		AutherizationRequest Authorize(string username, string password);
+		bool UpdatePassword(string username, string newPassword);
+		string GenerateAndSetNewPassword(string username);
+		int GetFailedAuthorizationAttempts(string username);
+	}
+
+	public class KvLoginProvider : IKvLoginProvider
 	{
 		private readonly IRandomCharacterGenerator _characterGen;
 		private readonly IStringVerifier _usernameVerifier;

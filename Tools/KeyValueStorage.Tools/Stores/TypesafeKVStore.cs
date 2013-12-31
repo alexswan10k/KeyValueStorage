@@ -11,7 +11,7 @@ namespace KeyValueStorage.Tools.Stores
 			
 		}
 
-		private string GetTypeIdentifierSuffix()
+		private static string GetTypeIdentifierSuffix()
 		{
 			return "." + typeof(T).Name;
 		}

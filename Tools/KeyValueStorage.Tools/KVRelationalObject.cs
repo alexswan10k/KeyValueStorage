@@ -83,10 +83,5 @@ namespace KeyValueStorage.Tools
                     _schema, 
                     _store));
         }
-
-        //public void Save()
-        //{
-           
-        //}
     }
 }

@@ -5,42 +5,48 @@ using KeyValueStorage.Tools.Utility.Strings;
 
 namespace KeyValueStorage.Tools
 {
-	public class ProfileProvider<T>  where T : new()
+	public interface IKVProfileProvider<T> where T : Profile, new()
+	{
+		T GetProfile(string username);
+		void UpdateProfile(string username, T profile);
+	}
+
+	public class KVProfileProvider<T> : IKVProfileProvider<T> where T : Profile, new()
 	{
 		private readonly IKVStore _store;
 
-		public ProfileProvider(IKVStore store, string namespacePrefix = "UPP:")
+		public KVProfileProvider(IKVStore store, string namespacePrefix = "UPP:")
 		{
             _store = new KeyTransformKVStore(store, new PrefixTransformer(namespacePrefix));
 		}
 
-		public ProfileWrapper<T> GetProfile(string username)
+		public T GetProfile(string username)
 		{
-			return _store.Get<ProfileWrapper<T>>(username);
+			return _store.Get<T>(username);
 		}
 
-		public void UpdateProfile(string username, ProfileWrapper<T> profileWrapper)
+		public void UpdateProfile(string username, T profile)
 		{
-			_store.Set(username, profileWrapper);
+			_store.Set(username, profile);
 		}
 
-		public static ProfileProvider<StrDictProfile> GetStrDictProfile(IKVStore store)
+		public static KVProfileProvider<StrDictProfile> GetStringDictProfile(IKVStore store)
 		{
-			return new ProfileProvider<StrDictProfile>(store);
+			return new KVProfileProvider<StrDictProfile>(store);
 		}
 	}
 
-	public class StrDictProfile
+	public abstract class Profile
 	{
-		IDictionary<string, object> Settings { get; set; } 
+		
+	}
+
+	public class StrDictProfile : Profile
+	{
+		public IDictionary<string, object> Settings { get; set; } 
 		public StrDictProfile()
 		{
 			Settings = new Dictionary<string, object>();
 		}
-	}
-
-	public class ProfileWrapper<T>
-	{
-		public T Profile { get; set; }
 	}
 }

@@ -9,8 +9,21 @@ using KeyValueStorage.Tools.Utility.Relationships;
 
 namespace KeyValueStorage.Tools
 {
-    public class KVRelationalStore
-    {
+	public interface IKVRelationalStore
+	{
+		IKVStore Store { get; }
+		IStoreSchema Schema { get; }
+		KVRelationalObject<T> New<T>() where T : new();
+		KVRelationalObject<T> New<T>(T objetToWrap) where T : new();
+		KVRelationalObject<T> Get<T>(IRelationalKey key);
+		KVRelationalObject<T> Get<T>(decimal id);
+		void Save<T>(KVRelationalObject<T> obj);
+		void Remove<T>(IRelationalKey key);
+		void Remove<T>(KVRelationalObject<T> value);
+	}
+
+	public class KVRelationalStore : IKVRelationalStore
+	{
         private readonly IKVStore _store;
         private readonly IStoreSchema _schema;
 

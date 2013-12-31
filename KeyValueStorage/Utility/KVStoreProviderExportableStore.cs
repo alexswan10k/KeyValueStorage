@@ -104,7 +104,7 @@ namespace KeyValueStorage.Utility
 			else
 				_provider.Set(item.Key, item.Value);
 
-			logger.LogSet(item);
+			logger.LogStoreCall("ExportableStore.Set ", item.Key, item.Value, null, item.Expiry);
 		}
 	}
 }

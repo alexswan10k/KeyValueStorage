@@ -115,6 +115,8 @@ namespace KeyValueStorage.Interfaces
         void SetCollection<T>(string key, IEnumerable<T> values, ulong cas);
 
         void AppendToCollection<T>(string key, T value);
+
+		void RemoveFromCollection<T>(string key, T value);
         #endregion
     }
 }
