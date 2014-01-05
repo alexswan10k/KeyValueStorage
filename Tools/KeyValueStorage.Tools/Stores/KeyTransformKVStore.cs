@@ -139,7 +139,12 @@ namespace KeyValueStorage.Tools.Stores
 			_store.AppendToCollection(_GetTransformedKey<T>(key), value);
 		}
 
-		protected virtual string _GetTransformedKey(string key)
+	    public void RemoveFromCollection<T>(string key, T value)
+	    {
+	        _store.RemoveFromCollection(key, value);
+	    }
+
+	    protected virtual string _GetTransformedKey(string key)
 		{
 			return _transformer.Transform(key);
 		}

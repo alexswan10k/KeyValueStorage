@@ -139,6 +139,11 @@ namespace KeyValueStorage.Tools.Stores
             _writeActions.Enqueue(() => _store.AppendToCollection(key, value));    
         }
 
+        public void RemoveFromCollection<T>(string key, T value)
+        {
+            _writeActions.Enqueue(() => _store.RemoveFromCollection(key, value));
+        }
+
         public void SaveChanges()
         {
             while (_writeActions.Count > 0)
