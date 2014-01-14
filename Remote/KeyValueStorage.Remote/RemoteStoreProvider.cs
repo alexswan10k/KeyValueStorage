@@ -121,7 +121,7 @@ namespace KeyValueStorage.Remote
             throw new NotImplementedException();
         }
 
-	    public IKeyLock GetKeyLock(string key, DateTime expires, IRetryStrategy retryStrategy = false, string workerId = null)
+	    public IKeyLock GetKeyLock(string key, DateTime expires, IRetryStrategy retryStrategy = null, string workerId = null)
 	    {
 		    throw new NotImplementedException();
 	    }
