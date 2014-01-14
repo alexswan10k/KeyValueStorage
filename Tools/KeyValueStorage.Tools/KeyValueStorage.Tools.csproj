@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\Queue.cs" />
     <Compile Include="Cryptography\CryptoTextSerializer.cs" />
     <Compile Include="Cryptography\StringSymmetricAlgorithms\IStringSymmetricAlgorithm.cs" />
     <Compile Include="Cryptography\StringSymmetricAlgorithms\RijndaelManagedStringSymmetricAlgorithm.cs" />

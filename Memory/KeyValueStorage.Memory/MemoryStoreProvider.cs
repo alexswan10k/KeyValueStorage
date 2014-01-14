@@ -6,7 +6,9 @@ using System.Text;
 using C5;
 using KeyValueStorage.Exceptions;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.Interfaces.Utility;
 using KeyValueStorage.RetryStrategies;
+using KeyValueStorage.Utility;
 using KeyValueStorage.Utility.Logging;
 
 namespace KeyValueStorage.Memory
@@ -205,7 +207,13 @@ namespace KeyValueStorage.Memory
         public IRetryStrategy GetDefaultRetryStrategy()
         {
             return new NoRetryStrategy();
-        } 
+        }
+
+		public IKeyLock GetKeyLock(string key, DateTime expires, IRetryStrategy retryStrategy = null, string workerId = null)
+		{
+			return new KVSLockWithCAS(key, expires, this, retryStrategy, workerId);
+		}
+
 	    #endregion
 
         private static ulong GenerateCas()
@@ -216,7 +224,6 @@ namespace KeyValueStorage.Memory
             cas = BitConverter.ToUInt16(bytes, 0);
             return cas;
         }
-
 
         #region
         public IStoreBackup CreateBackup(Func<IStoreBackup> createEmptyStoreBackup, IKVLogger logger = null)

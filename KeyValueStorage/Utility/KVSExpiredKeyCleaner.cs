@@ -5,6 +5,7 @@ using System.Text;
 using KeyValueStorage.Exceptions;
 using KeyValueStorage.Interfaces;
 using KeyValueStorage.Interfaces.Utility;
+using KeyValueStorage.RetryStrategies;
 using KeyValueStorage.Utility.Data;
 
 namespace KeyValueStorage.Utility
@@ -38,7 +39,7 @@ namespace KeyValueStorage.Utility
         {
             try
             {
-                using (var keyLock = new KVSLockWithCAS(LockKey, DateTime.UtcNow.AddSeconds(LockExpiryTimeS), Provider,false, "T"))
+                using (var keyLock = new KVSLockWithCAS(LockKey, DateTime.UtcNow.AddSeconds(LockExpiryTimeS), Provider,null, "T"))
                 {
                     var stateData = _GetStateData();
 

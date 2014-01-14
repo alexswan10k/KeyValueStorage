@@ -9,6 +9,7 @@ using Couchbase.Management;
 using KeyValueStorage.Exceptions;
 using System.Reflection;
 using System.IO;
+using KeyValueStorage.Interfaces.Utility;
 using KeyValueStorage.RetryStrategies;
 using KeyValueStorage.Utility;
 
@@ -162,7 +163,12 @@ namespace KeyValueStorage.Couchbase
             return new SimpleRetryStrategy(5, 1000);
         }
 
-        #endregion
+		public IKeyLock GetKeyLock(string key, DateTime expires, IRetryStrategy retryStrategy = null, string workerId = null)
+		{
+			return new KVSLockWithCAS(key, expires, this, retryStrategy ?? new SimpleLockRetryStrategy(5, 500), workerId);
+		}
+
+	    #endregion
 
         public void Dispose()
         {

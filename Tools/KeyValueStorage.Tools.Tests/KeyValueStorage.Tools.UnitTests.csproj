@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\QueueTests.cs" />
     <Compile Include="Cryptography\Hashers\HasherTests.cs" />
     <Compile Include="Cryptography\StringSymmetricAlgorithms\RijndaelManagedStringCryptoSymmetricTests.cs" />
     <Compile Include="KVRelationalObjectTests.cs" />

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KeyValueStorage.Exceptions;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.Interfaces.Utility;
 using KeyValueStorage.RetryStrategies;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
@@ -104,7 +105,7 @@ namespace KeyValueStorage.AzureTable
 
         public void Set(string key, string value, ulong cas)
         {
-            using (var keyLock = new KVSLockWithoutCAS(LockPrefix + key, DateTime.UtcNow.AddSeconds(10), this))
+            using (var keyLock = GetKeyLock(LockPrefix + key, DateTime.UtcNow.AddSeconds(10)))
             {
                 var entity = get(key);
                 if (entity != null)
@@ -221,7 +222,12 @@ namespace KeyValueStorage.AzureTable
             return new SimpleRetryStrategy(5, 1000);
         }
 
-        private void append(string key, string value, int tryCount = 0)
+		public IKeyLock GetKeyLock(string key, DateTime expires, IRetryStrategy retryStrategy = null, string workerId = null)
+	    {
+			return new KVSLockWithCAS(key, expires, this, retryStrategy ?? new SimpleLockRetryStrategy(5, 500), workerId);
+	    }
+
+	    private void append(string key, string value, int tryCount = 0)
         {
             try
             {

@@ -5,13 +5,14 @@ using System.Text;
 using KeyValueStorage.Exceptions;
 using KeyValueStorage.Interfaces;
 using KeyValueStorage.Interfaces.Utility;
+using KeyValueStorage.RetryStrategies;
 using KeyValueStorage.Utility.Data;
 
 namespace KeyValueStorage.Utility
 {
     public class KVSLockWithoutCAS : IKeyLock
     {
-        private int _retryingLockBackoffTimeMs;
+	    private readonly IRetryStrategy _retryStrategy;
         public string LockKey { get; protected set; }
         public DateTime Expires { get; protected set; }
         public string WorkerId { get; protected set; }
@@ -22,35 +23,19 @@ namespace KeyValueStorage.Utility
         public KVSLockWithoutCAS(string lockKey,
             DateTime expires, 
             IStoreProvider provider, 
-            bool retryingLock = false, 
+            IRetryStrategy retryStrategy = null, 
             string workerId = null, 
             int retryingLockBackoffTimeMs = 100, 
             ITextSerializer serializer = null)
         {
-            _retryingLockBackoffTimeMs = retryingLockBackoffTimeMs;
+	        _retryStrategy = retryStrategy ?? new NoRetryStrategy();
             LockKey = lockKey;
             Expires = expires;
             WorkerId = workerId;
             Provider = provider;
             Serializer = serializer;
 
-            if (retryingLock)
-                AcquireLockRecursiveRetry();
-
-            AcquireLock();
-        }
-
-        public void AcquireLockRecursiveRetry()
-        {
-            try
-            {
-                AcquireLock();
-            }
-            catch (LockException)
-            {
-                System.Threading.Thread.Sleep(_retryingLockBackoffTimeMs);
-                AcquireLockRecursiveRetry();
-            }
+			_retryStrategy.ExecuteDelegateWithRetry(AcquireLock);
         }
 
         private void AcquireLock()

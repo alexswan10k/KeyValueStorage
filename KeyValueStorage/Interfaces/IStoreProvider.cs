@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KeyValueStorage.Interfaces.Utility;
 
 namespace KeyValueStorage.Interfaces
 {
@@ -99,5 +100,7 @@ namespace KeyValueStorage.Interfaces
         #endregion
 
         IRetryStrategy GetDefaultRetryStrategy();
+
+		IKeyLock GetKeyLock(string key, DateTime expires, IRetryStrategy retryStrategy = null, string workerId = null);
     }
 }

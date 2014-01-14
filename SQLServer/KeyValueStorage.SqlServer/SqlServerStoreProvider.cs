@@ -270,7 +270,7 @@ namespace KeyValueStorage.SqlServer
             public ulong GetNextSequenceValue(string key, int increment)
             {
                 //set up a sproc for this
-                using (IKeyLock keyLock = new KVSLockWithCAS(lockPrefix + key, DateTime.UtcNow.AddSeconds(10),this, retryingLock:true))
+                using (IKeyLock keyLock = GetKeyLock(lockPrefix + key, DateTime.UtcNow.AddSeconds(10),new SimpleLockRetryStrategy(5,500)))
                 {
                     ulong value = 0;
                     var valueRaw = Get(key);
@@ -287,7 +287,7 @@ namespace KeyValueStorage.SqlServer
             public void Append(string key, string value)
             {
                 //This could be done far more efficiently and atomically with a sproc
-                using (IKeyLock keyLock = new KVSLockWithCAS(lockPrefix + key, DateTime.UtcNow.AddSeconds(10), this, retryingLock:true))
+                using (IKeyLock keyLock = GetKeyLock(lockPrefix + key, DateTime.UtcNow.AddSeconds(10), new SimpleLockRetryStrategy(5,500)))
                 {
                     var existingValue = Get(key);
                     Set(key, existingValue + value);
@@ -299,7 +299,12 @@ namespace KeyValueStorage.SqlServer
             return new SimpleRetryStrategy(5, 1000);
         }
 
-        #endregion
+		public IKeyLock GetKeyLock(string key, DateTime expires, IRetryStrategy retryStrategy = null, string workerId = null)
+		{
+			return new KVSLockWithCAS(key, expires, this, retryStrategy, workerId);
+		}
+
+	    #endregion
 
             private void _Set(string key, string value, DateTime? expires)
             {

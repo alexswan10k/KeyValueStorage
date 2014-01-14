@@ -6,16 +6,14 @@ using System.Text;
 using KeyValueStorage.Exceptions;
 using KeyValueStorage.Interfaces;
 using KeyValueStorage.Interfaces.Utility;
+using KeyValueStorage.RetryStrategies;
 using KeyValueStorage.Utility.Data;
 
 namespace KeyValueStorage.Utility
 {
     public class KVSLockWithCAS : IKeyLock
     {
-        private readonly bool _retryingLock;
-        private readonly int _retryingLockBackoffTimeMs;
-	    private int _lockFailureCount = 0;
-	    private const int _maxLockFailure = 20;
+	    private readonly IRetryStrategy _retryStrategy;
 	    public string LockKey { get; protected set; }
         public DateTime Expires { get; protected set; }
         public string WorkerId { get; protected set; }
@@ -26,40 +24,19 @@ namespace KeyValueStorage.Utility
         public KVSLockWithCAS(string lockKey, 
             DateTime expires, 
             IStoreProvider provider, 
-            bool retryingLock = false, 
+            IRetryStrategy retryStrategy = null, 
             string workerId = null, 
-            int retryingLockBackoffTimeMs = 100, 
             ITextSerializer serializer = null)
         {
-            _retryingLockBackoffTimeMs = retryingLockBackoffTimeMs;
-            _retryingLock = retryingLock;
+	        _retryStrategy = retryStrategy ?? new NoRetryStrategy();
+
             LockKey = lockKey;
             Expires = expires;
             WorkerId = workerId ?? System.Environment.MachineName;
             Provider = provider;
             Serializer = serializer ?? new ServiceStackTextSerializer();
 
-            if(retryingLock)
-                AcquireLockRecursiveRetry();
-            else
-                AcquireLock();
-        }
-
-        public void AcquireLockRecursiveRetry()
-        {
-            try
-            {
-                AcquireLock();
-				_lockFailureCount = 0;
-            }
-            catch(LockException ex)
-            {
-	            _lockFailureCount++;
-	            if(_lockFailureCount > _maxLockFailure)
-					throw new Exception("Exceeded maximum retries "+ _maxLockFailure, ex);
-                System.Threading.Thread.Sleep(_retryingLockBackoffTimeMs);
-                AcquireLockRecursiveRetry();
-            }
+			_retryStrategy.ExecuteDelegateWithRetry(AcquireLock);
         }
 
         private void AcquireLock()
@@ -70,14 +47,7 @@ namespace KeyValueStorage.Utility
                 CheckLockPocoIsMyLock(lockPOCO);
 
             var storeKeyLock = new StoreKeyLock() {Expiry = Expires, WorkerId = WorkerId, IsConfirmed = true};
-            if (cas > 0)
-            {
-                Set(LockKey, storeKeyLock, cas);
-            }
-            else
-            {
-                Set(LockKey, storeKeyLock);
-            }
+            Set(LockKey, storeKeyLock, cas);
         }
 
         private void CheckLockPocoIsMyLock(StoreKeyLock lockPOCO, bool isMyLock = false)

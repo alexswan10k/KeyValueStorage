@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using KeyValueStorage.Interfaces;
 using Cassandra;
+using KeyValueStorage.Interfaces.Utility;
 using KeyValueStorage.RetryStrategies;
 using KeyValueStorage.Utility;
 
@@ -161,7 +162,12 @@ namespace KeyValueStorage.Cassandra
             return new SimpleRetryStrategy(5, 1000);
         }
 
-        #endregion
+		public IKeyLock GetKeyLock(string key, DateTime expires, IRetryStrategy retryStrategy = null, string workerId = null)
+		{
+			throw new NotImplementedException();
+		}
+
+	    #endregion
 
         public void Dispose()
         {

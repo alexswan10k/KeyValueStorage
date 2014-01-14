@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.Interfaces.Utility;
 
 namespace KeyValueStorage.Remote
 {
@@ -119,5 +120,10 @@ namespace KeyValueStorage.Remote
         {
             throw new NotImplementedException();
         }
+
+	    public IKeyLock GetKeyLock(string key, DateTime expires, IRetryStrategy retryStrategy = false, string workerId = null)
+	    {
+		    throw new NotImplementedException();
+	    }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using KeyValueStorage.Interfaces;
 using KeyValueStorage.Extensions;
+using KeyValueStorage.Interfaces.Utility;
 using KeyValueStorage.RetryStrategies;
 using Oracle.ManagedDataAccess.Client;
 using KeyValueStorage.Utility.Sql;
@@ -277,7 +278,12 @@ namespace KeyValueStorage.Oracle
             return new SimpleRetryStrategy(5, 1000);
         }
 
-        #endregion
+		public IKeyLock GetKeyLock(string key, DateTime expires, IRetryStrategy retryStrategy = null, string workerId = null)
+		{
+			return new KVSLockWithoutCAS(key, expires, this, retryStrategy, workerId);
+		}
+
+	    #endregion
 
         #region SqlHelpers
         protected int SplitAndInsert(string key, string json)

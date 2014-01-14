@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using KeyValueStorage.Exceptions;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.Interfaces.Utility;
+using KeyValueStorage.RetryStrategies;
 using KeyValueStorage.Utility;
 
 namespace KeyValueStorage.FSText
@@ -354,7 +356,12 @@ namespace KeyValueStorage.FSText
             return new FSTextRetryStrategy(5, 500);
         }
 
-        #endregion
+		public IKeyLock GetKeyLock(string key, DateTime expires, IRetryStrategy retryStrategy = null, string workerId = null)
+		{
+			return new KVSLockWithCAS(key, expires, this, retryStrategy ?? new SimpleLockRetryStrategy(5,500), workerId);
+		}
+
+	    #endregion
 
         private void _SetKeyExpiry(string key, DateTime expires)
         {
