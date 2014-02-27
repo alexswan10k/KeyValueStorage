@@ -165,17 +165,20 @@ namespace KeyValueStorage.SqlServer
 
         private void AssertCasIsValid(string key, ulong cas)
         {
-            var casExisting =(int?)
-                Connection.ExecuteSql("Select [Cas] from " + KVSTableName + " where [Key] = '" + key + "'").AsEnumerable().First
-                    ()[0];
+            DataRow casQuery = Connection.ExecuteSql("Select [Cas] from " + KVSTableName + " where [Key] = '" + key + "'").AsEnumerable().FirstOrDefault();
 
-            if(casExisting == null)
+            var casExisting = (int?) (casQuery != null ? casQuery[0] : null);
+
+            if(casExisting == null && cas > 0)
                 throw new CASException("Key does not exist for Cas " + cas);
 
-            var casExistingUlong = (ulong) casExisting;
+            if (casExisting != null)
+            {
+                var casExistingUlong = (ulong) casExisting;
 
-            if (casExistingUlong != cas)
-                throw new CASException();
+                if (casExistingUlong != cas)
+                    throw new CASException();
+            }
         }
 
             public void Set(string key, string value, DateTime expires)
