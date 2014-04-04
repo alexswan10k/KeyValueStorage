@@ -51,7 +51,7 @@ namespace KeyValueStorage.Tools.UnitTests.Structured.Schema
 		{
 			var objectSchema = _CreateObjectTypeSchema();
 			IKVStore kvStore = new Mock<IKVStore>().Object;
-			IKey key = new Mock<IKey>().Object;
+		    Key key = "";
 
 			var relationships = objectSchema.BuildKeyRelationships(kvStore, key);
 

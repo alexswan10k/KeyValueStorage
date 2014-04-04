@@ -136,19 +136,19 @@ namespace KeyValueStorage.Testing
                 var keys = context.GetKeysStartingWith("K1A");
 
                 Assert.AreEqual(3, keys.Count());
-                Assert.IsTrue(keys.All(q => q.StartsWith("K1A")));
+                Assert.IsTrue(keys.All(q => q.ToString().StartsWith("K1A")));
 
 
                 keys = context.GetKeysStartingWith("K1B");
 
                 Assert.AreEqual(4, keys.Count());
-                Assert.IsTrue(keys.All(q => q.StartsWith("K1B")));
+                Assert.IsTrue(keys.All(q => q.ToString().StartsWith("K1B")));
 
 
                 keys = context.GetKeysStartingWith("K2A");
 
                 Assert.AreEqual(4, keys.Count());
-                Assert.IsTrue(keys.All(q => q.StartsWith("K2A")));
+                Assert.IsTrue(keys.All(q => q.ToString().StartsWith("K2A")));
 
                 keys = context.GetKeysStartingWith("K2A:2Sub");
 

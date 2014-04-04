@@ -21,7 +21,7 @@ namespace KeyValueStorage.Tools.Tests.Utility.Strings
 		[Test]
 		public void StringTransformer()
 		{
-			Func<string, string> transformOperation = s => s.Replace("is", "isnt");
+            Func<Key, Key> transformOperation = s => s.ToString().Replace("is", "isnt");
 			var st = new StringTransformer(transformOperation);
 			Assert.AreEqual(transformOperation(_transformString), st.Transform(_transformString));
 		}
@@ -32,7 +32,7 @@ namespace KeyValueStorage.Tools.Tests.Utility.Strings
 		{
 			string prefix = "prefix ";
 			var st = new PrefixTransformer(prefix);
-			Assert.IsTrue(st.Transform(_transformString).StartsWith(prefix));
+			Assert.IsTrue(st.Transform(_transformString).ToString().StartsWith(prefix));
 		}
 
 		[Test]
@@ -40,7 +40,7 @@ namespace KeyValueStorage.Tools.Tests.Utility.Strings
 		{
 			string suffix = " suffix";
 			var st = new SuffixTransformer(suffix);
-			Assert.IsTrue(st.Transform(_transformString).EndsWith(suffix));
+            Assert.IsTrue(st.Transform(_transformString).ToString().EndsWith(suffix));
 		}
 	}
 }

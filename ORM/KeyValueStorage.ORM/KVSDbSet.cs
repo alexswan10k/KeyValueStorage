@@ -70,7 +70,7 @@ namespace KeyValueStorage.ORM
 
             for (int i = 0; i < keys.Count(); i++)
             {
-                var keyIdx = ulong.Parse(keys.ElementAt(i).Split(':').Last());
+                var keyIdx = ulong.Parse(keys.ElementAt(i).ToString().Split(':').Last());
                 var entity = collection.ElementAt(i);
                 if (EntityReflectionHelpers.GetEntityKey(entity) == 0)
                     EntityReflectionHelpers.SetEntityKey(entity, keyIdx);
