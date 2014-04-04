@@ -211,7 +211,11 @@ namespace KeyValueStorage.SqlServer
             {
                 try
                 {
-                    var count = Connection.ExecuteSql("Select Count([Value]) from " + KVSTableName + " where [Key] = @p1", key).AsEnumerable().First()[0] as decimal?;
+	                var arr = Connection.ExecuteSql("Select Count([Value]) from " + KVSTableName + " where [Key] = @p1", key).AsEnumerable().FirstOrDefault();
+					if (arr == null)
+						return false;
+
+	                var count = arr[0] as decimal?;
                     if (count > 0)
                         return true;
                     return false;
@@ -224,10 +228,15 @@ namespace KeyValueStorage.SqlServer
 
             public DateTime? ExpiresOn(string key)
             {
-                return Connection.ExecuteSql("Select Expires from " + KVSTableName + " where [Key] = @p1", key).AsEnumerable().First()[0] as DateTime?;
+	            var arr = Connection.ExecuteSql("Select Expires from " + KVSTableName + " where [Key] = @p1", key).AsEnumerable().FirstOrDefault();
+
+				if(arr == null)
+					return null;
+
+	            return arr[0] as DateTime?;
             }
 
-            public IEnumerable<string> GetStartingWith(string key)
+	    public IEnumerable<string> GetStartingWith(string key)
             {
                 return Connection.ExecuteSql("Select [Value] from " + KVSTableName + " where [Key] like '" + key + "%'").AsEnumerable().Select(s => s[0] as string);
             }
@@ -254,19 +263,34 @@ namespace KeyValueStorage.SqlServer
 
             public int CountStartingWith(string key)
             {
-                var val = Connection.ExecuteSql("Select Count([Key]) from " + KVSTableName + " where [Key] like '" + key + "%'").AsEnumerable().First()[0] as decimal?;
+	            var countArr = Connection.ExecuteSql("Select Count([Key]) from " + KVSTableName + " where [Key] like '" + key + "%'").AsEnumerable().FirstOrDefault();
+
+				if (countArr == null)
+					return 0;
+
+	            var val = countArr[0] as decimal?;
                 return (int)val.Value;
             }
 
             public int CountContaining(string key)
             {
-                var val = Connection.ExecuteSql("Select Count([Key]) from " + KVSTableName + " where [Key] like '%" + key + "%'").AsEnumerable().First()[0] as decimal?;
+	            var countArr = Connection.ExecuteSql("Select Count([Key]) from " + KVSTableName + " where [Key] like '%" + key + "%'").AsEnumerable().FirstOrDefault();
+
+				if (countArr == null)
+					return 0;
+
+	            var val = countArr[0] as decimal?;
                 return (int)val.Value;
             }
 
             public int CountAll()
             {
-                var val = Connection.ExecuteSql("Select Count([Key]) from " + KVSTableName).AsEnumerable().First()[0] as decimal?;
+	            var countArr = Connection.ExecuteSql("Select Count([Key]) from " + KVSTableName).AsEnumerable().FirstOrDefault();
+
+				if (countArr == null)
+					return 0;
+
+	            var val = countArr[0] as decimal?;
                 return (int)val.Value;
             }
 
@@ -313,7 +337,8 @@ namespace KeyValueStorage.SqlServer
             {
                 try
                 {
-                    var count = (int)Connection.ExecuteSql("Select Count([Value]) from " + KVSTableName + " where [Key] = @p1", key).AsEnumerable().First()[0];
+	                var arr = Connection.ExecuteSql("Select Count([Value]) from " + KVSTableName + " where [Key] = @p1", key).AsEnumerable().FirstOrDefault();
+	                var count = arr != null ? (int)arr[0] : 0;
 
                     if (count == 0)
                     {
