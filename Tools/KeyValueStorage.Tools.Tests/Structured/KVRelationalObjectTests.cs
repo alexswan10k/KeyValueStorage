@@ -1,24 +1,23 @@
-using System;
 using System.Linq;
 using KeyValueStorage.Interfaces;
-using KeyValueStorage.Tools.Schema;
+using KeyValueStorage.Tools.Structured;
+using KeyValueStorage.Tools.Structured.Schema;
 using KeyValueStorage.Tools.Utility.Relationships;
-using NUnit.Framework;
 using Moq;
-using KeyValueStorage.Tools;
-			 
-namespace KeyValueStorage.Tools.Tests
+using NUnit.Framework;
+
+namespace KeyValueStorage.Tools.UnitTests.Structured
 {
 	[TestFixture]
 	public class KVRelationalObjectTests
 	{
-		private readonly Mock<IRelationalKey> _key;
+		private readonly Mock<IKey> _key;
 		private readonly Mock<IStoreSchema> _schema;
 		private readonly Mock<IKVStore> _store;
 
 		public KVRelationalObjectTests()
 		{
-			_key = new Mock<IRelationalKey>();
+			_key = new Mock<IKey>();
 			_key.Setup(m => m.Value).Returns("A:1");
 
 			_schema = new Mock<IStoreSchema>();
@@ -32,10 +31,10 @@ namespace KeyValueStorage.Tools.Tests
 			var foreignKeyRelationshipProviderMock = new Mock<IKVForeignKeyRelationshipProvider>();
 
 			foreignKeyRelationshipProviderMock.Setup(m => m.GetKeys(_key.Object))
-				.Returns(new IRelationalKey[]
+				.Returns(new IKey[]
 				{
-					new RelationalKey("B:1"), 
-					new RelationalKey("B:2")
+					new Key("B:1"), 
+					new Key("B:2")
 				});
 
 			_schema.Setup(s => s.GetObjectSchema<TestObjA>()
@@ -56,16 +55,16 @@ namespace KeyValueStorage.Tools.Tests
 		[Test]
 		public void ShouldCorrectlyAddRelatedObject()
 		{
-			var keyMock2 = new Mock<IRelationalKey>();
+			var keyMock2 = new Mock<IKey>();
 			keyMock2.Setup(m => m.Value).Returns("B:1");
 
 			var foreignKeyRelationshipProvider = new Mock<IKVForeignKeyRelationshipProvider>();
 
 			foreignKeyRelationshipProvider.Setup(m => m.GetKeys(_key.Object))
-				.Returns(new IRelationalKey[]
+				.Returns(new IKey[]
 				{
-					new RelationalKey("B:1"), 
-					new RelationalKey("B:2")
+					new Key("B:1"), 
+					new Key("B:2")
 				});
 
 			var generatedRelationshipProvider = new Mock<IKVForeignKeyRelationshipProvider>();
@@ -92,16 +91,16 @@ namespace KeyValueStorage.Tools.Tests
 		[Test]
 		public void ShouldCorrectlyRemoveRelatedObject()
 		{
-			var keyMock2 = new Mock<IRelationalKey>();
+			var keyMock2 = new Mock<IKey>();
 			keyMock2.Setup(m => m.Value).Returns("B:1");
 
 			var foreignKeyRelationshipProvider = new Mock<IKVForeignKeyRelationshipProvider>();
 
 			foreignKeyRelationshipProvider.Setup(m => m.GetKeys(_key.Object))
-				.Returns(new IRelationalKey[]
+				.Returns(new IKey[]
 				{
-					new RelationalKey("B:1"), 
-					new RelationalKey("B:2")
+					new Key("B:1"), 
+					new Key("B:2")
 				});
 
 			var generatedRelationshipProvider = new Mock<IKVForeignKeyRelationshipProvider>();

@@ -39,13 +39,13 @@ namespace KeyValueStorage.Tools
 
 		public IEnumerable<string> GetUserRoles(string username)
 		{
-            return new KeyWithRelationship(new RelationalKey(username), _usersToRolesFK)
+            return new KeyWithRelationship(username, _usersToRolesFK)
                 .GetReferences().Select(s => s.Value);
 		}
 
 		public IEnumerable<string> GetUsersInRole(string rolename)
 		{
-            return new KeyWithRelationship(new RelationalKey(rolename), _rolesToUsersFK)
+            return new KeyWithRelationship(rolename, _rolesToUsersFK)
                 .GetReferences().Select(s => s.Value);
 		}
 
@@ -56,14 +56,14 @@ namespace KeyValueStorage.Tools
 
 		public void AddUserToRole(string username, string rolename)
 		{
-		    var relationship = new KeyWithRelationship(new RelationalKey(username), _usersToRolesFK);
-            relationship.Add(new RelationalKey(rolename), _rolesToUsersFK);
+		    var relationship = new KeyWithRelationship(username, _usersToRolesFK);
+            relationship.Add(rolename, _rolesToUsersFK);
 		}
 
 		public void RemoveUserFromRole(string username, string rolename)
 		{
-		    var relationship = new KeyWithRelationship(new RelationalKey(username), _usersToRolesFK);
-            relationship.Remove(new RelationalKey(rolename), _rolesToUsersFK);
+		    var relationship = new KeyWithRelationship(username, _usersToRolesFK);
+            relationship.Remove(rolename, _rolesToUsersFK);
 		}
 	}
 

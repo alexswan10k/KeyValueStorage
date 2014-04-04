@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.Tools.Structured.Schema;
 using KeyValueStorage.Tools.Utility.Relationships;
-using NUnit.Framework;
 using Moq;
-using KeyValueStorage.Tools.Schema;
+using NUnit.Framework;
 using ServiceStack.Text;
-			 
-namespace KeyValueStorage.Tools.Tests.Schema
+
+namespace KeyValueStorage.Tools.UnitTests.Structured.Schema
 {
 	[TestFixture]
 	public class ObjectTypeSchemaTests
@@ -51,12 +51,12 @@ namespace KeyValueStorage.Tools.Tests.Schema
 		{
 			var objectSchema = _CreateObjectTypeSchema();
 			IKVStore kvStore = new Mock<IKVStore>().Object;
-			IRelationalKey relationalKey = new Mock<IRelationalKey>().Object;
+			IKey key = new Mock<IKey>().Object;
 
-			var relationships = objectSchema.BuildKeyRelationships(kvStore, relationalKey);
+			var relationships = objectSchema.BuildKeyRelationships(kvStore, key);
 
 			var expected = new List<KeyWithRelationship>()
-			{new KeyWithRelationship(relationalKey, new KVForeignKeyStoreRelationshipProvider(kvStore,"B"))};
+			{new KeyWithRelationship(key, new KVForeignKeyStoreRelationshipProvider(kvStore,"B"))};
 			Assert.AreEqual(expected.Select(s => s.Key), relationships.ToList().Select(s => s.Key));
 		}
 	}

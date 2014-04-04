@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using KeyValueStorage.Interfaces;
+using KeyValueStorage.Tools.UnitTests.Structured;
 using NUnit.Framework;
 using Moq;
 using KeyValueStorage.Tools.Collections;

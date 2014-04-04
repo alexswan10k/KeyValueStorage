@@ -24,47 +24,47 @@ namespace KeyValueStorage.Tools.Stores
         public IStoreProvider StoreProvider { get { return _store.StoreProvider; } }
         public ITextSerializer Serializer { get { return _store.Serializer; } }
 
-        public T Get<T>(string key)
+        public T Get<T>(Key key)
         {
             return _store.Get<T>(key);
         }
 
-        public void Set<T>(string key, T value)
+        public void Set<T>(Key key, T value)
         {
             _writeActions.Enqueue(() =>_store.Set(key, value));
         }
 
-        public void Delete(string key)
+        public void Delete(Key key)
         {
             _writeActions.Enqueue(() => _store.Delete(key));       
         }
 
-        public T Get<T>(string key, out ulong cas)
+        public T Get<T>(Key key, out ulong cas)
         {
             return _store.Get<T>(key, out cas);
         }
 
-        public void Set<T>(string key, T value, ulong cas)
+        public void Set<T>(Key key, T value, ulong cas)
         {
             _writeActions.Enqueue(() => _store.Set(key, value, cas));    
         }
 
-        public void Set<T>(string key, T value, DateTime expires)
+        public void Set<T>(Key key, T value, DateTime expires)
         {
             _writeActions.Enqueue(() => _store.Set(key, value, expires));    
         }
 
-        public void Set<T>(string key, T value, TimeSpan expiresIn)
+        public void Set<T>(Key key, T value, TimeSpan expiresIn)
         {
             _writeActions.Enqueue(() => _store.Set(key, value, expiresIn));    
         }
 
-        public void Set<T>(string key, T value, ulong CAS, DateTime expires)
+        public void Set<T>(Key key, T value, ulong CAS, DateTime expires)
         {
             _writeActions.Enqueue(() => _store.Set(key, value, expires));    
         }
 
-        public void Set<T>(string key, T value, ulong CAS, TimeSpan expiresIn)
+        public void Set<T>(Key key, T value, ulong CAS, TimeSpan expiresIn)
         {
             _writeActions.Enqueue(() => _store.Set(key, value, expiresIn));    
         }
@@ -79,22 +79,22 @@ namespace KeyValueStorage.Tools.Stores
             return _store.ExpiresOn(key);
         }
 
-        public IEnumerable<T> GetStartingWith<T>(string key)
+        public IEnumerable<T> GetStartingWith<T>(Key key)
         {
             return _store.GetStartingWith<T>(key);
         }
 
-        public IEnumerable<string> GetAllKeys()
+        public IEnumerable<Key> GetAllKeys()
         {
             return _store.GetAllKeys();
         }
 
-        public IEnumerable<string> GetKeysStartingWith(string key)
+        public IEnumerable<Key> GetKeysStartingWith(Key key)
         {
             return _store.GetKeysStartingWith(key);
         }
 
-        public int CountStartingWith(string key)
+        public int CountStartingWith(Key key)
         {
             return _store.CountStartingWith(key);
         }
@@ -104,42 +104,42 @@ namespace KeyValueStorage.Tools.Stores
             return _store.CountAll();
         }
 
-        public ulong GetNextSequenceValue(string key)
+        public ulong GetNextSequenceValue(Key key)
         {
             return _store.GetNextSequenceValue(key);
         }
 
-        public ulong GetNextSequenceValue(string key, int increment)
+        public ulong GetNextSequenceValue(Key key, int increment)
         {
             return _store.GetNextSequenceValue(key, increment);
         }
 
-        public IEnumerable<T> GetCollection<T>(string key)
+        public IEnumerable<T> GetCollection<T>(Key key)
         {
             return _store.GetCollection<T>(key);
         }
 
-        public IEnumerable<T> GetCollection<T>(string key, out ulong cas)
+        public IEnumerable<T> GetCollection<T>(Key key, out ulong cas)
         {
             return _store.GetCollection<T>(key, out cas);
         }
 
-        public void SetCollection<T>(string key, IEnumerable<T> values)
+        public void SetCollection<T>(Key key, IEnumerable<T> values)
         {
             _writeActions.Enqueue(() => _store.SetCollection(key, values));    
         }
 
-        public void SetCollection<T>(string key, IEnumerable<T> values, ulong cas)
+        public void SetCollection<T>(Key key, IEnumerable<T> values, ulong cas)
         {
             _writeActions.Enqueue(() => _store.SetCollection(key, values, cas));    
         }
 
-        public void AppendToCollection<T>(string key, T value)
+        public void AppendToCollection<T>(Key key, T value)
         {
             _writeActions.Enqueue(() => _store.AppendToCollection(key, value));    
         }
 
-        public void RemoveFromCollection<T>(string key, T value)
+        public void RemoveFromCollection<T>(Key key, T value)
         {
             _writeActions.Enqueue(() => _store.RemoveFromCollection(key, value));
         }

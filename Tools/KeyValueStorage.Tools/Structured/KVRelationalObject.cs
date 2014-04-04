@@ -1,20 +1,20 @@
 using System;
 using System.Collections.Generic;
-using KeyValueStorage.Interfaces;
-using KeyValueStorage.Tools.Schema;
-using KeyValueStorage.Tools.Utility.Relationships;
 using System.Linq;
+using KeyValueStorage.Interfaces;
+using KeyValueStorage.Tools.Structured.Schema;
+using KeyValueStorage.Tools.Utility.Relationships;
 
-namespace KeyValueStorage.Tools
+namespace KeyValueStorage.Tools.Structured
 {
     public abstract class KVRelationalObject
     {
-        protected KVRelationalObject(IRelationalKey key)
+        protected KVRelationalObject(Key key)
         {
             Key = key;
         }
 
-        public IRelationalKey Key { get; internal set; }
+        public Key Key { get; internal set; }
     }
 
     public class KVRelationalObject<T> : KVRelationalObject
@@ -45,7 +45,7 @@ namespace KeyValueStorage.Tools
         /// <summary>
         /// Use factory
         /// </summary>
-        internal KVRelationalObject(IRelationalKey key, IStoreSchema schema, IKVStore store)
+        internal KVRelationalObject(Key key, IStoreSchema schema, IKVStore store)
             :base(key)
         {
             _schema = schema;
@@ -70,7 +70,7 @@ namespace KeyValueStorage.Tools
             GetRelationship<U>().Remove<T>(relationalObject.Key, _store, _schema);
         }
 
-        public IEnumerable<IRelationalKey> GetForeignKeys<U>()
+        public IEnumerable<Key> GetForeignKeys<U>()
         {
             return GetRelationship<U>().GetReferences();
         }

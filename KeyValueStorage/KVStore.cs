@@ -33,25 +33,25 @@ namespace KeyValueStorage
         public ITextSerializer Serializer { get; protected set; }
 
         #region IKeyValueStore
-        public T Get<T>(string key)
+        public T Get<T>(Key key)
         {
             return _retryStrategy.ExecuteFuncWithRetry(
                 () => Serializer.Deserialize<T>(StoreProvider.Get(key)));
         }
 
-        public void Set<T>(string key, T value)
+        public void Set<T>(Key key, T value)
         {
             _retryStrategy.ExecuteDelegateWithRetry(
                 () => StoreProvider.Set(key, Serializer.Serialize(value)));
         }
 
-        public void Delete(string key)
+        public void Delete(Key key)
         {
             _retryStrategy.ExecuteDelegateWithRetry(
                 () => StoreProvider.Remove(key));
         }
 
-        public T Get<T>(string key, out ulong cas)
+        public T Get<T>(Key key, out ulong cas)
         {
             //horrendous hack for accomodating out params!
             ulong casOut = 0;
@@ -70,31 +70,31 @@ namespace KeyValueStorage
         }
 
 
-        public void Set<T>(string key, T value, ulong cas)
+        public void Set<T>(Key key, T value, ulong cas)
         {
             _retryStrategy.ExecuteDelegateWithRetry(
                 () => StoreProvider.Set(key, Serializer.Serialize(value), cas));
         }
 
-        public void Set<T>(string key, T value, DateTime expires)
+        public void Set<T>(Key key, T value, DateTime expires)
         {
             _retryStrategy.ExecuteDelegateWithRetry(
                 () => StoreProvider.Set(key, Serializer.Serialize(value), expires));
         }
 
-        public void Set<T>(string key, T value, TimeSpan expiresIn)
+        public void Set<T>(Key key, T value, TimeSpan expiresIn)
         {
             _retryStrategy.ExecuteDelegateWithRetry(
                 () => StoreProvider.Set(key, Serializer.Serialize(value), expiresIn));
         }
 
-        public void Set<T>(string key, T value, ulong cas, DateTime expires)
+        public void Set<T>(Key key, T value, ulong cas, DateTime expires)
         {
             _retryStrategy.ExecuteDelegateWithRetry(
                 () => StoreProvider.Set(key, Serializer.Serialize(value), cas, expires));
         }
 
-        public void Set<T>(string key, T value, ulong cas, TimeSpan expiresIn)
+        public void Set<T>(Key key, T value, ulong cas, TimeSpan expiresIn)
         {
             _retryStrategy.ExecuteDelegateWithRetry(
                 () => StoreProvider.Set(key, Serializer.Serialize(value), cas, expiresIn));
@@ -114,28 +114,28 @@ namespace KeyValueStorage
         }
 
         #region Queries
-        public IEnumerable<T> GetStartingWith<T>(string key)
+        public IEnumerable<T> GetStartingWith<T>(Key key)
         {
             return _retryStrategy.ExecuteFuncWithRetry(
                 () => StoreProvider.GetStartingWith(key).Select(s => Serializer.Deserialize<T>(s)).ToList()
             );
         }
 
-        public IEnumerable<string> GetAllKeys()
+        public IEnumerable<Key> GetAllKeys()
         {
             return _retryStrategy.ExecuteFuncWithRetry(
-                () => StoreProvider.GetAllKeys());
+                () => StoreProvider.GetAllKeys()).Select(s => new Key(s));
         }
 
-        public IEnumerable<string> GetKeysStartingWith(string key)
+        public IEnumerable<Key> GetKeysStartingWith(Key key)
         {
             return _retryStrategy.ExecuteFuncWithRetry(
-                () => StoreProvider.GetKeysStartingWith(key));
+                () => StoreProvider.GetKeysStartingWith(key)).Select(s => new Key(s));
         }
         #endregion
 
         #region Scalar Queries
-        public int CountStartingWith(string key)
+        public int CountStartingWith(Key key)
         {
             return _retryStrategy.ExecuteFuncWithRetry(
                 () => StoreProvider.CountStartingWith(key));
@@ -149,13 +149,13 @@ namespace KeyValueStorage
         #endregion
 
         #region Sequences
-        public ulong GetNextSequenceValue(string key)
+        public ulong GetNextSequenceValue(Key key)
         {
             return _retryStrategy.ExecuteFuncWithRetry(
                 () => StoreProvider.GetNextSequenceValue(key, 1));
         }
 
-        public ulong GetNextSequenceValue(string key, int increment)
+        public ulong GetNextSequenceValue(Key key, int increment)
         {
             return _retryStrategy.ExecuteFuncWithRetry(
                 () => StoreProvider.GetNextSequenceValue(key, increment));
@@ -164,7 +164,7 @@ namespace KeyValueStorage
         #endregion
 
         #region CollectionOperations
-        public IEnumerable<T> GetCollection<T>(string key)
+        public IEnumerable<T> GetCollection<T>(Key key)
         {
             return _retryStrategy.ExecuteFuncWithRetry(
                 () =>
@@ -172,7 +172,7 @@ namespace KeyValueStorage
                 );
         }
 
-        public IEnumerable<T> GetCollection<T>(string key, out ulong cas)
+        public IEnumerable<T> GetCollection<T>(Key key, out ulong cas)
         {
             // nasty hack for out params
             ulong casOut = 0;
@@ -192,7 +192,7 @@ namespace KeyValueStorage
             return outerResult;
         }
 
-        public void SetCollection<T>(string key, IEnumerable<T> values)
+        public void SetCollection<T>(Key key, IEnumerable<T> values)
         {
             _retryStrategy.ExecuteDelegateWithRetry(
                 () =>
@@ -200,7 +200,7 @@ namespace KeyValueStorage
                 );
         }
 
-        public void SetCollection<T>(string key, IEnumerable<T> values, ulong cas)
+        public void SetCollection<T>(Key key, IEnumerable<T> values, ulong cas)
         {
             _retryStrategy.ExecuteDelegateWithRetry(
                 () => 
@@ -208,7 +208,7 @@ namespace KeyValueStorage
                 );
         }
 
-        public void AppendToCollection<T>(string key, T value)
+        public void AppendToCollection<T>(Key key, T value)
         {
             _retryStrategy.ExecuteDelegateWithRetry(
                 () =>
@@ -216,7 +216,7 @@ namespace KeyValueStorage
                 );
         }
 
-        public void RemoveFromCollection<T>(string key, T value)
+        public void RemoveFromCollection<T>(Key key, T value)
         {
             _retryStrategy.ExecuteDelegateWithRetry(
                 () =>

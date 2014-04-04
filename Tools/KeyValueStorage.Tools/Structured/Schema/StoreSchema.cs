@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using KeyValueStorage.Interfaces;
 using KeyValueStorage.Tools.Utility.Relationships;
 
-namespace KeyValueStorage.Tools.Schema
+namespace KeyValueStorage.Tools.Structured.Schema
 {
     public class StoreSchema : IStoreSchema
     {
@@ -15,7 +15,7 @@ namespace KeyValueStorage.Tools.Schema
             _schemaObjects = schemaObjects ?? new Dictionary<Type, IObjectTypeSchema>();
         }
 
-        public IEnumerable<KeyWithRelationship> BuildKeyRelationships<T>(IKVStore underlyingStore, IRelationalKey key)
+        public IEnumerable<KeyWithRelationship> BuildKeyRelationships<T>(IKVStore underlyingStore, Key key)
         {
             IObjectTypeSchema objectTypeSchema;
             if(!_schemaObjects.TryGetValue(typeof(T), out objectTypeSchema))

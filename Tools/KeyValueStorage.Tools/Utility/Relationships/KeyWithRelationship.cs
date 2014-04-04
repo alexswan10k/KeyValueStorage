@@ -1,22 +1,22 @@
 ﻿using System.Collections.Generic;
 using KeyValueStorage.Interfaces;
-using KeyValueStorage.Tools.Schema;
 using System.Linq;
+using KeyValueStorage.Tools.Structured.Schema;
 
 namespace KeyValueStorage.Tools.Utility.Relationships
 {
     public class KeyWithRelationship
     {
-        private readonly IRelationalKey _key;
+        private readonly Key _key;
         private readonly IKVForeignKeyRelationshipProvider _kvLocalRelationshipProvider;
 
-        public KeyWithRelationship(IRelationalKey key, IKVForeignKeyRelationshipProvider kvLocalRelationshipProvider)
+        public KeyWithRelationship(Key key, IKVForeignKeyRelationshipProvider kvLocalRelationshipProvider)
         {
             _key = key;
             _kvLocalRelationshipProvider = kvLocalRelationshipProvider;
         }
 
-        public IRelationalKey Key
+        public Key Key
         {
             get { return _key; }
         }
@@ -26,13 +26,13 @@ namespace KeyValueStorage.Tools.Utility.Relationships
             get { return _kvLocalRelationshipProvider; }
         }
 
-        public void Add(IRelationalKey foreignKey, IKVForeignKeyRelationshipProvider foreignKeyReturnRelationshipProvider)
+        public void Add(Key foreignKey, IKVForeignKeyRelationshipProvider foreignKeyReturnRelationshipProvider)
         {
             KvLocalRelationshipProvider.Add(Key, foreignKey);
             foreignKeyReturnRelationshipProvider.Add(foreignKey, Key);
         }
 
-        public void Remove(IRelationalKey foreignKey, IKVForeignKeyRelationshipProvider foreignKeyReturnRelationshipProvider)
+        public void Remove(Key foreignKey, IKVForeignKeyRelationshipProvider foreignKeyReturnRelationshipProvider)
         {
             KvLocalRelationshipProvider.Remove(Key, foreignKey);
             foreignKeyReturnRelationshipProvider.Remove(foreignKey, Key);
@@ -53,7 +53,7 @@ namespace KeyValueStorage.Tools.Utility.Relationships
             return KvLocalRelationshipProvider.GetRelationships(Key);
         }
 
-        public IEnumerable<IRelationalKey> GetReferences()
+        public IEnumerable<Key> GetReferences()
         {
             return KvLocalRelationshipProvider.GetKeys(Key);
         }
@@ -70,7 +70,7 @@ namespace KeyValueStorage.Tools.Utility.Relationships
             }
         }
 
-        public void Remove<T>(IRelationalKey foreignKey, IKVStore store, IStoreSchema schema)
+        public void Remove<T>(IKey foreignKey, IKVStore store, IStoreSchema schema)
         {
             IObjectTypeSchema thisObjectSchema = schema.GetObjectSchema<T>();
 

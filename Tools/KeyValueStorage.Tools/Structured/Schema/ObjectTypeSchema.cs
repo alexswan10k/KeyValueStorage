@@ -5,7 +5,7 @@ using System.Linq;
 using KeyValueStorage.Interfaces;
 using KeyValueStorage.Tools.Utility.Relationships;
 
-namespace KeyValueStorage.Tools.Schema
+namespace KeyValueStorage.Tools.Structured.Schema
 {
     public class ObjectTypeSchema : IObjectTypeSchema
     {
@@ -30,13 +30,13 @@ namespace KeyValueStorage.Tools.Schema
 		    get { return _conceptualTableKeyPrefix; }
 	    }
 
-	    public IEnumerable<KeyWithRelationship> BuildKeyRelationships(IKVStore store, IRelationalKey key)
+	    public IEnumerable<KeyWithRelationship> BuildKeyRelationships(IKVStore store, Key key)
         {
             return _foreignTypeAliases.Select(
                 s => new KeyWithRelationship(key, new KVForeignKeyStoreRelationshipProvider(store, s.Value)));
         }
 
-        public KeyWithRelationship GetRelationshipFor<T>(IKVStore store, IRelationalKey key)
+        public KeyWithRelationship GetRelationshipFor<T>(IKVStore store, Key key)
         {
             string relationshipSuffix;
             if(_foreignTypeAliases.TryGetValue(typeof (T), out relationshipSuffix))
@@ -45,12 +45,12 @@ namespace KeyValueStorage.Tools.Schema
             return null;
         }
 
-        public IRelationalKey GenerateKey(IKVStore store)
+        public Key GenerateKey(IKVStore store)
         {
             var sequenceValue = store.GetNextSequenceValue(string.Format("{0}:i", ConceptualTableKeyPrefix));
 
             //todo : replace with customisable logic
-            return new RelationalKey(string.Format("{0}:{1}", ConceptualTableKeyPrefix, sequenceValue.ToString()));
+            return string.Format("{0}:{1}", ConceptualTableKeyPrefix, sequenceValue.ToString());
         }
 
         public void AddRelationship<T>(string conceptualTableAlias = null)

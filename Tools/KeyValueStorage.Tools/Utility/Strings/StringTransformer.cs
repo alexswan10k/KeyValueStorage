@@ -4,12 +4,12 @@ namespace KeyValueStorage.Tools.Utility.Strings
 {
     public interface IStringTransformer
     {
-        string Transform(string valueToTransform);
+        Key Transform(Key valueToTransform);
     }
 
     public class NullStringTransformer : IStringTransformer
     {
-        public string Transform(string valueToTransform)
+        public Key Transform(Key valueToTransform)
         {
             return valueToTransform;
         }
@@ -17,14 +17,14 @@ namespace KeyValueStorage.Tools.Utility.Strings
 
     public class StringTransformer : IStringTransformer
     {
-        private readonly Func<string, string> _transformOperation;
+		private readonly Func<Key, Key> _transformOperation;
 
-        public StringTransformer(Func<string, string> transformOperation)
+		public StringTransformer(Func<Key, Key> transformOperation)
         {
             _transformOperation = transformOperation;
         }
 
-        public string Transform(string valueToTransform)
+        public Key Transform(Key valueToTransform)
         {
             return _transformOperation(valueToTransform);
         }
@@ -39,7 +39,7 @@ namespace KeyValueStorage.Tools.Utility.Strings
             _prefix = prefix;
         }
 
-        public string Transform(string valueToTransform)
+        public Key Transform(Key valueToTransform)
         {
             return _prefix + valueToTransform;
         }
@@ -54,7 +54,7 @@ namespace KeyValueStorage.Tools.Utility.Strings
             _suffix = suffix;
         }
 
-        public string Transform(string valueToTransform)
+        public Key Transform(Key valueToTransform)
         {
             return valueToTransform + _suffix;
         }

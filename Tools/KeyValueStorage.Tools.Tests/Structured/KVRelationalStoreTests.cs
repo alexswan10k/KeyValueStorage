@@ -1,14 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KeyValueStorage.Interfaces;
-using KeyValueStorage.Tools.Schema;
-using KeyValueStorage.Tools.Utility.Relationships;
+using KeyValueStorage.Tools.Structured;
+using KeyValueStorage.Tools.Structured.Schema;
 using Moq;
 using NUnit.Framework;
 
-namespace KeyValueStorage.Tools.Tests
+namespace KeyValueStorage.Tools.UnitTests.Structured
 {
     [TestFixture]
     public class KVRelationalStoreTests

@@ -4,9 +4,9 @@ namespace KeyValueStorage.Tools.Utility.Relationships
 {
     public interface IKVForeignKeyRelationshipProvider
     {
-        void Add(IRelationalKey key, IRelationalKey p1);
-        void Remove(IRelationalKey key, IRelationalKey p1);
-        IEnumerable<KeyWithRelationship> GetRelationships(IRelationalKey key);
-        IEnumerable<IRelationalKey> GetKeys(IRelationalKey key);
+        void Add(Key key, Key p1);
+        void Remove(Key key, Key p1);
+        IEnumerable<KeyWithRelationship> GetRelationships(Key key);
+        IEnumerable<Key> GetKeys(Key key);
     }
 }

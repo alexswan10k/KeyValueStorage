@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using KeyValueStorage.Interfaces;
-using KeyValueStorage.Tools.Schema;
+using KeyValueStorage.Tools.Structured.Schema;
 using KeyValueStorage.Tools.Utility.Relationships;
 
-namespace KeyValueStorage.Tools
+namespace KeyValueStorage.Tools.Structured
 {
 	public interface IKVRelationalStore
 	{
@@ -15,10 +10,10 @@ namespace KeyValueStorage.Tools
 		IStoreSchema Schema { get; }
 		KVRelationalObject<T> New<T>() where T : new();
 		KVRelationalObject<T> New<T>(T objetToWrap) where T : new();
-		KVRelationalObject<T> Get<T>(IRelationalKey key);
+		KVRelationalObject<T> Get<T>(Key key);
 		KVRelationalObject<T> Get<T>(decimal id);
 		void Save<T>(KVRelationalObject<T> obj);
-		void Remove<T>(IRelationalKey key);
+		void Remove<T>(Key key);
 		void Remove<T>(KVRelationalObject<T> value);
 	}
 
@@ -55,7 +50,7 @@ namespace KeyValueStorage.Tools
             return relObject;
         }
 
-        public KVRelationalObject<T> Get<T>(IRelationalKey key)
+        public KVRelationalObject<T> Get<T>(Key key)
         {
             var value = Store.Get<T>(key.Value);
 
@@ -65,7 +60,7 @@ namespace KeyValueStorage.Tools
 		public KVRelationalObject<T> Get<T>(decimal id)
 		{
 			var key = Schema.GetObjectSchema<T>().ConceptualTableKeyPrefix + ":" + id;
-			return new KVRelationalObject<T>(new RelationalKey(key),Schema, Store);
+			return new KVRelationalObject<T>(key,Schema, Store);
 		}
 
         public void Save<T>(KVRelationalObject<T> obj)
@@ -78,7 +73,7 @@ namespace KeyValueStorage.Tools
             }
         }
 
-        public void Remove<T>(IRelationalKey key)
+        public void Remove<T>(Key key)
         {
             //find all other references
             foreach(var rel in Schema.BuildKeyRelationships<T>(Store, key))
@@ -95,7 +90,7 @@ namespace KeyValueStorage.Tools
             value.Key = null;
         }
 
-        private IRelationalKey GenerateKey<T>()
+        private Key GenerateKey<T>()
         {
             return Schema.GetObjectSchema<T>().GenerateKey(Store);
         }

@@ -23,7 +23,7 @@ namespace KeyValueStorage
 		public IStoreProvider StoreProvider { get { return _store.StoreProvider; } }
 		public ITextSerializer Serializer { get { return _store.Serializer; } }
 
-		public T Get<T>(string key)
+		public T Get<T>(Key key)
 		{
 			_logger.LogStoreCall("Get", key);
 			try
@@ -37,7 +37,7 @@ namespace KeyValueStorage
 			}
 		}
 
-		public void Set<T>(string key, T value)
+		public void Set<T>(Key key, T value)
 		{
 			_logger.LogStoreCall("Set", key, value);
 			try
@@ -50,7 +50,7 @@ namespace KeyValueStorage
 			}
 		}
 
-		public void Delete(string key)
+		public void Delete(Key key)
 		{
 			_logger.LogStoreCall("Delete", key);
 			try
@@ -63,7 +63,7 @@ namespace KeyValueStorage
 			}
 		}
 
-		public T Get<T>(string key, out ulong cas)
+		public T Get<T>(Key key, out ulong cas)
 		{
 			_logger.LogStoreCall("Get", key);
 			try
@@ -79,7 +79,7 @@ namespace KeyValueStorage
 			}
 		}
 
-		public void Set<T>(string key, T value, ulong cas)
+		public void Set<T>(Key key, T value, ulong cas)
 		{
 			_logger.LogStoreCall("Set", key, value, cas);
 			try
@@ -92,7 +92,7 @@ namespace KeyValueStorage
 			}
 		}
 
-		public void Set<T>(string key, T value, DateTime expires)
+		public void Set<T>(Key key, T value, DateTime expires)
 		{
 			_logger.LogStoreCall("Set", key, value, null, expires);
 			try
@@ -105,7 +105,7 @@ namespace KeyValueStorage
 			}
 		}
 
-		public void Set<T>(string key, T value, TimeSpan expiresIn)
+		public void Set<T>(Key key, T value, TimeSpan expiresIn)
 		{
 			_logger.LogStoreCall("Set", key, value, null, expiresIn);
 			try
@@ -118,7 +118,7 @@ namespace KeyValueStorage
 			}
 		}
 
-		public void Set<T>(string key, T value, ulong cas, DateTime expires)
+		public void Set<T>(Key key, T value, ulong cas, DateTime expires)
 		{
 			_logger.LogStoreCall("Set", key, value, cas, expires);
 			try
@@ -131,7 +131,7 @@ namespace KeyValueStorage
 			}
 		}
 
-		public void Set<T>(string key, T value, ulong cas, TimeSpan expiresIn)
+		public void Set<T>(Key key, T value, ulong cas, TimeSpan expiresIn)
 		{
 			_logger.LogStoreCall("Set", key, value, cas, expiresIn);
 			try
@@ -174,7 +174,7 @@ namespace KeyValueStorage
 
 		#region Queries
 
-		public IEnumerable<T> GetStartingWith<T>(string key)
+		public IEnumerable<T> GetStartingWith<T>(Key key)
 		{
 			_logger.LogStoreCall("GetStartingWith", key);
 			try
@@ -188,7 +188,7 @@ namespace KeyValueStorage
 			}
 		}
 
-		public IEnumerable<string> GetAllKeys()
+		public IEnumerable<Key> GetAllKeys()
 		{
 			_logger.LogStoreCall("GetAllKeys");
 			try
@@ -202,7 +202,7 @@ namespace KeyValueStorage
 			}
 		}
 
-		public IEnumerable<string> GetKeysStartingWith(string key)
+		public IEnumerable<Key> GetKeysStartingWith(Key key)
 		{
 			_logger.LogStoreCall("GetKeysStartingWith", key);
 			try
@@ -220,7 +220,7 @@ namespace KeyValueStorage
 
 		#region Scalar Queries
 
-		public int CountStartingWith(string key)
+		public int CountStartingWith(Key key)
 		{
 			_logger.LogStoreCall("CountStartingWith", key);
 			try
@@ -252,7 +252,7 @@ namespace KeyValueStorage
 
 		#region Sequences
 
-		public ulong GetNextSequenceValue(string key)
+		public ulong GetNextSequenceValue(Key key)
 		{
 			_logger.LogStoreCall("GetNextSequenceValue", key);
 			try
@@ -266,7 +266,7 @@ namespace KeyValueStorage
 			}
 		}
 
-		public ulong GetNextSequenceValue(string key, int increment)
+		public ulong GetNextSequenceValue(Key key, int increment)
 		{
 			_logger.LogStoreCall("GetNextSequenceValue", key, increment);
 			try
@@ -286,7 +286,7 @@ namespace KeyValueStorage
 
 		#region CollectionOperations
 
-		public IEnumerable<T> GetCollection<T>(string key)
+		public IEnumerable<T> GetCollection<T>(Key key)
 		{
 			_logger.LogStoreCall("GetCollection", key);
 			try
@@ -300,7 +300,7 @@ namespace KeyValueStorage
 			}
 		}
 
-		public IEnumerable<T> GetCollection<T>(string key, out ulong cas)
+		public IEnumerable<T> GetCollection<T>(Key key, out ulong cas)
 		{
 			_logger.LogStoreCall("GetCollection", key);
 			try
@@ -316,7 +316,7 @@ namespace KeyValueStorage
 			}
 		}
 
-		public void SetCollection<T>(string key, IEnumerable<T> values)
+		public void SetCollection<T>(Key key, IEnumerable<T> values)
 		{
 			_logger.LogStoreCall("SetCollection", key, values);
 			try
@@ -329,7 +329,7 @@ namespace KeyValueStorage
 			}
 		}
 
-		public void SetCollection<T>(string key, IEnumerable<T> values, ulong cas)
+		public void SetCollection<T>(Key key, IEnumerable<T> values, ulong cas)
 		{
 			_logger.LogStoreCall("SetCollection", key, values, cas);
 			try
@@ -342,7 +342,7 @@ namespace KeyValueStorage
 			}
 		}
 
-		public void AppendToCollection<T>(string key, T value)
+		public void AppendToCollection<T>(Key key, T value)
 		{
 			_logger.LogStoreCall("AppendToCollection", key, value);
 			try
@@ -355,7 +355,7 @@ namespace KeyValueStorage
 			}
 		}
 
-		public void RemoveFromCollection<T>(string key, T value)
+		public void RemoveFromCollection<T>(Key key, T value)
 		{
 			_logger.LogStoreCall("RemoveFromCollection", key, value);
 			try

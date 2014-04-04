@@ -54,10 +54,10 @@
     <Compile Include="Collections\QueueTests.cs" />
     <Compile Include="Cryptography\Hashers\HasherTests.cs" />
     <Compile Include="Cryptography\StringSymmetricAlgorithms\RijndaelManagedStringCryptoSymmetricTests.cs" />
-    <Compile Include="KVRelationalObjectTests.cs" />
-    <Compile Include="KVRelationalStoreTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Schema\ObjectTypeSchemaTests.cs" />
+    <Compile Include="Structured\KVRelationalObjectTests.cs" />
+    <Compile Include="Structured\KVRelationalStoreTests.cs" />
+    <Compile Include="Structured\Schema\ObjectTypeSchemaTests.cs" />
     <Compile Include="Utility\Strings\StringTransformerTests.cs" />
   </ItemGroup>
   <ItemGroup>

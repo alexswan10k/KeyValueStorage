@@ -23,25 +23,25 @@ namespace KeyValueStorage.Tools.Utility.Relationships
             _store = new KeyTransformKVStore(store, new SuffixTransformer(relationshipSuffix + relationshipSuffixCollection));
         }
 
-        public void Add(IRelationalKey key, IRelationalKey p1)
+        public void Add(Key key, Key p1)
         {
             _store.AppendToCollection(key.Value, p1);
         }
 
-        public void Remove(IRelationalKey key, IRelationalKey p1)
+        public void Remove(Key key, Key p1)
         {
             _store.RemoveFromCollection(key.Value, p1);
         }
 
-        public IEnumerable<KeyWithRelationship> GetRelationships(IRelationalKey key)
+        public IEnumerable<KeyWithRelationship> GetRelationships(Key key)
         {
-            return _store.GetCollection<string>(key.Value).Select(s => new RelationalKey(s))
+            return _store.GetCollection<string>(key.Value)
                 .Select(s => new KeyWithRelationship(s, this));
         }
 
-        public IEnumerable<IRelationalKey> GetKeys(IRelationalKey key)
+        public IEnumerable<Key> GetKeys(Key key)
         {
-            return _store.GetCollection<IRelationalKey>(key.Value);
+            return _store.GetCollection<Key>(key.Value);
         }
     }
 }
