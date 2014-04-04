@@ -34,7 +34,7 @@ namespace KeyValueStorage.Utility
             Expires = expires;
             WorkerId = workerId ?? System.Environment.MachineName;
             Provider = provider;
-            Serializer = serializer ?? new ServiceStackTextSerializer();
+            Serializer = serializer ?? new JavaScriptTextSerializer();
 
 			_retryStrategy.ExecuteDelegateWithRetry(AcquireLock);
         }

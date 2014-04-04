@@ -25,7 +25,7 @@ namespace KeyValueStorage
 
             _retryStrategy = retryStrategy ?? provider.GetDefaultRetryStrategy();
             StoreProvider = provider;
-            Serializer = serializer ?? new ServiceStackTextSerializer();
+            Serializer = serializer ?? new JavaScriptTextSerializer();
         }
 
         

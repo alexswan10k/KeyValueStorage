@@ -209,6 +209,7 @@ namespace KeyValueStorage.SqlServer
 
             public bool Exists(string key)
             {
+                BeginOperation();
                 try
                 {
 	                var arr = Connection.ExecuteSql("Select Count([Value]) from " + KVSTableName + " where [Key] = @p1", key).AsEnumerable().FirstOrDefault();
@@ -228,6 +229,7 @@ namespace KeyValueStorage.SqlServer
 
             public DateTime? ExpiresOn(string key)
             {
+                BeginOperation();
 	            var arr = Connection.ExecuteSql("Select Expires from " + KVSTableName + " where [Key] = @p1", key).AsEnumerable().FirstOrDefault();
 
 				if(arr == null)
@@ -238,31 +240,37 @@ namespace KeyValueStorage.SqlServer
 
 	    public IEnumerable<string> GetStartingWith(string key)
             {
+                BeginOperation();
                 return Connection.ExecuteSql("Select [Value] from " + KVSTableName + " where [Key] like '" + key + "%'").AsEnumerable().Select(s => s[0] as string);
             }
 
             public IEnumerable<string> GetContaining(string key)
             {
+                BeginOperation();
                 return Connection.ExecuteSql("Select [Value] from " + KVSTableName + " where [Key] like '%" + key + "%'").AsEnumerable().Select(s => s[0] as string);
             }
 
             public IEnumerable<string> GetAllKeys()
             {
+                BeginOperation();
                 return Connection.ExecuteSql("Select [Key] from " + KVSTableName).AsEnumerable().Select(s => s[0] as string);
             }
 
             public IEnumerable<string> GetKeysStartingWith(string key)
             {
+                BeginOperation();
                 return Connection.ExecuteSql("Select [Key] from " + KVSTableName + " where [Key] like '" + key + "%'").AsEnumerable().Select(s => s[0] as string);
             }
 
             public IEnumerable<string> GetKeysContaining(string key)
             {
+                BeginOperation();
                 return Connection.ExecuteSql("Select [Key] from " + KVSTableName + " where [Key] like '%" + key + "%'").AsEnumerable().Select(s => s[0] as string);
             }
 
             public int CountStartingWith(string key)
             {
+                BeginOperation();
 	            var countArr = Connection.ExecuteSql("Select Count([Key]) from " + KVSTableName + " where [Key] like '" + key + "%'").AsEnumerable().FirstOrDefault();
 
 				if (countArr == null)
@@ -274,6 +282,7 @@ namespace KeyValueStorage.SqlServer
 
             public int CountContaining(string key)
             {
+                BeginOperation();
 	            var countArr = Connection.ExecuteSql("Select Count([Key]) from " + KVSTableName + " where [Key] like '%" + key + "%'").AsEnumerable().FirstOrDefault();
 
 				if (countArr == null)
@@ -285,6 +294,7 @@ namespace KeyValueStorage.SqlServer
 
             public int CountAll()
             {
+                BeginOperation();
 	            var countArr = Connection.ExecuteSql("Select Count([Key]) from " + KVSTableName).AsEnumerable().FirstOrDefault();
 
 				if (countArr == null)
@@ -296,6 +306,7 @@ namespace KeyValueStorage.SqlServer
 
             public ulong GetNextSequenceValue(string key, int increment)
             {
+                BeginOperation();
                 //set up a sproc for this
                 using (IKeyLock keyLock = GetKeyLock(lockPrefix + key, DateTime.UtcNow.AddSeconds(10),new SimpleLockRetryStrategy(5,500)))
                 {
@@ -313,6 +324,7 @@ namespace KeyValueStorage.SqlServer
 
             public void Append(string key, string value)
             {
+                BeginOperation();
                 //This could be done far more efficiently and atomically with a sproc
                 using (IKeyLock keyLock = GetKeyLock(lockPrefix + key, DateTime.UtcNow.AddSeconds(10), new SimpleLockRetryStrategy(5,500)))
                 {

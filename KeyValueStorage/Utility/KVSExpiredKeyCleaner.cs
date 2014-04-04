@@ -27,7 +27,7 @@ namespace KeyValueStorage.Utility
             LockKey = lockKey;
             WindowResolution = windowResolution;
             LockExpiryTimeS = 320;
-            Serializer = serializer ?? new ServiceStackTextSerializer();
+            Serializer = serializer ?? new JavaScriptTextSerializer();
             StoreExpiryDateRowPrefix = "-SE-";
             StoreExpirySequenceKey = "-SES";
             StoreExpiryStateDataKey = "-SESD";

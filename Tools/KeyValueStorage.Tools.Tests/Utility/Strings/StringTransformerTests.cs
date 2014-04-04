@@ -15,7 +15,7 @@ namespace KeyValueStorage.Tools.Tests.Utility.Strings
 		public void NullStringTransformerTest()
 		{
 			var st = new NullStringTransformer();
-			Assert.AreEqual(_transformString, st.Transform(_transformString));
+			Assert.AreEqual(_transformString, st.Transform(_transformString).ToString());
 		}
 
 		[Test]

@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using KeyValueStorage.Interfaces;
-using ServiceStack.Text;
 
 namespace KeyValueStorage.Utility.Logging
 {
@@ -59,7 +58,7 @@ namespace KeyValueStorage.Utility.Logging
 
 		public void LogError(Exception ex)
 		{
-			_logWriter.Write("Error: \r\n" + ex.Dump());
+			_logWriter.Write("Error: \r\n" + ex.ToString());
 		}
 
 		public void LogStoreCall(string command, string key = null, object value = null, ulong? cas = null, object expiry = null)
@@ -67,7 +66,7 @@ namespace KeyValueStorage.Utility.Logging
 			_logWriter.Write(string.Format("Called {0} \r\nKey {1}\r\nCas {2}\r\nExpiry {3}", command, key, cas, expiry));
 
 			if (_logValues && value != null)
-				_logWriter.Write("Value \r\n " + value.Dump());
+				_logWriter.Write("Value \r\n " + value.ToString());
 		}
 	}
 }

@@ -110,7 +110,7 @@ namespace KeyValueStorage.Memory
             try
             {
                 var pointless = _memoryMemoryBackingStore[key];
-                if (pointless != null)
+                if (pointless != null && pointless.Value != null)
                     return true;
             }
             catch
@@ -177,7 +177,7 @@ namespace KeyValueStorage.Memory
                 ulong sequence = 0;
                 ulong.TryParse(Val.Value, out sequence);
 
-                sequence++;
+                sequence =  sequence + (ulong)increment;
 
                 Val.Value = sequence.ToString();
                 Val.Cas = GenerateCas();
@@ -213,7 +213,7 @@ namespace KeyValueStorage.Memory
 
         #endregion
 
-        private static ulong GenerateCas()
+        internal static ulong GenerateCas()
         {
             ulong cas;
             byte[] bytes = new byte[4];

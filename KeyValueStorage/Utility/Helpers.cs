@@ -24,13 +24,13 @@ namespace KeyValueStorage.Utility
                 else if (depth < 0)
                     throw new Exception("Json is invalid");
 
+                sb.Append(json[i]);
+
                 if ((depth == 0 && !inQuot) && i > 0)
                 {
                     outputStringEnumerable.Add(sb.ToString());
                     sb = new StringBuilder();
                 }
-                else
-                    sb.Append(json[i]);
             }
 
             return outputStringEnumerable;

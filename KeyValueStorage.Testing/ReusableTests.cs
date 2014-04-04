@@ -238,5 +238,13 @@ namespace KeyValueStorage.Testing
                 Assert.AreEqual(4, context.GetCollection<string>(key).Count());
             }
         }
+
+        public static void DoesNotExistTest(string key = "doesNotExistKey")
+        {
+            using (var context = KVStore.Factory.Get())
+            {
+                Assert.False(context.Exists(key));
+            }
+        }
     }
 }

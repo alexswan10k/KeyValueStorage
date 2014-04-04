@@ -19,7 +19,19 @@ namespace KeyValueStorage.Memory
 
         public MemoryStorageRow this[string key]
         {
-            get { return _memoryStore[key]; }
+            get
+            {
+                MemoryStorageRow memoryStorageRow;
+                if (!_memoryStore.TryGetValue(key, out memoryStorageRow))
+                    return new MemoryStorageRow()
+                           {
+                               Expiry = null,
+                               Cas = SimpleMemoryStoreProvider.GenerateCas(),
+                               Value = null
+                           };
+
+                return memoryStorageRow;
+            }
             set { _memoryStore[key] = value; }
         }
 

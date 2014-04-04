@@ -2,20 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using KeyValueStorage.Testing;
+using KeyValueStorage.Memory;
 using NUnit.Framework;
-using KeyValueStorage;
 
-namespace KeyValueStorage.FSText.Tests
+namespace KeyValueStorage.Testing.Memory
 {
     [TestFixture]
-    public class MainTests
+    class SimpleMemoryStoreProviderTests
     {
         [SetUp]
         public void SetUp()
         {
-            KVStore.Initialize(new Func<Interfaces.IStoreProvider>(() => new KeyValueStorage.FSText.FSTextStoreProvider(@"C:\FSTextStore")));
+            KVStore.Initialize(new Func<Interfaces.IStoreProvider>(() => new SimpleMemoryStoreProvider()));
         }
 
         [Test]

@@ -180,7 +180,7 @@ namespace KeyValueStorage.Memory
                 ulong sequence = 0;
                 ulong.TryParse(Val.Value, out sequence);
 
-                sequence++;
+                sequence = sequence + (ulong) increment;
 
                 Val.Value = sequence.ToString();
                 Val.Cas = GenerateCas();

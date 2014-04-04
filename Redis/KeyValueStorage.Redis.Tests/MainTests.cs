@@ -53,5 +53,11 @@ namespace KeyValueStorage.Redis.Tests
         {
             ReusableTests.CollectionsTest();
         }
+
+        [Test]
+        public void DoesNotExistTest()
+        {
+            ReusableTests.DoesNotExistTest();
+        }
     }
 }
