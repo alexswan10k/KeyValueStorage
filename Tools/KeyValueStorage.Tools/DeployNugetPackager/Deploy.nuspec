@@ -2,7 +2,7 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>KeyValueStorage.Tools</id>
-    <version>0.0.0.5-alpha</version>
+    <version>0.0.0.6-alpha</version>
     <title>KeyValueStorage Tools</title>
     <authors>Metal10k</authors>
     <summary></summary>

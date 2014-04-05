@@ -10,4 +10,9 @@ namespace KeyValueStorage.Testing.TestObjects
     {
         public string SomeInfo { get; set; }
     }
+
+    public class TestBO_C
+    {
+        public string SomeNewInfo { get; set; }
+    }
 }

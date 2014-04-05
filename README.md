@@ -1,6 +1,11 @@
 KeyValueStorage is a project aimed at making storage of data simple, bridging the gap between various NoSql solutions, 
 and strives to provide a common interface that can be shared between all providers. Tools are also available to deal with more complex scenarios such as relational data and encryption.
 
+New:
+	Relational API
+	Simple memory store support
+	Keys of primitive types are now implicitly converted so you can use Guid's or ints for keys without any string operations. The KeyTransformKVStore gives more control over key generation
+
 (http://nuget.org/List/Packages/KeyValueStorage.FSText)
 
 Features
@@ -11,9 +16,9 @@ Features
 	Key expiry
 	Retry strategies
 	One common interface for all abstractions
+	Tools for working with relational data
 	Tools for Membership/Role/Profile substitutes
 	Tools for encryption and decryption of keys on insertion
-	Tools for storing relational data (currently somewhat experimental)
 	Locking
 	Written using TDD and loosely coupled code. Plenty of extension points to customize behaviour.
 	Available on NuGet!
@@ -44,13 +49,15 @@ Write code like:
 
 		var bo3 = new TestBO_A();
 		bo3.Id = context.GetNextSequenceValue(key+"S");
-
-	//etc
 	}
 
+New relational API persisting keys in  both directions:
 
-
-Note: This project is in early stages, and the interface has not completely been defined, so bear with us.
+		var relatedKeys = context.GetRelatedKeysFor<TestBO_A, TestBO_B>(boAKey).ToList();
+		var relatedKeysAssoc1 = context.GetRelatedKeysFor<TestBO_B, TestBO_A>(KeyRel1);
+		context.ClearRelationships<TestBO_A, TestBO_B>(boAKey);
+		context.RemoveRelationship<TestBO_A, TestBO_B>(boAKey, KeyRel1);
+		var relatedObjs = context.GetRelatedFor<TestBO_A, TestBO_B>(boAKey);
 
 Currently fully supported:
 
@@ -58,6 +65,7 @@ Currently fully supported:
 	Redis
 	SqlServer
 	FileSystem
+	SimpleMemoryStoreProvider (included in base package)
 
 Partly supported:
 

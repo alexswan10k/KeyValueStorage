@@ -225,7 +225,11 @@ namespace KeyValueStorage
                         var collection = GetCollection<T>(key, out cas).ToList();
                         var itemToRemove = collection.SingleOrDefault(q => q.Equals(value));
                         collection.Remove(itemToRemove);
-                        SetCollection(key, collection);
+
+                        if(collection.Count == 0)
+                            Delete(key);
+                        else
+                            SetCollection(key, collection);
                     });
         }
         #endregion

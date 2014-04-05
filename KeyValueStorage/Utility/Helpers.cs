@@ -9,6 +9,9 @@ namespace KeyValueStorage.Utility
     {
         public static IEnumerable<string> SeparateJsonArray(string json)
         {
+            if (json == null)
+                return Enumerable.Empty<string>();
+
             int depth = 0;
             bool inQuot = false;
             List<string> outputStringEnumerable = new List<string>();

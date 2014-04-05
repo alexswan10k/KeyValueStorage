@@ -8,7 +8,7 @@ namespace KeyValueStorage.Utility
 		private readonly string _delimiter;
 		private readonly Dictionary<Type, string> _typeAliases;
 
-		public TypeStringTransformer(Dictionary<Type, string> typePrefixMaps = null, string delimiter = ",")
+		public TypeStringTransformer(Dictionary<Type, string> typePrefixMaps = null, string delimiter = ".")
 		{
 			_delimiter = delimiter;
 			_typeAliases = typePrefixMaps ?? new Dictionary<Type, string>();
@@ -47,7 +47,7 @@ namespace KeyValueStorage.Utility
 		private readonly string _delimiter;
 		private readonly Dictionary<Type, string> _typeAliases;
 
-		public ForeignKeyTypeStringTransformer(Dictionary<Type, string> typePrefixMaps = null, string delimiter = ",")
+		public ForeignKeyTypeStringTransformer(Dictionary<Type, string> typePrefixMaps = null, string delimiter = ".")
 		{
 			_delimiter = delimiter;
 			_typeAliases = typePrefixMaps ?? new Dictionary<Type, string>();

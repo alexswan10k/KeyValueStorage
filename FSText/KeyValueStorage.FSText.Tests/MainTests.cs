@@ -60,4 +60,32 @@ namespace KeyValueStorage.FSText.Tests
             ReusableTests.DoesNotExistTest();
         }
     }
+
+    [TestFixture]
+    class RelationalTests
+    {
+        [SetUp]
+        public void SetUp()
+        {
+            KVStore.Initialize(new Func<Interfaces.IStoreProvider>(() => new KeyValueStorage.FSText.FSTextStoreProvider(@"C:\FSTextStore")));
+        }
+
+        [Test]
+        public void ShouldAddToSingleRelationship()
+        {
+            RelationalReusableTests.ShouldHandleSingleRelationship();
+        }
+
+        [Test]
+        public void ShouldBuildRelatedObjectFromFetchedKey()
+        {
+            RelationalReusableTests.ShouldBuildRelatedObjectFromFetchedKey();
+        }
+
+        [Test]
+        public void ShouldHandleMultipleRelationshipsIndependently()
+        {
+            RelationalReusableTests.ShouldHandleMultipleRelationshipsIndependently();
+        }
+    }
 }
