@@ -75,7 +75,7 @@
     <Compile Include="Interfaces\Utility\ISqlDialectProvider.cs" />
     <Compile Include="KVStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceStackTextSerializer.cs" />
+    <Compile Include="TextSerializer.cs" />
     <Compile Include="Utility\ArrayHelpers.cs" />
     <Compile Include="Utility\CharSubstitutor.cs" />
     <Compile Include="Utility\Data\StoreExpiryData.cs" />

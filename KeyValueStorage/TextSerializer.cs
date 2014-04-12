@@ -29,6 +29,8 @@ namespace KeyValueStorage
         {
             try
             {
+                if (string.IsNullOrEmpty(itemSerialized))
+                    return default(T);
                 //if (typeof(T) == typeof(string))
                 //    return (T)(object)itemSerialized;
 
