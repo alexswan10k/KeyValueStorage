@@ -54,17 +54,21 @@ namespace KeyValueStorage.SqlServer
                 BeginOperation();
                 try
                 {
-                    Connection.ExecuteNonQuery("create table " + KVSTableName + " ("
-                        + "[Key] Varchar(128) not null,"
-                        + "[Value] Varchar(MAX),"
-                        + "[Expires] datetime,"
-                        + "[Cas] int"
-                        + ")");
-
-                    Connection.ExecuteNonQuery("Alter table "+ KVSTableName 
-                        +" add constraint PK_"+ KVSTableName
-                        +" primary key clustered ([Key] ASC)");
-
+                    Connection.ExecuteNonQuery(
+                        string.Format(@"
+                            IF object_id('{0}') is null
+                            BEGIN
+	                            create table {0}
+                                ([Key] Varchar(128) not null,
+                                [Value] Varchar(MAX),
+                                [Expires] datetime,
+                                [Cas] int);
+    
+                                Alter table {0}
+		                            add constraint PK_{0}
+		                            primary key clustered ([Key] ASC);
+                            END
+                            ", KVSTableName));
                     return true;
                 }
                 catch (SqlException ex)
