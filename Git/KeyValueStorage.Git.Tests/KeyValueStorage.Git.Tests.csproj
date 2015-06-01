@@ -51,11 +51,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Git\KeyValueStorage.Git\KeyValueStorage.Git.csproj">
+    <ProjectReference Include="..\KeyValueStorage.Git\KeyValueStorage.Git.csproj">
       <Project>{723A64E2-A20A-44B2-9D2A-C4B370286A8B}</Project>
       <Name>KeyValueStorage.Git</Name>
     </ProjectReference>
-    <ProjectReference Include="..\KeyValueStorage\KeyValueStorage.csproj">
+    <ProjectReference Include="..\..\KeyValueStorage\KeyValueStorage.csproj">
       <Project>{A53CB348-4535-44C6-A752-7E3382C24304}</Project>
       <Name>KeyValueStorage</Name>
     </ProjectReference>
