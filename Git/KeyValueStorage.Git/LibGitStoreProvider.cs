@@ -6,16 +6,21 @@ using System.Threading.Tasks;
 using KeyValueStorage.Exceptions;
 using KeyValueStorage.Interfaces;
 using KeyValueStorage.Interfaces.Utility;
+using KeyValueStorage.RetryStrategies;
+using KeyValueStorage.Utility;
 
 namespace KeyValueStorage.Git.Tests
 {
     public class LibGitStoreProvider : IStoreProvider
     {
         private Repo _repo;
+        public KVSExpiredKeyCleaner KeyCleaner { get; protected set; }
+        const string lockPrefix = "-L-";
 
         public LibGitStoreProvider(string path)
         {
             _repo = new Repo(path);
+            KeyCleaner = new KVSExpiredKeyCleaner(this, lockPrefix + "KC", TimeSpan.FromMinutes(1));
         }
 
         public void Dispose()
@@ -65,22 +70,30 @@ namespace KeyValueStorage.Git.Tests
 
         public void Set(string key, string value, DateTime expires)
         {
-            throw new NotImplementedException();
+            Set(key, value);
+            _SetKeyExpiry(key, expires);
         }
 
         public void Set(string key, string value, TimeSpan expiresIn)
         {
-            throw new NotImplementedException();
+            var expires = DateTime.UtcNow + expiresIn;
+
+            Set(key, value);
+            _SetKeyExpiry(key, expires);
         }
 
         public void Set(string key, string value, ulong cas, DateTime expires)
         {
-            throw new NotImplementedException();
+            Set(key, value, cas);
+            _SetKeyExpiry(key, expires);
         }
 
         public void Set(string key, string value, ulong cas, TimeSpan expiresIn)
         {
-            throw new NotImplementedException();
+            var expires = DateTime.UtcNow + expiresIn;
+
+            Set(key, value, cas);
+            _SetKeyExpiry(key, expires);
         }
 
         public bool Exists(string key)
@@ -90,7 +103,9 @@ namespace KeyValueStorage.Git.Tests
 
         public DateTime? ExpiresOn(string key)
         {
-            throw new NotImplementedException();
+            if (KeyCleaner != null)
+                return KeyCleaner.GetKeyExpiry(key);
+            return null;
         }
 
         public IEnumerable<string> GetStartingWith(string key)
@@ -120,7 +135,7 @@ namespace KeyValueStorage.Git.Tests
 
         public ulong GetNextSequenceValue(string key, int increment)
         {
-            throw new NotImplementedException();
+            return IStoreProviderInternalHelpers.GetNextSequenceValueViaCAS(this, key, increment);
         }
 
         public void Append(string key, string value)
@@ -130,7 +145,7 @@ namespace KeyValueStorage.Git.Tests
 
         public IRetryStrategy GetDefaultRetryStrategy()
         {
-            throw new NotImplementedException();
+            return new NoRetryStrategy();
         }
 
         public IKeyLock GetKeyLock(string key, DateTime expires, IRetryStrategy retryStrategy = null, string workerId = null)
@@ -140,7 +155,18 @@ namespace KeyValueStorage.Git.Tests
 
         private ulong _toULong(string text)
         {
+            if (text == null)
+                return (ulong) 1;
+
             return (ulong) text.GetHashCode();
+        }
+
+        private void _SetKeyExpiry(string key, DateTime expires)
+        {
+            if (KeyCleaner == null)
+                throw new InvalidOperationException("Expiry date cannot be set if no key cleaner is present");
+
+            KeyCleaner.SetKeyExpiry(key, expires);
         }
     }
 }

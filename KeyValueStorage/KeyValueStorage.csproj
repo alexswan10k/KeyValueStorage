@@ -60,6 +60,7 @@
     <Compile Include="Memory\SimpleMemoryStoreProvider.cs" />
     <Compile Include="RetryStrategies\NoRetryStrategy.cs" />
     <Compile Include="RetryStrategies\SimpleRetryStrategy.cs" />
+    <Compile Include="StoreFactory.cs" />
     <Compile Include="Utility\KVStoreProviderExportableStore.cs" />
     <Compile Include="Utility\LazyStoreBackup.cs" />
     <Compile Include="Utility\Logging\IKVLogger.cs" />

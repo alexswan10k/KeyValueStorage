@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using KeyValueStorage.Exceptions;
 using KeyValueStorage.Interfaces;
 
@@ -11,10 +12,10 @@ namespace KeyValueStorage.Utility
     {
         public static ulong GetNextSequenceValueViaCASWithRetries(IStoreProvider provider, string key, int increment, int tryCount)
         {
-            return getNextSequenceValueViaCAS(provider, key, increment, tryCount);
+            return getNextSequenceValueViaCASRet(provider, key, increment, tryCount);
         }
 
-        private static ulong getNextSequenceValueViaCAS(IStoreProvider provider, string key, int increment, int tryCount)
+        private static ulong getNextSequenceValueViaCASRet(IStoreProvider provider, string key, int increment, int tryCount)
         {
             try
             {
@@ -22,7 +23,7 @@ namespace KeyValueStorage.Utility
                 var obj = provider.Get(key, out cas);
                 ulong seqVal;
 
-                if (!ulong.TryParse(obj, out seqVal))
+                if (!UInt64.TryParse(obj, out seqVal))
                 {
                     seqVal = 0;
                 }
@@ -35,11 +36,26 @@ namespace KeyValueStorage.Utility
                 if (tryCount >= 10)
                     throw new Exception("Could not get sequence value", casEx);
 
-                System.Threading.Thread.Sleep(20);
+                Thread.Sleep(20);
                 //retry
-                return getNextSequenceValueViaCAS(provider, key, increment, tryCount++);
+                return getNextSequenceValueViaCASRet(provider, key, increment, tryCount++);
             }
             return 0;
+        }
+
+        public static ulong GetNextSequenceValueViaCAS(IStoreProvider fsTextStoreProvider, string key, int increment)
+        {
+            ulong cas;
+            var obj = fsTextStoreProvider.Get(key, out cas);
+            ulong seqVal;
+
+            if (!UInt64.TryParse(obj, out seqVal))
+            {
+                seqVal = 0;
+            }
+            seqVal = seqVal + (ulong) increment;
+            fsTextStoreProvider.Set(key, seqVal.ToString(), cas);
+            return seqVal;
         }
     }
 }

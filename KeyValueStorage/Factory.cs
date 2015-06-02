@@ -8,7 +8,10 @@ using KeyValueStorage.Utility;
 
 namespace KeyValueStorage
 {
-
+    /// <summary>
+    /// Obsolete. Use StoreFactory<T>
+    /// </summary>
+    [Obsolete]
     public class Factory
     {
         public static Factory Instance { get; set; }

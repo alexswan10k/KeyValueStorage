@@ -6,7 +6,7 @@ using KeyValueStorage.Interfaces.Utility;
 
 namespace KeyValueStorage.Interfaces
 {
-    public interface IStoreProvider : IDisposable
+    public interface ISimpleStoreProvider : IDisposable
     {
         void Initialize();
 
@@ -17,6 +17,7 @@ namespace KeyValueStorage.Interfaces
         /// <param name="key">The key.</param>
         /// <returns></returns>
         string Get(string key);
+
         /// <summary>
         /// Sets the specified key.
         /// Covered by all providers
@@ -24,6 +25,7 @@ namespace KeyValueStorage.Interfaces
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         void Set(string key, string value);
+
         /// <summary>
         /// Removes the specified key.
         /// Supported by all providers
@@ -31,6 +33,12 @@ namespace KeyValueStorage.Interfaces
         /// <param name="key">The key.</param>
         void Remove(string key);
 
+        bool Exists(string key);
+        IRetryStrategy GetDefaultRetryStrategy();
+    }
+
+    public interface ICasExpStoreProvider : ISimpleStoreProvider
+    {
         /// <summary>
         /// Gets the specified key.
         /// </summary>
@@ -38,6 +46,7 @@ namespace KeyValueStorage.Interfaces
         /// <param name="cas">The cas.</param>
         /// <returns></returns>
         string Get(string key, out ulong cas);
+
         /// <summary>
         /// Sets the specified key.
         /// </summary>
@@ -53,6 +62,7 @@ namespace KeyValueStorage.Interfaces
         /// <param name="value">The value.</param>
         /// <param name="expires">The expires.</param>
         void Set(string key, string value, DateTime expires);
+
         /// <summary>
         /// Sets the specified key.
         /// </summary>
@@ -60,6 +70,7 @@ namespace KeyValueStorage.Interfaces
         /// <param name="value">The value.</param>
         /// <param name="expiresIn">The expires in.</param>
         void Set(string key, string value, TimeSpan expiresIn);
+
         /// <summary>
         /// Sets the specified key.
         /// </summary>
@@ -68,6 +79,7 @@ namespace KeyValueStorage.Interfaces
         /// <param name="CAS">The CAS.</param>
         /// <param name="expires">The expires.</param>
         void Set(string key, string value, ulong cas, DateTime expires);
+
         /// <summary>
         /// Sets the specified key.
         /// </summary>
@@ -77,9 +89,11 @@ namespace KeyValueStorage.Interfaces
         /// <param name="expiresIn">The expires in.</param>
         void Set(string key, string value, ulong cas, TimeSpan expiresIn);
 
-        bool Exists(string key);
         DateTime? ExpiresOn(string key);
+    }
 
+    public interface IStoreProvider : ISimpleStoreProvider, ICasExpStoreProvider
+    {
         #region Queries
         IEnumerable<string> GetStartingWith(string key);
         IEnumerable<string> GetAllKeys();
@@ -99,8 +113,6 @@ namespace KeyValueStorage.Interfaces
         void Append(string key, string value);
         #endregion
 
-        IRetryStrategy GetDefaultRetryStrategy();
-
-		IKeyLock GetKeyLock(string key, DateTime expires, IRetryStrategy retryStrategy = null, string workerId = null);
+        IKeyLock GetKeyLock(string key, DateTime expires, IRetryStrategy retryStrategy = null, string workerId = null);
     }
 }

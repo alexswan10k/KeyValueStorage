@@ -299,39 +299,7 @@ namespace KeyValueStorage.FSText
         public ulong GetNextSequenceValue(string key, int increment)
         {
             key = KeyCharSubstitutor.Convert(key);
-            return getNextSequenceValue(key, increment, 0);
-        }
-
-        protected ulong getNextSequenceValue(string key, int increment, int tryCount)
-        {
-            if(tryCount == 0)
-                key = KeyCharSubstitutor.Convert(key);
-
-            try
-            {
-                ulong cas;
-                var obj = Get(key, out cas);
-                ulong seqVal;
-
-                if (!ulong.TryParse(obj, out seqVal))
-                {
-                    seqVal = 0;
-                }
-                seqVal = seqVal + (ulong)increment;
-                Set(key, seqVal.ToString(), cas);
-                return seqVal;
-            }
-            catch (CASException casEx)
-            {
-                if (tryCount >= 10)
-                    throw new Exception("Could not get sequence value", casEx);
-
-                System.Threading.Thread.Sleep(20);
-                //retry
-                tryCount++;
-                return getNextSequenceValue(key, increment, tryCount);
-            }
-            return 0;
+            return IStoreProviderInternalHelpers.GetNextSequenceValueViaCAS(this, key, increment);
         }
 
         public void Append(string key, string value)

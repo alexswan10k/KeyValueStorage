@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MainTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepoTests.cs" />
   </ItemGroup>
@@ -51,6 +52,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\KeyValueStorage.Testing\KeyValueStorage.Testing.csproj">
+      <Project>{BDBDBDA2-4004-47CF-A7EF-A34928637D08}</Project>
+      <Name>KeyValueStorage.Testing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\KeyValueStorage.Git\KeyValueStorage.Git.csproj">
       <Project>{723A64E2-A20A-44B2-9D2A-C4B370286A8B}</Project>
       <Name>KeyValueStorage.Git</Name>

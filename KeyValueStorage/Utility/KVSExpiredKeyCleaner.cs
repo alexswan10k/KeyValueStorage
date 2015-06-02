@@ -39,7 +39,8 @@ namespace KeyValueStorage.Utility
         {
             try
             {
-                using (var keyLock = new KVSLockWithCAS(LockKey, DateTime.UtcNow.AddSeconds(LockExpiryTimeS), Provider,null, "T"))
+                using (var keyLock = 
+                    Provider.GetKeyLock(LockKey, DateTime.UtcNow.AddSeconds(LockExpiryTimeS)))
                 {
                     var stateData = _GetStateData();
 

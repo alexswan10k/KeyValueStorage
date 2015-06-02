@@ -10,7 +10,6 @@ namespace KeyValueStorage.Git.Tests
     public class Repo : IDisposable
     {
         private readonly Repository _repo;
-        public static CharSubstitutor KeyCharSubstitutor = new CharSubstitutor();
 
         public Repo(string path)
         {
